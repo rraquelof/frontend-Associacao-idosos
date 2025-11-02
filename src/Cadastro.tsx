@@ -93,8 +93,6 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
             <input
               type="text"
               name="nome"
-              value={formData.nome}
-              onChange={handleChange}
               placeholder="Nome completo"
               className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
               required
