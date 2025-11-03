@@ -17,7 +17,6 @@ export default function CadastroIdoso() {
 
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto mt-4 p-8 fixed top-24 overflow-hidden">
         <form className="flex flex-col gap-6 h-[70vh] overflow-y-auto pr-2">
-     
           {etapa === 1 && (
             <>
               <h3 className="text-black font-bold text-xl">
@@ -40,20 +39,75 @@ export default function CadastroIdoso() {
                 />
               </div>
 
-              <div className="flex flex-col">
-                <label
-                  htmlFor="cpf"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  CPF
-                </label>
-                <input
-                  type="text"
-                  id="cpf"
-                  name="cpf"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  required
-                />
+               <div className="flex gap-6">
+                <div className="flex flex-col w-1/2">
+                  <label
+                    htmlFor="dataNascimento"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    Data de Nascimento
+                  </label>
+                  <input
+                    type="date"
+                    id="dataNascimento"
+                    name="dataNascimento"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col w-1/2">
+                  <label
+                    htmlFor="sexo"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    Sexo
+                  </label>
+                  <select
+                    id="sexo"
+                    name="sexo"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    required
+                  >
+                    <option value="">Selecione</option>
+                    <option value="feminino">Feminino</option>
+                    <option value="masculino">Masculino</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                <div className="flex flex-col w-1/2">
+                  <label
+                    htmlFor="cpf"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    CPF
+                  </label>
+                  <input
+                    type="text"
+                    id="cpf"
+                    name="cpf"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col w-1/2">
+                  <label
+                    htmlFor="sus"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    SUS
+                  </label>
+                  <input
+                    type="text"
+                    id="sus"
+                    name="sus"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="flex gap-6">
@@ -103,43 +157,6 @@ export default function CadastroIdoso() {
                     className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
-                </div>
-              </div>
-
-              <div className="flex gap-6">
-                <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="dataNascimento"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Data de Nascimento
-                  </label>
-                  <input
-                    type="date"
-                    id="dataNascimento"
-                    name="dataNascimento"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="sexo"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Sexo
-                  </label>
-                  <select
-                    id="sexo"
-                    name="sexo"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    <option value="feminino">Feminino</option>
-                    <option value="masculino">Masculino</option>
-                  </select>
                 </div>
               </div>
 
@@ -334,6 +351,100 @@ export default function CadastroIdoso() {
                 />
               </div>
 
+               <div className="flex gap-4">
+                <div className="flex flex-col w-1/3">
+                  <label
+                    htmlFor="ctps"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    CTPS
+                  </label>
+                  <input
+                    type="text"
+                    id="ctps"
+                    name="ctps"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                </div>
+
+                <div className="flex flex-col w-1/3">
+                  <label
+                    htmlFor="serieCtps"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    Série
+                  </label>
+                  <input
+                    type="text"
+                    id="serieCtps"
+                    name="serieCtps"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                </div>
+
+                <div className="flex flex-col w-1/3">
+                  <label
+                    htmlFor="pis"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    PIS
+                  </label>
+                  <input
+                    type="text"
+                    id="pis"
+                    name="pis"
+                    className="border p-3 rounded-lg text-lg w-1/1 text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                </div>
+              </div>
+
+               <div className="flex gap-4">
+                <div className="flex flex-col w-1/3">
+                  <label
+                    htmlFor="tituloEleitor"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    Título de Eleitor
+                  </label>
+                  <input
+                    type="text"
+                    id="tituloEleitor"
+                    name="tituloEleitor"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                </div>
+
+                <div className="flex flex-col w-1/3">
+                  <label
+                    htmlFor="zonaTituloEleitor"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    Zona
+                  </label>
+                  <input
+                    type="text"
+                    id="zonaTituloEleitor"
+                    name="zonaTituloEleitor"
+                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                </div>
+
+                <div className="flex flex-col w-1/3">
+                  <label
+                    htmlFor="secaoTituloEleitor"
+                    className="text-black font-medium text-lg mb-1"
+                  >
+                    Seção
+                  </label>
+                  <input
+                    type="text"
+                    id="secaoTituloEleitor"
+                    name="secaoTituloEleitor"
+                    className="border p-3 rounded-lg text-lg w-1/1 text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-col">
                 <label
                   htmlFor="observacoesDadosPessoais"
@@ -401,7 +512,6 @@ export default function CadastroIdoso() {
                     id="encaminhadoPor"
                     name="encaminhadoPor"
                     className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
                   />
                 </div>
               </div>
@@ -434,7 +544,6 @@ export default function CadastroIdoso() {
                   id="documentosRecebidos"
                   name="documentosRecebidos"
                   className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  required
                 />
               </div>
 
@@ -443,7 +552,7 @@ export default function CadastroIdoso() {
                   htmlFor="condicoesOcorreuRetirada"
                   className="text-black font-medium text-lg mb-1"
                 >
-                  Condições em que ocorreu a retirada do idoso da familiar
+                  Condições em que ocorreu a retirada do idoso da familia
                 </label>
                 <textarea
                   id="condicoesOcorreuRetirada"
@@ -508,7 +617,10 @@ export default function CadastroIdoso() {
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/3">
-                  <label htmlFor="instituicaoAnterior" className="text-black font-medium text-lg mb-1">
+                  <label
+                    htmlFor="instituicaoAnterior"
+                    className="text-black font-medium text-lg mb-1"
+                  >
                     Instituição
                   </label>
                   <input
@@ -520,7 +632,10 @@ export default function CadastroIdoso() {
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label htmlFor="dataEntradaAnterior" className="text-black font-medium text-lg mb-1">
+                  <label
+                    htmlFor="dataEntradaAnterior"
+                    className="text-black font-medium text-lg mb-1"
+                  >
                     Data de entrada
                   </label>
                   <input
@@ -532,7 +647,10 @@ export default function CadastroIdoso() {
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label htmlFor="dataSaidaAnterior" className="text-black font-medium text-lg mb-1">
+                  <label
+                    htmlFor="dataSaidaAnterior"
+                    className="text-black font-medium text-lg mb-1"
+                  >
                     Data da saída
                   </label>
                   <input
@@ -606,11 +724,10 @@ export default function CadastroIdoso() {
           {etapa === 3 && (
             <>
               <h3 className="text-black font-bold text-xl">III - FAMÍLIA</h3>
-
             </>
           )}
 
-           <div className="flex justify-between mt-6">
+          <div className="flex justify-between mt-6">
             {etapa > 1 && (
               <Botao
                 onClick={etapaAnterior}
