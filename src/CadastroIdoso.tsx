@@ -1,5 +1,10 @@
 import { useState } from "react";
-import Botao from "./components/Botao";
+import Botao from "./componentes/Botao";
+import Input from "./componentes/Input";
+import Label from "./componentes/Label";
+import Select from "./componentes/Select";
+import Option from "./componentes/Option";
+import Textarea from "./componentes/Textarea";
 
 export default function CadastroIdoso() {
   const [etapa, setEtapa] = useState(1);
@@ -24,137 +29,65 @@ export default function CadastroIdoso() {
               </h3>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="nome"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Nome completo
-                </label>
-                <input
-                  type="text"
-                  id="nome"
-                  name="nome"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  required
-                />
+                <Label htmlFor="nome" texto="Nome completo" />
+                <Input type="text" id="nome" name="nome" required />
               </div>
 
-               <div className="flex gap-6">
+              <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="dataNascimento"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Data de Nascimento
-                  </label>
-                  <input
+                  <Label htmlFor="dataNascimento" texto="Data de Nascimento" />
+                  <Input
                     type="date"
                     id="dataNascimento"
                     name="dataNascimento"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
 
                 <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="sexo"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Sexo
-                  </label>
-                  <select
-                    id="sexo"
-                    name="sexo"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    <option value="feminino">Feminino</option>
-                    <option value="masculino">Masculino</option>
-                  </select>
+                  <Label htmlFor="sexo" texto="Sexo" />
+                  <Select id="sexo" name="sexo" required>
+                    <Option value="" texto="Selecione" />
+                    <Option value="feminino" texto="Feminino" />
+                    <Option value="masculino" texto="Masculino" />
+                  </Select>
                 </div>
               </div>
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="cpf"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    CPF
-                  </label>
-                  <input
-                    type="text"
-                    id="cpf"
-                    name="cpf"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
-                  />
+                  <Label htmlFor="cpf" texto="CPF" />
+                  <Input type="text" id="cpf" name="cpf" required />
                 </div>
 
                 <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="sus"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    SUS
-                  </label>
-                  <input
-                    type="text"
-                    id="sus"
-                    name="sus"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
-                  />
+                  <Label htmlFor="sus" texto="SUS" />
+                  <Input type="text" id="sus" name="sus" required />
                 </div>
               </div>
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="rg"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    RG
-                  </label>
-                  <input
-                    type="text"
-                    id="rg"
-                    name="rg"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    required
-                  />
+                  <Label htmlFor="rg" texto="RG" />
+                  <Input type="text" id="rg" name="rg" required />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="dataEmissaoRg"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Data de Emissão
-                  </label>
-                  <input
+                  <Label htmlFor="dataEmissaoRg" texto="Data de Emissão" />
+                  <Input
                     type="date"
                     id="dataEmissaoRg"
                     name="dataEmissaoRg"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="orgaoEmissorRg"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Órgão Emissor
-                  </label>
-                  <input
+                  <Label htmlFor="orgaoEmissorRg" texto="Órgão Emissor" />
+                  <Input
                     type="text"
                     id="orgaoEmissorRg"
                     name="orgaoEmissorRg"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
@@ -162,33 +95,21 @@ export default function CadastroIdoso() {
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="nacionalidade"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Nacionalidade
-                  </label>
-                  <input
+                  <Label htmlFor="nacionalidade" texto="Nacionalidade" />
+                  <Input
                     type="text"
                     id="nacionalidade"
                     name="nacionalidade"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
 
                 <div className="flex flex-col w-1/2">
-                  <label
-                    htmlFor="naturalidade"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Naturalidade
-                  </label>
-                  <input
+                  <Label htmlFor="naturalidade" texto="Naturalidade" />
+                  <Input
                     type="text"
                     id="naturalidade"
                     name="naturalidade"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
@@ -198,265 +119,123 @@ export default function CadastroIdoso() {
                 <p className="text-black font-bold text-lg">Filiação</p>
                 <div className="flex gap-6">
                   <div className="flex flex-col w-1/2">
-                    <label
-                      htmlFor="nomePai"
-                      className="text-black font-medium text-lg mb-1"
-                    >
-                      Nome do Pai
-                    </label>
-                    <input
-                      type="text"
-                      id="nomePai"
-                      name="nomePai"
-                      className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    />
+                    <Label htmlFor="nomePai" texto="Nome do Pai" />
+                    <Input type="text" id="nomePai" name="nomePai" />
                   </div>
 
                   <div className="flex flex-col w-1/2">
-                    <label
-                      htmlFor="nomeMae"
-                      className="text-black font-medium text-lg mb-1"
-                    >
-                      Nome da Mãe
-                    </label>
-                    <input
-                      type="text"
-                      id="nomeMae"
-                      name="nomeMae"
-                      className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                    />
+                    <Label htmlFor="nomeMae" texto="Nome da Mãe" />
+                    <Input type="text" id="nomeMae" name="nomeMae" />
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="responsavel"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Nome do Responsável
-                </label>
-                <input
-                  type="text"
-                  id="responsavel"
-                  name="responsavel"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                />
+                <Label htmlFor="responsavel" texto="Nome do Responsável" />
+                <Input type="text" id="responsavel" name="responsavel" />
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
                   htmlFor="ultimoEndereco"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Último endereço do acolhido
-                </label>
-                <input
-                  type="text"
-                  id="ultimoEndereco"
-                  name="ultimoEndereco"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  texto="Último endereço do acolhido"
                 />
+                <Input type="text" id="ultimoEndereco" name="ultimoEndereco" />
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="cidade"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Cidade / UF
-                </label>
-                <input
-                  type="text"
-                  id="cidade"
-                  name="cidade"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                />
+                <Label htmlFor="cidade" texto="Cidade / UF" />
+                <Input type="text" id="cidade" name="cidade" />
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="contato"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Contato
-                </label>
-                <input
-                  type="text"
-                  id="contato"
-                  name="contato"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                />
+                <Label htmlFor="contato" texto="Contato" />
+                <Input type="text" id="contato" name="contato" />
               </div>
 
               <div className="flex gap-4">
                 <div className="flex flex-col w-1/3">
-                  <label
+                  <Label
                     htmlFor="certidaoNascimento"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Nº da Certidão de Nascimento
-                  </label>
-                  <input
+                    texto="Nº da Certidão de Nascimento"
+                  />
+                  <Input
                     type="text"
                     id="certidaoNascimento"
                     name="certidaoNascimento"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   />
                 </div>
 
                 <div className="flex flex-col w-1/3 mt-6">
-                  <label
-                    htmlFor="folhaCertidao"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Folha
-                  </label>
-                  <input
-                    type="text"
-                    id="folhaCertidao"
-                    name="folhaCertidao"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  />
+                  <Label htmlFor="folhaCertidao" texto="Folha" />
+                  <Input type="text" id="folhaCertidao" name="folhaCertidao" />
                 </div>
 
                 <div className="flex flex-col w-1/3 mt-6">
-                  <label
-                    htmlFor="livroCertidao"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Livro
-                  </label>
-                  <input
+                  <Label htmlFor="livroCertidao" texto="Livro" />
+                  <Input
                     type="text"
                     id="livroCertidao"
                     name="livroCertidao"
-                    className="border p-3 rounded-lg text-lg w-1/1 text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    className="w-1/1"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="cartorio"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Cartório
-                </label>
-                <input
-                  type="text"
-                  id="cartorio"
-                  name="cartorio"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                />
+                <Label htmlFor="cartorio" texto="Cartório" />
+                <Input type="text" id="cartorio" name="cartorio" />
               </div>
 
-               <div className="flex gap-4">
+              <div className="flex gap-4">
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="ctps"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    CTPS
-                  </label>
-                  <input
-                    type="text"
-                    id="ctps"
-                    name="ctps"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  />
+                  <Label htmlFor="ctps" texto="CTPS" />
+                  <Input type="text" id="ctps" name="ctps" />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="serieCtps"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Série
-                  </label>
-                  <input
-                    type="text"
-                    id="serieCtps"
-                    name="serieCtps"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  />
+                  <Label htmlFor="serieCtps" texto="Série" />
+                  <Input type="text" id="serieCtps" name="serieCtps" />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="pis"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    PIS
-                  </label>
-                  <input
-                    type="text"
-                    id="pis"
-                    name="pis"
-                    className="border p-3 rounded-lg text-lg w-1/1 text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  />
+                  <Label htmlFor="pis" texto="PIS" />
+                  <Input type="text" id="pis" name="pis" className="w-1/1" />
                 </div>
               </div>
 
-               <div className="flex gap-4">
+              <div className="flex gap-4">
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="tituloEleitor"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Título de Eleitor
-                  </label>
-                  <input
-                    type="text"
-                    id="tituloEleitor"
-                    name="tituloEleitor"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  />
+                  <Label htmlFor="tituloEleitor" texto="Título de Eleitor" />
+                  <Input type="text" id="tituloEleitor" name="tituloEleitor" />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="zonaTituloEleitor"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Zona
-                  </label>
-                  <input
+                  <Label htmlFor="zonaTituloEleitor" texto="Zona" />
+                  <Input
                     type="text"
                     id="zonaTituloEleitor"
                     name="zonaTituloEleitor"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="secaoTituloEleitor"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Seção
-                  </label>
-                  <input
+                  <Label htmlFor="secaoTituloEleitor" texto="Seção" />
+                  <Input
                     type="text"
                     id="secaoTituloEleitor"
                     name="secaoTituloEleitor"
-                    className="border p-3 rounded-lg text-lg w-1/1 text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    className="w-1/1"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="observacoesDadosPessoais"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Observações
-                </label>
-                <textarea
+                <Label htmlFor="observacoesDadosPessoais" texto="Observações" />
+                <Textarea
                   id="observacoesDadosPessoais"
                   name="observacoesDadosPessoais"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                ></textarea>
+                />
               </div>
             </>
           )}
@@ -469,97 +248,75 @@ export default function CadastroIdoso() {
 
               <div className="flex gap-6">
                 <div className="flex flex-col">
-                  <label
+                  <Label
                     htmlFor="dataAcolhimento"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Data do Acolhimento
-                  </label>
-                  <input
+                    texto="Data do Acolhimento"
+                  />
+                  <Input
                     type="date"
                     id="dataAcolhimento"
                     name="dataAcolhimento"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
 
                 <div className="flex flex-col">
-                  <label
+                  <Label
                     htmlFor="localAcolhimento"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Local do Acolhimento
-                  </label>
-                  <input
+                    texto="Local do Acolhimento"
+                  />
+                  <Input
                     type="text"
                     id="localAcolhimento"
                     name="localAcolhimento"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                     required
                   />
                 </div>
 
                 <div className="flex flex-col">
-                  <label
-                    htmlFor="encaminhadoPor"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Encaminhado por
-                  </label>
-                  <input
+                  <Label htmlFor="encaminhadoPor" texto="Encaminhado por" />
+                  <Input
                     type="text"
                     id="encaminhadoPor"
                     name="encaminhadoPor"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
                   htmlFor="motivoAcolhimento"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Motivo do Acolhimento conforme o órgão encaminhador
-                </label>
-
-                <textarea
+                  texto="Motivo do Acolhimento conforme o órgão encaminhador"
+                />
+                <Textarea
                   id="motivoAcolhimento"
                   name="motivoAcolhimento"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   required
-                ></textarea>
-              </div>
-
-              <div className="flex flex-col">
-                <label
-                  htmlFor="documentosRecebidos"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Documentos Recebidos
-                </label>
-                <input
-                  type="text"
-                  id="documentosRecebidos"
-                  name="documentosRecebidos"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                 />
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
+                  htmlFor="documentosRecebidos"
+                  texto="Documentos Recebidos"
+                />
+                <Input
+                  type="text"
+                  id="documentosRecebidos"
+                  name="documentosRecebidos"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <Label
                   htmlFor="condicoesOcorreuRetirada"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Condições em que ocorreu a retirada do idoso da familia
-                </label>
-                <textarea
+                  texto="Condições em que ocorreu a retirada do idoso da família"
+                />
+                <Textarea
                   id="condicoesOcorreuRetirada"
                   name="condicoesOcorreuRetirada"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   required
-                ></textarea>
+                />
               </div>
 
               <h4 className="text-black font-bold text-xl">
@@ -567,48 +324,29 @@ export default function CadastroIdoso() {
               </h4>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="higiene"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Higiene
-                </label>
-                <textarea
-                  id="higiene"
-                  name="higiene"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  required
-                ></textarea>
+                <Label htmlFor="higiene" texto="Higiene" />
+                <Textarea id="higiene" name="higiene" required />
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
                   htmlFor="reacoesComportamentos"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Reações e comportamentos
-                </label>
-                <textarea
+                  texto="Reações e comportamentos"
+                />
+                <Textarea
                   id="reacoesComportamentos"
                   name="reacoesComportamentos"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   required
-                ></textarea>
+                />
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="sinaisViolencia"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Sinais de violência
-                </label>
-                <textarea
+                <Label htmlFor="sinaisViolencia" texto="Sinais de violência" />
+                <Textarea
                   id="sinaisViolencia"
                   name="sinaisViolencia"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   required
-                ></textarea>
+                />
               </div>
 
               <h4 className="text-black font-bold text-xl">
@@ -617,106 +355,75 @@ export default function CadastroIdoso() {
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="instituicaoAnterior"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Instituição
-                  </label>
-                  <input
+                  <Label htmlFor="instituicaoAnterior" texto="Instituição" />
+                  <Input
                     type="text"
                     id="instituicaoAnterior"
                     name="instituicaoAnterior"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
+                  <Label
                     htmlFor="dataEntradaAnterior"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Data de entrada
-                  </label>
-                  <input
+                    texto="Data de entrada"
+                  />
+                  <Input
                     type="date"
                     id="dataEntradaAnterior"
                     name="dataEntradaAnterior"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   />
                 </div>
 
                 <div className="flex flex-col w-1/3">
-                  <label
-                    htmlFor="dataSaidaAnterior"
-                    className="text-black font-medium text-lg mb-1"
-                  >
-                    Data da saída
-                  </label>
-                  <input
+                  <Label htmlFor="dataSaidaAnterior" texto="Data da saída" />
+                  <Input
                     type="date"
                     id="dataSaidaAnterior"
                     name="dataSaidaAnterior"
-                    className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
                   htmlFor="motivoAcompanhamentoAnterior"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Motivo do acompanhamento anterior
-                </label>
-                <textarea
+                  texto="Motivo do acompanhamento anterior"
+                />
+                <Textarea
                   id="motivoAcompanhamentoAnterior"
                   name="motivoAcompanhamentoAnterior"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                ></textarea>
+                />
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
                   htmlFor="motivoDesacolhimentoAnterior"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Motivos do desacolhimento anterior
-                </label>
-                <textarea
+                  texto="Motivos do desacolhimento anterior"
+                />
+                <Textarea
                   id="motivoDesacolhimentoAnterior"
                   name="motivoDesacolhimentoAnterior"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                ></textarea>
+                />
               </div>
 
               <div className="flex flex-col">
-                <label
+                <Label
                   htmlFor="encaminhamentosFamiliaAnteriormenteAoAcolhimento"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Encaminhamentos dados á família e ao idoso ou responsável
-                  anteriormente ao acolhimento institucional
-                </label>
-                <textarea
+                  texto="Encaminhamentos dados à família e ao idoso ou responsável anteriormente ao acolhimento institucional"
+                />
+                <Textarea
                   id="encaminhamentosFamiliaAnteriormenteAoAcolhimento"
                   name="encaminhamentosFamiliaAnteriormenteAoAcolhimento"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                ></textarea>
+                />
               </div>
 
               <div className="flex flex-col">
-                <label
-                  htmlFor="observacoesAcolhimento"
-                  className="text-black font-medium text-lg mb-1"
-                >
-                  Observações
-                </label>
-                <textarea
+                <Label htmlFor="observacoesAcolhimento" texto="Observações" />
+                <Textarea
                   id="observacoesAcolhimento"
                   name="observacoesAcolhimento"
-                  className="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300"
-                ></textarea>
+                />
               </div>
             </>
           )}
