@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Botao from "./components/botao";
+import Botao from "./components/Botao";
 
 export default function CadastroIdoso() {
   const [etapa, setEtapa] = useState(1);
