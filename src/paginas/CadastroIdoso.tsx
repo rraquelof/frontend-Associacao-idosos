@@ -1,11 +1,11 @@
 import { useState, type FormEvent } from "react";
-import Botao from "./componentes/Botao";
-import Input from "./componentes/Input";
-import Label from "./componentes/Label";
-import Select from "./componentes/Select";
-import Option from "./componentes/Option";
-import Textarea from "./componentes/Textarea";
-import Campos from "./componentes/Campos";
+import Botao from "../componentes/Botao";
+import Input from "../componentes/Input";
+import Label from "../componentes/Label";
+import Select from "../componentes/Select";
+import Option from "../componentes/Option";
+import Textarea from "../componentes/Textarea";
+import Campos from "../componentes/Campos";
 
 export default function CadastroIdoso() {
   const familiaRenda = [

@@ -2,10 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Cadastro from './Cadastro';
-import Login from './Login';
-import CadastroIdoso from './CadastroIdoso';
-import Menu from './Menu';
+import Cadastro from './paginas/Cadastro';
+import Login from './paginas/Login';
+import CadastroIdoso from './paginas/CadastroIdoso';
+import Menu from './paginas/Menu';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
