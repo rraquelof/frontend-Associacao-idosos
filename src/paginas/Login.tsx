@@ -1,5 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import Input from "../componentes/Input";
+import Botao from "../componentes/Botao";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ export default function Login() {
       {/* Lado esquerdo */}
       <div className="w-1/2 bg-gray-200 flex flex-col justify-center items-center text-black p-10">
         <div className="flex flex-col items-center text-center space-y-4">
-          <h1 className="text-3xl font-bold">Apoio para Associações de Idosos</h1>
+          <h1 className="text-5xl font-bold">Apoio para Associações de Idosos</h1>
           <p className="text-lg max-w-md">
             Conecte-se e continue fazendo a diferença na vida dos idosos.
           </p>
@@ -61,44 +63,39 @@ export default function Login() {
           <h2 className="text-2xl font-bold mb-6 text-center">Bem-vindo de volta</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-            <input
+           
+            <Input 
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Email"
-              className="border p-3 rounded"
+              placeholder="Digite seu e-mail"
               required
             />
 
-            <input
+            <Input 
               type="password"
               name="senha"
               value={formData.senha}
               onChange={handleChange}
-              placeholder="Senha"
-              className="border p-3 rounded"
+              placeholder="Digite sua senha"
               required
             />
 
-            {/* 👇 Link para criar conta */}
             <p className="text-center text-sm text-gray-600">
-              Não possui conta?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/cadastro")}
-                className="text-blue-600 hover:underline"
-              >
-                Criar conta
-              </button>
+            Não possui conta?
+            <Botao 
+              tipo="button"
+              onClick={() => navigate("/cadastro")}
+              texto="Criar conta"
+            />
             </p>
 
-            <button
-              type="submit"
+            <Botao 
+              tipo="submit"
+              texto="Entrar"
               className="bg-gradient-to-r from-purple-400 via-blue-300 to-purple-400 rounded-full shadow-md hover:shadow-lg transition-all text-lg font-semibold px-6 py-2"
-            >
-              Entrar
-            </button>
+            />
 
             {mensagem && (
               <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
