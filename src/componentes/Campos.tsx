@@ -4,14 +4,11 @@ import Label from "./Label";
 import Botao from "./Botao";
 
 interface CamposDinamicosProps {
-  campos: string[]; 
+  campos: string[];
   onChange?: (valores: Record<string, string>[]) => void;
 }
 
-export default function Campos({
-  campos,
-  onChange,
-}: CamposDinamicosProps) {
+export default function Campos({ campos, onChange }: CamposDinamicosProps) {
   const [itens, setItens] = useState<Record<string, string>[]>([
     Object.fromEntries(campos.map((c) => [c, ""])),
   ]);
@@ -32,15 +29,14 @@ export default function Campos({
 
   return (
     <div className="flex flex-col gap-4">
-  
       {itens.map((item, index) => (
-        <div
-          key={index}
-          className="flex gap-3"
-        >
+        <div key={index} className="flex gap-3">
           {campos.map((campo) => (
             <div key={campo} className="flex flex-col">
-              <Label texto={campo.charAt(0).toUpperCase() + campo.slice(1)} />
+              <Label
+                htmlFor={campo}
+                texto={campo.charAt(0).toUpperCase() + campo.slice(1)}
+              />
               <Input
                 type="text"
                 value={item[campo]}

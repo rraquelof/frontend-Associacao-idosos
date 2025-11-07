@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import Botao from "../componentes/Botao";
 import Input from "../componentes/Input";
 import Label from "../componentes/Label";
@@ -8,26 +8,238 @@ import Textarea from "../componentes/Textarea";
 import Campos from "../componentes/Campos";
 
 export default function CadastroIdoso() {
-  const familiaRenda = [
-    "nome",
-    "idade",
-    "parentesco",
-    "profissão",
-    "religião",
-    "escolaridade",
-    "contato",
-  ];
+  const [formDados, setFormDados] = useState({
+    nome: "",
+    cpf: "",
+    rg: "",
+    dataEmissaoRg: "",
+    orgaoEmissorRg: "",
+    sus: "",
+    dataNascimento: "",
+    sexo: "",
+    nacionalidade: "",
+    naturalidade: "",
+    foto: "",
+    nomePai: "",
+    nomeMae: "",
+    responsavel: "",
+    ultimoEnderecoDoAcolhido: "",
+    cidade: "",
+    contato: "",
+    numCertidaoNascimento: "",
+    folha: "",
+    livro: "",
+    cartorio: "",
+    ctps: "",
+    serie: "",
+    pis: "",
+    tituloEleitor: "",
+    zonaTituloEleitor: "",
+    secaoTituloEleitor: "",
+    observacoesDadosPessoais: "",
+    dataAcolhimento: "",
+    localAcolhimento: "",
+    encaminhadoPor: "",
+    motivoDoAcolhimentoConformeOrgaoEmissor: "",
+    documentacaoRecebida: "",
+    condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia: "",
+    condicoesDeHigieneNoMomentoDoAcolhimento: "",
+    reacoesEComportamentos: "",
+    sinasDeViolencia: "",
+    instituicaoAcolhimentoAnterior: "",
+    dataEntradaAcolhimentoAnterior: "",
+    dataSaidaAcolhimentoAnterior: "",
+    motivoAcolhimentoAnterior: "",
+    motivoDesacolhimentoAnterior: "",
+    encaminhamentosFamiliaAnteriormenteAoAcolhimento: "",
+    observacoesAcolhimento: "",
+    arranjoFamiliar: "",
+    familiaAmpliada: "",
+    interessadosNoIdoso: "",
+    familiaAtendidaPorProgramaSocial: "",
+    programaSocialDaFamilia: "",
+    quemEAtendidoNoProgramaSocialDaFamilia: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia: "",
+    infraestutura: "",
+    familiaAtendidaPorProgramaSaude: "",
+    servicoDeSaudeQueAtendeAFamilia: "",
+    localServicoDeSaudeQueAtendeAFamilia: "",
+    quemServicoDeSaudeQueAtendeAFamilia: "",
+    observacoesServicoDeSaude: "",
+    condicoesDeHabilidade: "",
+    infraestruturaDeComunidade: "",
+    relacaoComFamilia: "",
+    percepcaoDaFamiliaSobreIdoso: "",
+    percepcaoIdosoSobreFamilia: "",
+    percepcaoEquipeTecnicaSobreRelacaoFamiliar: "",
+    observacoesRelacaoFamiliar: "",
+    IdosoRecebeVisita: "",
+    comportamentosIdosoDuranteVisita: "",
+    comportamentosFamiliaresDuranteVisita: "",
+    idosoTemIrmaos: "",
+    nomeIrmaos: "",
+    idadeIrmaos: "",
+    localIrmaos: "",
+    parecerEquipeTecnica: "",
+    reavaliacao: "",
+  });
 
-  const irmoes = ["nome", "idade", "local"];
+  const [familia, setFamilia] = useState({
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade: "",
+    familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato: "",
+  });
 
+  const [irmoes, setIrmoes] = useState({
+    nomeIrmaos: "",
+    idadeIrmaos: "",
+    localIrmaos: "",
+  });
+
+  const [mensagem, setMensagem] = useState("");
   const [etapa, setEtapa] = useState(1);
   const [aplica, setAplica] = useState<string>("");
 
   const proximaEtapa = () => setEtapa((prev) => prev + 1);
   const etapaAnterior = () => setEtapa((prev) => prev - 1);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFormDados({
+      ...formDados,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setMensagem("Enviando...");
+    const dadosParaEnviar = {
+      ...formDados,
+    };
+
+    try {
+      const resposta = await fetch(
+        "https://api-associacao-idosos.onrender.com/api/cadastrarIdoso",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dadosParaEnviar),
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (resposta.ok) {
+        setMensagem("Idoso cadastrado com sucesso!");
+
+        setFormDados({
+          nome: "",
+          cpf: "",
+          rg: "",
+          dataEmissaoRg: "",
+          orgaoEmissorRg: "",
+          sus: "",
+          dataNascimento: "",
+          sexo: "",
+          nacionalidade: "",
+          naturalidade: "",
+          foto: "",
+          nomePai: "",
+          nomeMae: "",
+          responsavel: "",
+          ultimoEnderecoDoAcolhido: "",
+          cidade: "",
+          contato: "",
+          numCertidaoNascimento: "",
+          folha: "",
+          livro: "",
+          cartorio: "",
+          ctps: "",
+          serie: "",
+          pis: "",
+          tituloEleitor: "",
+          zonaTituloEleitor: "",
+          secaoTituloEleitor: "",
+          observacoesDadosPessoais: "",
+          dataAcolhimento: "",
+          localAcolhimento: "",
+          encaminhadoPor: "",
+          motivoDoAcolhimentoConformeOrgaoEmissor: "",
+          documentacaoRecebida: "",
+          condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia: "",
+          condicoesDeHigieneNoMomentoDoAcolhimento: "",
+          observacoesAcolhimento: "",
+          reacoesEComportamentos: "",
+          sinasDeViolencia: "",
+          instituicaoAcolhimentoAnterior: "",
+          dataEntradaAcolhimentoAnterior: "",
+          dataSaidaAcolhimentoAnterior: "",
+          motivoAcolhimentoAnterior: "",
+          motivoDesacolhimentoAnterior: "",
+          encaminhamentosFamiliaAnteriormenteAoAcolhimento: "",
+          arranjoFamiliar: "",
+          familiaAmpliada: "",
+          interessadosNoIdoso: "",
+          familiaAtendidaPorProgramaSocial: "",
+          programaSocialDaFamilia: "",
+          quemEAtendidoNoProgramaSocialDaFamilia: "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade: "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco:
+            "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao:
+            "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao:
+            "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade:
+            "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato:
+            "",
+          familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia: "",
+          infraestutura: "",
+          familiaAtendidaPorProgramaSaude: "",
+          servicoDeSaudeQueAtendeAFamilia: "",
+          localServicoDeSaudeQueAtendeAFamilia: "",
+          quemServicoDeSaudeQueAtendeAFamilia: "",
+          observacoesServicoDeSaude: "",
+          condicoesDeHabilidade: "",
+          infraestruturaDeComunidade: "",
+          relacaoComFamilia: "",
+          percepcaoDaFamiliaSobreIdoso: "",
+          percepcaoIdosoSobreFamilia: "",
+          percepcaoEquipeTecnicaSobreRelacaoFamiliar: "",
+          observacoesRelacaoFamiliar: "",
+          IdosoRecebeVisita: "",
+          comportamentosIdosoDuranteVisita: "",
+          comportamentosFamiliaresDuranteVisita: "",
+          idosoTemIrmaos: "",
+          nomeIrmaos: "",
+          idadeIrmaos: "",
+          localIrmaos: "",
+          parecerEquipeTecnica: "",
+          reavaliacao: "",
+        });
+      } else {
+        setMensagem(`${dados.mensagem || "Erro ao cadastrar idoso."}`);
+      }
+    } catch {
+      setMensagem("Erro ao conectar com o servidor.");
+    }
   };
 
   return (
@@ -51,7 +263,14 @@ export default function CadastroIdoso() {
 
               <div className="flex flex-col">
                 <Label htmlFor="nome" texto="Nome completo" />
-                <Input type="text" id="nome" name="nome" required />
+                <Input
+                  type="text"
+                  id="nome"
+                  name="nome"
+                  value={formDados.nome}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="flex gap-6">
@@ -61,13 +280,21 @@ export default function CadastroIdoso() {
                     type="date"
                     id="dataNascimento"
                     name="dataNascimento"
+                    value={formDados.dataNascimento}
+                    onChange={handleChange}
                     required
                   />
                 </div>
 
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="sexo" texto="Sexo" />
-                  <Select id="sexo" name="sexo" required>
+                  <Select
+                    id="sexo"
+                    name="sexo"
+                    value={formDados.sexo}
+                    onChange={handleChange}
+                    required
+                  >
                     <Option value="" texto="Selecione" />
                     <Option value="feminino" texto="Feminino" />
                     <Option value="masculino" texto="Masculino" />
@@ -78,19 +305,40 @@ export default function CadastroIdoso() {
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="cpf" texto="CPF" />
-                  <Input type="text" id="cpf" name="cpf" required />
+                  <Input
+                    type="text"
+                    id="cpf"
+                    name="cpf"
+                    value={formDados.cpf}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="sus" texto="SUS" />
-                  <Input type="text" id="sus" name="sus" required />
+                  <Input
+                    type="text"
+                    id="sus"
+                    name="sus"
+                    value={formDados.sus}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="rg" texto="RG" />
-                  <Input type="text" id="rg" name="rg" required />
+                  <Input
+                    type="text"
+                    id="rg"
+                    name="rg"
+                    value={formDados.rg}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
                 <div className="flex flex-col w-1/3">
@@ -99,6 +347,8 @@ export default function CadastroIdoso() {
                     type="date"
                     id="dataEmissaoRg"
                     name="dataEmissaoRg"
+                    value={formDados.dataEmissaoRg}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -109,6 +359,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="orgaoEmissorRg"
                     name="orgaoEmissorRg"
+                    value={formDados.orgaoEmissorRg}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -121,6 +373,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="nacionalidade"
                     name="nacionalidade"
+                    value={formDados.nacionalidade}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -131,6 +385,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="naturalidade"
                     name="naturalidade"
+                    value={formDados.naturalidade}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -141,19 +397,37 @@ export default function CadastroIdoso() {
                 <div className="flex gap-6">
                   <div className="flex flex-col w-1/2">
                     <Label htmlFor="nomePai" texto="Nome do Pai" />
-                    <Input type="text" id="nomePai" name="nomePai" />
+                    <Input
+                      type="text"
+                      id="nomePai"
+                      name="nomePai"
+                      value={formDados.nomePai}
+                      onChange={handleChange}
+                    />
                   </div>
 
                   <div className="flex flex-col w-1/2">
                     <Label htmlFor="nomeMae" texto="Nome da Mãe" />
-                    <Input type="text" id="nomeMae" name="nomeMae" />
+                    <Input
+                      type="text"
+                      id="nomeMae"
+                      name="nomeMae"
+                      value={formDados.nomeMae}
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="responsavel" texto="Nome do Responsável" />
-                <Input type="text" id="responsavel" name="responsavel" />
+                <Input
+                  type="text"
+                  id="responsavel"
+                  name="responsavel"
+                  value={formDados.responsavel}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -161,17 +435,35 @@ export default function CadastroIdoso() {
                   htmlFor="ultimoEndereco"
                   texto="Último endereço do acolhido"
                 />
-                <Input type="text" id="ultimoEndereco" name="ultimoEndereco" />
+                <Input
+                  type="text"
+                  id="ultimoEndereco"
+                  name="ultimoEndereco"
+                  value={formDados.ultimoEnderecoDoAcolhido}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="cidade" texto="Cidade / UF" />
-                <Input type="text" id="cidade" name="cidade" />
+                <Input
+                  type="text"
+                  id="cidade"
+                  name="cidade"
+                  value={formDados.cidade}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="contato" texto="Contato" />
-                <Input type="text" id="contato" name="contato" />
+                <Input
+                  type="text"
+                  id="contato"
+                  name="contato"
+                  value={formDados.contato}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex gap-4">
@@ -184,12 +476,20 @@ export default function CadastroIdoso() {
                     type="text"
                     id="certidaoNascimento"
                     name="certidaoNascimento"
+                    value={formDados.numCertidaoNascimento}
+                    onChange={handleChange}
                   />
                 </div>
 
                 <div className="flex flex-col w-1/3 mt-6">
                   <Label htmlFor="folhaCertidao" texto="Folha" />
-                  <Input type="text" id="folhaCertidao" name="folhaCertidao" />
+                  <Input
+                    type="text"
+                    id="folhaCertidao"
+                    name="folhaCertidao"
+                    value={formDados.folha}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="flex flex-col w-1/3 mt-6">
@@ -198,37 +498,70 @@ export default function CadastroIdoso() {
                     type="text"
                     id="livroCertidao"
                     name="livroCertidao"
-                    className="w-1/1"
+                    value={formDados.livro}
+                    onChange={handleChange}
+                    className="w-full"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="cartorio" texto="Cartório" />
-                <Input type="text" id="cartorio" name="cartorio" />
+                <Input
+                  type="text"
+                  id="cartorio"
+                  name="cartorio"
+                  value={formDados.cartorio}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex gap-4">
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="ctps" texto="CTPS" />
-                  <Input type="text" id="ctps" name="ctps" />
+                  <Input
+                    type="text"
+                    id="ctps"
+                    name="ctps"
+                    value={formDados.ctps}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="serieCtps" texto="Série" />
-                  <Input type="text" id="serieCtps" name="serieCtps" />
+                  <Input
+                    type="text"
+                    id="serieCtps"
+                    name="serieCtps"
+                    value={formDados.serie}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="pis" texto="PIS" />
-                  <Input type="text" id="pis" name="pis" className="w-1/1" />
+                  <Input
+                    type="text"
+                    id="pis"
+                    name="pis"
+                    value={formDados.pis}
+                    onChange={handleChange}
+                    className="w-full"
+                  />
                 </div>
               </div>
 
               <div className="flex gap-4">
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="tituloEleitor" texto="Título de Eleitor" />
-                  <Input type="text" id="tituloEleitor" name="tituloEleitor" />
+                  <Input
+                    type="text"
+                    id="tituloEleitor"
+                    name="tituloEleitor"
+                    value={formDados.tituloEleitor}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="flex flex-col w-1/3">
@@ -237,6 +570,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="zonaTituloEleitor"
                     name="zonaTituloEleitor"
+                    value={formDados.zonaTituloEleitor}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -246,7 +581,9 @@ export default function CadastroIdoso() {
                     type="text"
                     id="secaoTituloEleitor"
                     name="secaoTituloEleitor"
-                    className="w-1/1"
+                    value={formDados.secaoTituloEleitor}
+                    onChange={handleChange}
+                    className="w-full"
                   />
                 </div>
               </div>
@@ -256,6 +593,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="observacoesDadosPessoais"
                   name="observacoesDadosPessoais"
+                  value={formDados.observacoesDadosPessoais}
+                  onChange={handleChange}
                 />
               </div>
             </>
@@ -277,6 +616,8 @@ export default function CadastroIdoso() {
                     type="date"
                     id="dataAcolhimento"
                     name="dataAcolhimento"
+                    value={formDados.dataAcolhimento}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -290,6 +631,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="localAcolhimento"
                     name="localAcolhimento"
+                    value={formDados.localAcolhimento}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -300,6 +643,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="encaminhadoPor"
                     name="encaminhadoPor"
+                    value={formDados.encaminhadoPor}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -312,6 +657,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="motivoAcolhimento"
                   name="motivoAcolhimento"
+                  value={formDados.motivoDoAcolhimentoConformeOrgaoEmissor}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -325,6 +672,8 @@ export default function CadastroIdoso() {
                   type="text"
                   id="documentosRecebidos"
                   name="documentosRecebidos"
+                  value={formDados.documentacaoRecebida}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -336,6 +685,10 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="condicoesOcorreuRetirada"
                   name="condicoesOcorreuRetirada"
+                  value={
+                    formDados.condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia
+                  }
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -346,7 +699,13 @@ export default function CadastroIdoso() {
 
               <div className="flex flex-col">
                 <Label htmlFor="higiene" texto="Higiene" />
-                <Textarea id="higiene" name="higiene" required />
+                <Textarea
+                  id="higiene"
+                  name="higiene"
+                  value={formDados.condicoesDeHigieneNoMomentoDoAcolhimento}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="flex flex-col">
@@ -357,6 +716,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="reacoesComportamentos"
                   name="reacoesComportamentos"
+                  value={formDados.reacoesEComportamentos}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -366,6 +727,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="sinaisViolencia"
                   name="sinaisViolencia"
+                  value={formDados.sinasDeViolencia}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -381,6 +744,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="instituicaoAnterior"
                     name="instituicaoAnterior"
+                    value={formDados.instituicaoAcolhimentoAnterior}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -393,6 +758,8 @@ export default function CadastroIdoso() {
                     type="date"
                     id="dataEntradaAnterior"
                     name="dataEntradaAnterior"
+                    value={formDados.dataEntradaAcolhimentoAnterior}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -402,6 +769,8 @@ export default function CadastroIdoso() {
                     type="date"
                     id="dataSaidaAnterior"
                     name="dataSaidaAnterior"
+                    value={formDados.dataSaidaAcolhimentoAnterior}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -414,6 +783,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="motivoAcompanhamentoAnterior"
                   name="motivoAcompanhamentoAnterior"
+                  value={formDados.motivoAcolhimentoAnterior}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -425,6 +796,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="motivoDesacolhimentoAnterior"
                   name="motivoDesacolhimentoAnterior"
+                  value={formDados.motivoDesacolhimentoAnterior}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -436,6 +809,10 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="encaminhamentosFamiliaAnteriormenteAoAcolhimento"
                   name="encaminhamentosFamiliaAnteriormenteAoAcolhimento"
+                  value={
+                    formDados.encaminhamentosFamiliaAnteriormenteAoAcolhimento
+                  }
+                  onChange={handleChange}
                 />
               </div>
 
@@ -444,6 +821,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="observacoesAcolhimento"
                   name="observacoesAcolhimento"
+                  value={formDados.observacoesAcolhimento}
+                  onChange={handleChange}
                 />
               </div>
             </>
@@ -462,7 +841,12 @@ export default function CadastroIdoso() {
                   htmlFor="arranjoFamiliar"
                   texto="Arranjo familiar (pessoas que residiam com o idoso(a))"
                 />
-                <Textarea id="arranjoFamiliar" name="arranjoFamiliar" />
+                <Textarea
+                  id="arranjoFamiliar"
+                  name="arranjoFamiliar"
+                  value={formDados.arranjoFamiliar}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -470,7 +854,12 @@ export default function CadastroIdoso() {
                   htmlFor="familiaAmpliada"
                   texto="Família extensa/ampliada (que não residem no domicilio, mas possui vínculos)"
                 />
-                <Textarea id="familiaAmpliada" name="familiaAmpliada" />
+                <Textarea
+                  id="familiaAmpliada"
+                  name="familiaAmpliada"
+                  value={formDados.familiaAmpliada}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -478,7 +867,12 @@ export default function CadastroIdoso() {
                   htmlFor="interessadosIdoso"
                   texto="Há interessados no idoso?"
                 />
-                <Textarea id="interessadosIdoso" name="interessadosIdoso" />
+                <Textarea
+                  id="interessadosIdoso"
+                  name="interessadosIdoso"
+                  value={formDados.interessadosNoIdoso}
+                  onChange={handleChange}
+                />
               </div>
 
               <p className="text-black text-lg font-medium">
@@ -489,11 +883,13 @@ export default function CadastroIdoso() {
                 <div className="flex items-center gap-2">
                   <Input
                     type="radio"
-                    id="recebePrograma"
+                    id="recebeProgramaSocial"
                     name="recebePrograma"
+                    value={formDados.familiaAtendidaPorProgramaSocial}
+                    onChange={handleChange}
                   />
                   <Label
-                    htmlFor="recebePrograma"
+                    htmlFor="recebeProgramaSocial"
                     texto="Sim, é atendida por programa/benefício"
                   />
                 </div>
@@ -501,11 +897,13 @@ export default function CadastroIdoso() {
                 <div className="flex items-center gap-2">
                   <Input
                     type="radio"
-                    id="naoRecebePrograma"
+                    id="naoRecebeProgramaSocial"
                     name="recebePrograma"
+                    value={formDados.familiaAtendidaPorProgramaSocial}
+                    onChange={handleChange}
                   />
                   <Label
-                    htmlFor="naoRecebePrograma"
+                    htmlFor="naoRecebeProgramaSocial"
                     texto="Não é atendida por nenhum programa/benefício"
                   />
                 </div>
@@ -518,6 +916,8 @@ export default function CadastroIdoso() {
                       type="checkbox"
                       id="programaTransferenciaRenda"
                       name="programaTransferenciaRenda"
+                      value={formDados.programaSocialDaFamilia}
+                      onChange={handleChange}
                     />
                     <Label
                       htmlFor="programaTransferenciaRenda"
@@ -530,6 +930,8 @@ export default function CadastroIdoso() {
                       type="checkbox"
                       id="programaAtendimentoFamilia"
                       name="programaAtendimentoFamilia"
+                      value={formDados.programaSocialDaFamilia}
+                      onChange={handleChange}
                     />
                     <Label
                       htmlFor="programaAtendimentoFamilia"
@@ -542,6 +944,8 @@ export default function CadastroIdoso() {
                       type="checkbox"
                       id="beneficioPrestacaoContinua"
                       name="beneficioPrestacaoContinua"
+                      value={formDados.programaSocialDaFamilia}
+                      onChange={handleChange}
                     />
                     <Label
                       htmlFor="beneficioPrestacaoContinua"
@@ -553,7 +957,9 @@ export default function CadastroIdoso() {
                     <Input
                       type="checkbox"
                       id="beneficioPrevidenciario"
-                      name="beneficioPrevidenciario "
+                      name="beneficioPrevidenciario"
+                      value={formDados.programaSocialDaFamilia}
+                      onChange={handleChange}
                     />
                     <Label
                       htmlFor="beneficioPrevidenciario"
@@ -565,7 +971,9 @@ export default function CadastroIdoso() {
                     <Input
                       type="checkbox"
                       id="programaHabitacao"
-                      name="programaHabitacao "
+                      name="programaHabitacao"
+                      value={formDados.programaSocialDaFamilia}
+                      onChange={handleChange}
                     />
                     <Label
                       htmlFor="programaHabitacao"
@@ -578,7 +986,9 @@ export default function CadastroIdoso() {
                     <Input
                       type="text"
                       id="outroProgramaBeneficio"
-                      name="outroProgramaBeneficio "
+                      name="outroProgramaBeneficio"
+                      value={formDados.programaSocialDaFamilia}
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -592,6 +1002,8 @@ export default function CadastroIdoso() {
                     type="text"
                     id="quemRecebePrograma"
                     name="quemRecebePrograma"
+                    value={formDados.quemEAtendidoNoProgramaSocialDaFamilia}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -601,7 +1013,7 @@ export default function CadastroIdoso() {
               </h4>
 
               <p className="text-black text-lg font-medium">
-                Familiares possuem renda provenente de atividade laboral e/ou
+                Familiares possuem renda proveniente de atividade laboral e/ou
                 pensão alimentícia?
               </p>
 
@@ -610,10 +1022,18 @@ export default function CadastroIdoso() {
                   <Input
                     type="radio"
                     id="seAplicaRenda"
-                    name="aplicaRenda"
+                    name="possuiRendaFamiliar"
                     value="sim"
-                    onChange={() => setAplica("sim")}
+                    checked={
+                      formDados.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia ===
+                      "sim"
+                    }
+                    onChange={(e) => {
+                      handleChange(e);
+                      setAplica("sim");
+                    }}
                   />
+
                   <Label htmlFor="seAplicaRenda" texto="Sim" />
                 </div>
 
@@ -623,17 +1043,60 @@ export default function CadastroIdoso() {
                     id="naoSeAplicaRenda"
                     name="aplicaRenda"
                     value="nao"
-                    onChange={() => setAplica("nao")}
+                    checked={
+                      formDados.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia ===
+                      "não"
+                    }
+                    onChange={(e) => {
+                      handleChange(e);
+                      setAplica("nao");
+                    }}
                   />
                   <Label htmlFor="naoSeAplicaRenda" texto="Não" />
                 </div>
               </div>
 
-              {aplica === "sim" && <Campos campos={familiaRenda} />}
+              {aplica === "sim" && (
+                <Campos
+                  campos={[
+                    "nome",
+                    "idade",
+                    "parentesco",
+                    "profissão",
+                    "religião",
+                    "escolaridade",
+                    "contato",
+                  ]}
+                  onChange={(valores) => {
+                    const f = valores[0] || {};
+                    setFamilia({
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome:
+                        f.nome || "",
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade:
+                        f.idade || "",
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco:
+                        f.parentesco || "",
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao:
+                        f["profissão"] || "",
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao:
+                        f["religião"] || "",
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade:
+                        f.escolaridade || "",
+                      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato:
+                        f.contato || "",
+                    });
+                  }}
+                />
+              )}
 
               <div className="flex flex-col">
                 <Label htmlFor="infraestrutura" texto="Infraestrutura" />
-                <Textarea id="infraestrutura" name="infraestrutura" />
+                <Textarea
+                  id="infraestrutura"
+                  name="infraestrutura"
+                  value={formDados.infraestutura}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -644,6 +1107,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="condicaoHabitabilidade"
                   name="condicaoHabitabilidade"
+                  value={formDados.condicoesDeHabilidade}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -655,6 +1120,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="infraestruraComunidade"
                   name="infraestruraComunidade"
+                  value={formDados.infraestruturaDeComunidade}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -668,6 +1135,14 @@ export default function CadastroIdoso() {
                     type="radio"
                     id="temAtendimentoSaude"
                     name="atendimentoSaude"
+                    checked={
+                      formDados.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia ===
+                      "sim"
+                    }
+                    onChange={(e) => {
+                      handleChange(e);
+                      setAplica("sim");
+                    }}
                   />
                   <Label htmlFor="temAtendimentoSaude" texto="Sim" />
                 </div>
@@ -739,8 +1214,20 @@ export default function CadastroIdoso() {
                     type="text"
                     id="localProgramaSaude"
                     name="localProgramaSaude"
+                    value={formDados.localServicoDeSaudeQueAtendeAFamilia}
+                    onChange={handleChange}
                   />
                 </div>
+              </div>
+
+              <div className="flex flex-col">
+                <Label htmlFor="observacoesSaude" texto="Observações" />
+                <Textarea
+                  id="observacoesRelacaoSaude"
+                  name="observacoesRelacaoSaude"
+                  value={formDados.observacoesServicoDeSaude}
+                  onChange={handleChange}
+                />
               </div>
 
               <h4 className="text-black font-bold text-xl">
@@ -752,7 +1239,12 @@ export default function CadastroIdoso() {
                   htmlFor="relacaoFamilia"
                   texto="Como é a relação com a família? (fugas de casa, vínculos afetivos, indiferenças, brigas, etc)"
                 />
-                <Textarea id="relacaoFamilia" name="relacaoFamilia" />
+                <Textarea
+                  id="relacaoFamilia"
+                  name="relacaoFamilia"
+                  value={formDados.relacaoComFamilia}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -760,7 +1252,12 @@ export default function CadastroIdoso() {
                   htmlFor="percepcaoFamilia"
                   texto="Percepção da família sobre o idoso"
                 />
-                <Textarea id="percepcaoFamilia" name="percepcaoFamilia" />
+                <Textarea
+                  id="percepcaoFamilia"
+                  name="percepcaoFamilia"
+                  value={formDados.percepcaoDaFamiliaSobreIdoso}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -768,7 +1265,12 @@ export default function CadastroIdoso() {
                   htmlFor="percepcaoIdoso"
                   texto="Percepção do idoso sobre a família"
                 />
-                <Textarea id="percepcaoIdoso" name="percepcaoIdoso" />
+                <Textarea
+                  id="percepcaoIdoso"
+                  name="percepcaoIdoso"
+                  value={formDados.percepcaoIdosoSobreFamilia}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -779,12 +1281,20 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="percepcaoEquipeTecnicaFamilia"
                   name="percepcaoEquipeTecnicaFamilia"
+                  value={formDados.percepcaoEquipeTecnicaSobreRelacaoFamiliar}
+                  onChange={handleChange}
                 />
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="visita" texto="O idoso recebe visitas?" />
-                <Input type="text" id="visita" name="visita" />
+                <Input
+                  type="text"
+                  id="visita"
+                  name="visita"
+                  value={formDados.IdosoRecebeVisita}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="flex flex-col">
@@ -795,6 +1305,8 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="comportamentoIdosoVisita"
                   name="comportamentoIdosoVisita"
+                  value={formDados.comportamentosIdosoDuranteVisita}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -806,6 +1318,21 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="comportamentoFamiliarVisita"
                   name="comportamentoFamiliarVisita"
+                  value={formDados.comportamentosFamiliaresDuranteVisita}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <Label
+                  htmlFor="observacoesRelacaoFamiliar"
+                  texto="Obervações"
+                />
+                <Textarea
+                  id="observacoesRelacaoFamiliar"
+                  name="observacoesRelacaoFamiliar"
+                  value={formDados.observacoesRelacaoFamiliar}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -820,7 +1347,11 @@ export default function CadastroIdoso() {
                     id="temIrmao"
                     name="irmao"
                     value="sim"
-                    onChange={() => setAplica("sim")}
+                    checked={formDados.idosoTemIrmaos === "sim"}
+                    onChange={(e) => {
+                      handleChange(e);
+                      setAplica("sim");
+                    }}
                   />
                   <Label htmlFor="temIrmao" texto="Sim" />
                 </div>
@@ -831,13 +1362,29 @@ export default function CadastroIdoso() {
                     id="naoTemIrmao"
                     name="irmao"
                     value="nao"
-                    onChange={() => setAplica("nao")}
+                    checked={formDados.idosoTemIrmaos === "não"}
+                    onChange={(e) => {
+                      handleChange(e);
+                      setAplica("nao");
+                    }}
                   />
                   <Label htmlFor="naotemIrmao" texto="Não" />
                 </div>
               </div>
 
-              {aplica === "sim" && <Campos campos={irmoes} />}
+              {aplica === "sim" && (
+                <Campos
+                  campos={["nome", "idade", "local"]}
+                  onChange={(valores) => {
+                    const irmao = valores[0] || {};
+                    setIrmoes({
+                      nomeIrmaos: irmao.nome || "",
+                      idadeIrmaos: irmao.idade || "",
+                      localIrmaos: irmao.local || "",
+                    });
+                  }}
+                />
+              )}
 
               <div className="flex flex-col">
                 <Label
@@ -847,17 +1394,14 @@ export default function CadastroIdoso() {
                 <Textarea
                   id="parecerEquipeTecnicaIdoso"
                   name="parecerEquipeTecnicaIdoso"
+                  value={formDados.parecerEquipeTecnica}
+                  onChange={handleChange}
                 />
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="reavaliacao" texto="Prazo para reavaliação" />
                 <Input type="reavaliacao" id="reavaliacao" name="reavaliacao" />
-              </div>
-
-              <div className="flex flex-col">
-                <Label htmlFor="observacoesFinal" texto="Obervações" />
-                <Textarea id="observacoesFinal" name="observacoesFinal" />
               </div>
             </>
           )}
@@ -882,7 +1426,7 @@ export default function CadastroIdoso() {
             ) : (
               <Botao
                 tipo="submit"
-                texto="Salvar"
+                texto="Cadastrar"
                 className="bg-green-600 text-white hover:bg-green-700 ml-auto"
               />
             )}
