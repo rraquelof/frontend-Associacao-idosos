@@ -1,5 +1,5 @@
 interface BotaoProps {
-  tipo?: "button" | "submit" | "reset";
+  tipo?: "button" | "submit";
   onClick?: () => void;
   texto: string;
   className?: string;

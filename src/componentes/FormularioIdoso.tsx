@@ -94,7 +94,7 @@ export default function FormularioIdoso({
       percepcaoIdosoSobreFamilia: "",
       percepcaoEquipeTecnicaSobreRelacaoFamiliar: "",
       observacoesRelacaoFamiliar: "",
-      IdosoRecebeVisita: false,
+      IdosoRecebeVisita: "",
       comportamentosIdosoDuranteVisita: "",
       comportamentosFamiliaresDuranteVisita: "",
       idosoTemIrmaos: "",
@@ -139,16 +139,19 @@ export default function FormularioIdoso({
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    console.log("⛔ handleSubmit disparado");
     e.preventDefault();
+    e.stopPropagation();
     setMensagem("Enviando...");
 
     try {
       const token = localStorage.getItem("token");
       const resposta = await fetch(endpoint, {
         method: metodo,
-        headers: { 
-              "Content-Type": "application/json", 
-              ...(token && { Authorization: `Bearer ${token}` }) },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
         body: JSON.stringify(formDados),
       });
 
@@ -163,6 +166,8 @@ export default function FormularioIdoso({
       setMensagem("Erro ao conectar com o servidor.");
     }
   };
+
+  console.log("🚀 Re-render FormularioIdoso, etapa:", etapa);
 
   return (
     <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
@@ -1386,24 +1391,29 @@ export default function FormularioIdoso({
               />
             )}
 
-            {etapa < 3 ? (
+            {etapa < 3 && (
               <Botao
                 tipo="button"
                 onClick={proximaEtapa}
                 texto="Próximo"
                 className="bg-purple-500 text-white hover:bg-purple-600 ml-auto"
               />
-            ) : (
+            )}
+
+            {etapa === 3 && (
               <Botao
-                tipo="submit"
+                tipo="button"
+                onClick={() => {
+                  handleSubmit(new SubmitEvent("submit") as unknown as FormEvent<HTMLFormElement>);
+                }}
                 texto={textoBotao}
                 className="bg-green-600 text-white hover:bg-green-700 ml-auto"
               />
             )}
           </div>
-           {mensagem && (
-              <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
-            )}
+          {mensagem && (
+            <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
+          )}
         </form>
       </div>
     </div>
