@@ -28,7 +28,7 @@ export default function FormularioIdoso({
       dataEmissaoRg: "",
       orgaoEmissorRg: "",
       sus: "",
-      dataNascimento: "",
+      data_nascimento: "",
       sexo: "",
       nacionalidade: "",
       naturalidade: "",
@@ -94,7 +94,7 @@ export default function FormularioIdoso({
       percepcaoIdosoSobreFamilia: "",
       percepcaoEquipeTecnicaSobreRelacaoFamiliar: "",
       observacoesRelacaoFamiliar: "",
-      IdosoRecebeVisita: "",
+      IdosoRecebeVisita: false,
       comportamentosIdosoDuranteVisita: "",
       comportamentosFamiliaresDuranteVisita: "",
       idosoTemIrmaos: "",
@@ -143,9 +143,12 @@ export default function FormularioIdoso({
     setMensagem("Enviando...");
 
     try {
+      const token = localStorage.getItem("token");
       const resposta = await fetch(endpoint, {
         method: metodo,
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+              "Content-Type": "application/json", 
+              ...(token && { Authorization: `Bearer ${token}` }) },
         body: JSON.stringify(formDados),
       });
 
@@ -153,6 +156,7 @@ export default function FormularioIdoso({
       if (resposta.ok) {
         setMensagem(`${textoBotao} realizado com sucesso!`);
       } else {
+        console.error("Erro no cadastro:", dados);
         setMensagem(dados.mensagem || `Erro ao ${textoBotao.toLowerCase()}.`);
       }
     } catch {
@@ -193,12 +197,12 @@ export default function FormularioIdoso({
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
-                  <Label htmlFor="dataNascimento" texto="Data de Nascimento" />
+                  <Label htmlFor="data_nascimento" texto="Data de Nascimento" />
                   <Input
                     type="date"
-                    id="dataNascimento"
-                    name="dataNascimento"
-                    value={formDados.dataNascimento}
+                    id="data_nascimento"
+                    name="data_nascimento"
+                    value={formDados.data_nascimento}
                     onChange={handleChange}
                     required
                   />

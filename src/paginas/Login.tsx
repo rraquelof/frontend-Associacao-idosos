@@ -35,7 +35,11 @@ export default function Login() {
 
       if (resposta.ok) {
         setMensagem("✅ Login realizado com sucesso!");
-        navigate("/menu");
+        localStorage.setItem("token", dados.token);
+
+        setMensagem("✅ Login realizado com sucesso!");
+        
+        setTimeout(() => navigate("/menu"), 1000);
       } else {
         setMensagem(`⚠️ ${dados.message || "Credenciais inválidas."}`);
       }
