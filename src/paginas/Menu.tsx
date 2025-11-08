@@ -8,12 +8,13 @@ export default function Menu(){
             <h1 className=" text-black font-medium text-3xl mb-10 transition-all duration-200"> 
                 Menu Principal
             </h1>
-            <div className="grid grid-cols-2 gap-8">
-                <MenuItem
-                icon={<img src={idososIcon} className="w-full h-full object-cover rounded-xl" />}
+
+            <MenuItem
+                icon={<img src={idososIcon} className="w-full h-full object-contain" />}
+                label="Cadastro de Idosos"
                 route="/cadastro/idoso"
-                />
-            </div>
+            />
+            
         </div>
     )
 }
