@@ -3,14 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 interface MenuItemProps {
     icon: ReactNode;
-    label: string;
     route: string;
     className?: string;
 }
 
 export default function MenuItem({
     icon,
-    label,
     route,
     className = ""
 }: MenuItemProps) {
@@ -39,11 +37,9 @@ export default function MenuItem({
         <button
         type="button"
         onClick={handleClick}
-        aria-label={label}
         className={baseClasses + " " + className}
         >
-        <div className="text-5xl mb-3">{icon}</div>
-        <p className="font-semibold text-lg">{label}</p>
+        <div className="w-full h-full bg-white flex justify-center items-center rounded-xl overflow-hidden">{icon}</div>
         </button>
     );
 }
