@@ -53,6 +53,7 @@ export default function ListaIdosos() {
                   className="bg-gray-400 text-white hover:bg-gray-500"
                   onClick={() => navegacao(`/dados/idoso`)}
                 />
+
                 {/* Deletar */}
                 <Botao
                   texto="Deletar"

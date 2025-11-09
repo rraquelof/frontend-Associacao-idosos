@@ -9,6 +9,7 @@ import Menu from './paginas/Menu';
 import AtualizarIdoso from './paginas/AtualizarIdoso';
 import ListaIdosos from './paginas/ListarIdosos';
 import DetallharIdoso from './paginas/DetalharIdoso';
+import DeletarIdoso from './paginas/DeletarIdoso';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,7 +20,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/cadastro/idoso' element={<CadastroIdoso />}></Route>
         <Route path='/atualizar/idoso' element={<AtualizarIdoso />}></Route>
         <Route path='/lista/idosos' element={<ListaIdosos />}></Route>
-         <Route path='/dados/idoso' element={<DetallharIdoso />}></Route>
+        <Route path="/deletar/idoso/:id" element={<DeletarIdoso />}></Route>
+        <Route path='/dados/idoso' element={<DetallharIdoso />}></Route>
         <Route path='/menu' element={<Menu/>}></Route>
       </Routes>
     </Router>
