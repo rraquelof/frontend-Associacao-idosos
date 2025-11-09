@@ -6,12 +6,14 @@ import Select from "../componentes/Select";
 import Option from "../componentes/Option";
 import Textarea from "../componentes/Textarea";
 import Campos from "../componentes/Campos";
+import type Idoso from "../modelo/Idoso";
+import { formatacaoData } from "../formatacao/formatacaoData";
 
 interface IdosoFormProps {
   endpoint: string;
   metodo?: "POST" | "PUT";
   textoBotao: string;
-  dadosIniciais?: Record<string, any>;
+  dadosIniciais?: Partial<Idoso>;
 }
 
 export default function FormularioIdoso({
@@ -28,7 +30,7 @@ export default function FormularioIdoso({
       dataEmissaoRg: "",
       orgaoEmissorRg: "",
       sus: "",
-      data_nascimento: "",
+      dataNascimento: "",
       sexo: "",
       nacionalidade: "",
       naturalidade: "",
@@ -139,7 +141,6 @@ export default function FormularioIdoso({
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    console.log("⛔ handleSubmit disparado");
     e.preventDefault();
     e.stopPropagation();
     setMensagem("Enviando...");
@@ -159,15 +160,12 @@ export default function FormularioIdoso({
       if (resposta.ok) {
         setMensagem(`${textoBotao} realizado com sucesso!`);
       } else {
-        console.error("Erro no cadastro:", dados);
         setMensagem(dados.mensagem || `Erro ao ${textoBotao.toLowerCase()}.`);
       }
     } catch {
       setMensagem("Erro ao conectar com o servidor.");
     }
   };
-
-  console.log("🚀 Re-render FormularioIdoso, etapa:", etapa);
 
   return (
     <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
@@ -202,12 +200,12 @@ export default function FormularioIdoso({
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
-                  <Label htmlFor="data_nascimento" texto="Data de Nascimento" />
+                  <Label htmlFor="dataNascimento" texto="Data de Nascimento" />
                   <Input
                     type="date"
-                    id="data_nascimento"
-                    name="data_nascimento"
-                    value={formDados.data_nascimento}
+                    id="dataNascimento"
+                    name="dataNascimento"
+                    value={formatacaoData(formDados.dataNascimento)}
                     onChange={handleChange}
                     required
                   />
@@ -274,7 +272,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataEmissaoRg"
                     name="dataEmissaoRg"
-                    value={formDados.dataEmissaoRg}
+                    value={formatacaoData(formDados.dataEmissaoRg)}
                     onChange={handleChange}
                     required
                   />
@@ -543,7 +541,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataAcolhimento"
                     name="dataAcolhimento"
-                    value={formDados.dataAcolhimento}
+                    value={formatacaoData(formDados.dataAcolhimento)}
                     onChange={handleChange}
                     required
                   />
@@ -691,7 +689,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataEntradaAcolhimentoAnterior"
                     name="dataEntradaAcolhimentoAnterior"
-                    value={formDados.dataEntradaAcolhimentoAnterior}
+                    value={formatacaoData(formDados.dataEntradaAcolhimentoAnterior)}
                     onChange={handleChange}
                   />
                 </div>
@@ -705,7 +703,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataSaidaAcolhimentoAnterior"
                     name="dataSaidaAcolhimentoAnterior"
-                    value={formDados.dataSaidaAcolhimentoAnterior}
+                    value={formatacaoData(formDados.dataSaidaAcolhimentoAnterior)}
                     onChange={handleChange}
                   />
                 </div>

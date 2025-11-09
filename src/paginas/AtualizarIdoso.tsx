@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import FormularioIdoso from "../componentes/FormularioIdoso";
 import { useParams } from "react-router-dom";
+import type Idoso from "../modelo/idoso";
 
 export default function AtualizarIdoso() {
   const { id } = useParams();
-  const [dados, setDados] = useState<Record<string, any> | null>(null);
+  const [dados, setDados] = useState<Record<string, Idoso> | null>(null);
 
   useEffect(() => {
     async function carregarIdoso() {
