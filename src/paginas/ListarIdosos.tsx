@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type Idoso from "../modelo/idoso";
+import type Idoso from "../modelo/Idoso";
 import { useNavigate } from "react-router-dom";
 import Botao from "../componentes/Botao";
 
@@ -46,12 +46,21 @@ export default function ListaIdosos() {
               className="flex justify-between text-black items-center border-b py-2 px-2"
             >
               <span>{idoso.nome}</span>
-              <Botao
-                texto="Ver dados"
-                className="bg-gray-400 text-white hover:bg-gray-500"
-                onClick={() => navegacao(`/dados/idoso`)}
-              />
-            </div>
+
+              <div className="flex gap-2">
+                <Botao
+                  texto="Ver dados"
+                  className="bg-gray-400 text-white hover:bg-gray-500"
+                  onClick={() => navegacao(`/dados/idoso`)}
+                />
+                {/* Deletar */}
+                <Botao
+                  texto="Deletar"
+                  className="bg-red-500 text-white hover:bg-red-600"
+                  onClick={() => navegacao(`/deletar/idoso/${idoso.id}`)}
+                />
+              </div>
+            </div>  
           ))}
 
           {mensagem && (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import FormularioIdoso from "../componentes/FormularioIdoso";
 import { useParams } from "react-router-dom";
-import type Idoso from "../modelo/idoso";
+import type Idoso from "../modelo/Idoso";
 
 export default function AtualizarIdoso() {
   const { id } = useParams();
