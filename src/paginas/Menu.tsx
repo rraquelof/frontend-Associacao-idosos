@@ -12,7 +12,7 @@ export default function Menu(){
             <MenuItem
                 icon={<img src={idososIcon} className="w-full h-full object-contain" />}
                 label="Cadastro de Idosos"
-                route="/cadastro/idoso"
+                route="/lista/idosos"
             />
             
         </div>
