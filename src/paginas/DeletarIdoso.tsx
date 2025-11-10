@@ -1,36 +1,59 @@
 import { useNavigate, useParams } from "react-router-dom";
-
-async function deletarIdoso(id: number) {
-  const token = localStorage.getItem("token");
-
-  const resposta = await fetch(
-    `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!resposta.ok) {
-    throw new Error("Erro ao deletar idoso");
-  }
-}
+import Botao from "../componentes/Botao";
+import Mensagem from "../componentes/mensagem";
+import { useState } from "react";
 
 export default function DeletarIdoso() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const navegacao = useNavigate();
+
+  const [mensagem, setMensagem] = useState("");
+  const [tipoMensagem, setTipoMensagem] = useState<
+    "sucesso" | "erro" | "informacao"
+  >("informacao");
+
+  async function deletarIdoso(id: string) {
+    const token = localStorage.getItem("token");
+
+    const resposta = await fetch(
+      `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!resposta.ok) {
+      const dados = await resposta.json();
+      setMensagem(dados.mensagem || "Erro ao deletar idoso");
+      setTipoMensagem("erro");
+    }
+  }
 
   async function confirmarDelete() {
-    if (!id) return;
+    if (!id) {
+      setMensagem("ID inválido.");
+      setTipoMensagem("erro");
+      return;
+    }
+
+    setMensagem("Excluindo idoso...");
+    setTipoMensagem("informacao");
 
     try {
-      await deletarIdoso(Number(id));
-      navigate("/lista/idosos");
+      await deletarIdoso(id);
+      setMensagem("Idoso excluído com sucesso!");
+      setTipoMensagem("sucesso");
+
+      setTimeout(() => {
+        navegacao("/lista/idosos");
+      }, 2000);
     } catch {
-      alert("Erro ao excluir idoso.");
+      setMensagem("Erro ao excluir idoso.");
+      setTipoMensagem("erro");
     }
   }
 
@@ -45,21 +68,34 @@ export default function DeletarIdoso() {
         </p>
 
         <div className="flex gap-4 justify-center">
-          <button
+          <Botao
+            tipo="button"
             onClick={confirmarDelete}
+            texto="Deletar"
             className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
-          >
-            Excluir
-          </button>
+          />
 
-          <button
-            onClick={() => navigate("/lista/idosos")}
+          <Botao
+            tipo="button"
+            onClick={() => navegacao("/lista/idosos")}
+            texto="Cancelar"
             className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500"
-          >
-            Cancelar
-          </button>
+          />
         </div>
       </div>
+      {mensagem && (
+        <Mensagem
+          texto={mensagem}
+          tipo={
+            tipoMensagem === "sucesso"
+              ? "sucesso"
+              : tipoMensagem === "erro"
+              ? "erro"
+              : "informacao"
+          }
+          onClose={() => setMensagem("")}
+        />
+      )}
     </div>
   );
 }

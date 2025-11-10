@@ -18,7 +18,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/cadastro' element={<Cadastro />}></Route>
         <Route path='/login' element={<Login />}></Route>
         <Route path='/cadastro/idoso' element={<CadastroIdoso />}></Route>
-        <Route path='/atualizar/idoso' element={<AtualizarIdoso />}></Route>
+        <Route path='/atualizar/idoso/:id' element={<AtualizarIdoso />}></Route>
         <Route path='/lista/idosos' element={<ListaIdosos />}></Route>
         <Route path="/deletar/idoso/:id" element={<DeletarIdoso />}></Route>
         <Route path='/dados/idoso/:id' element={<DetalharIdoso />}></Route>

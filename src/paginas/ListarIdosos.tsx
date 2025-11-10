@@ -30,7 +30,6 @@ export default function ListaIdosos() {
 
         const dados = await resposta.json();
 
-        // converte o campo `_id` para `id`
         const idososFormatados = dados.map((i: any) => ({
           ...i,
           id: i._id,
@@ -58,20 +57,12 @@ export default function ListaIdosos() {
               className="flex justify-between text-black items-center border-b py-2 px-2"
             >
               <span>{idoso.nome}</span>
-
-              <div className="flex gap-2">
+              
                 <Botao
                   texto="Ver dados"
                   className="bg-gray-400 text-white hover:bg-gray-500"
                   onClick={() => navegacao(`/dados/idoso/${idoso.id}`)}
                 />
-
-                <Botao
-                  texto="Deletar"
-                  className="bg-red-500 text-white hover:bg-red-600"
-                  onClick={() => navegacao(`/deletar/idoso/${idoso.id}`)}
-                />
-              </div>
             </div>
           ))}
 

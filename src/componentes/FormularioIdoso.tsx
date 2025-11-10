@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Botao from "../componentes/Botao";
 import Input from "../componentes/Input";
 import Label from "../componentes/Label";
@@ -6,12 +6,15 @@ import Select from "../componentes/Select";
 import Option from "../componentes/Option";
 import Textarea from "../componentes/Textarea";
 import Campos from "../componentes/Campos";
+import type Idoso from "../modelo/Idoso";
+import { formatacaoData } from "../formatacao/formatacaoData";
+import Mensagem from "./mensagem";
 
 interface IdosoFormProps {
   endpoint: string;
   metodo?: "POST" | "PUT";
   textoBotao: string;
-  dadosIniciais?: Record<string, any>;
+  dadosIniciais?: Partial<Idoso>;
 }
 
 export default function FormularioIdoso({
@@ -20,91 +23,16 @@ export default function FormularioIdoso({
   textoBotao,
   dadosIniciais,
 }: IdosoFormProps) {
-  const [formDados, setFormDados] = useState(
-    dadosIniciais || {
-      nome: "",
-      cpf: "",
-      rg: "",
-      dataEmissaoRg: "",
-      orgaoEmissorRg: "",
-      sus: "",
-      data_nascimento: "",
-      sexo: "",
-      nacionalidade: "",
-      naturalidade: "",
-      foto: "",
-      nomePai: "",
-      nomeMae: "",
-      responsavel: "",
-      ultimoEnderecoDoAcolhido: "",
-      cidade: "",
-      contato: "",
-      numCertidaoNascimento: "",
-      folha: "",
-      livro: "",
-      cartorio: "",
-      ctps: "",
-      serie: "",
-      pis: "",
-      tituloEleitor: "",
-      zonaTituloEleitor: "",
-      secaoTituloEleitor: "",
-      observacoesDadosPessoais: "",
-      dataAcolhimento: "",
-      localAcolhimento: "",
-      encaminhadoPor: "",
-      motivoDoAcolhimentoConformeOrgaoEmissor: "",
-      documentacaoRecebida: "",
-      condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia: "",
-      condicoesDeHigieneNoMomentoDoAcolhimento: "",
-      reacoesEComportamentos: "",
-      sinasDeViolencia: "",
-      instituicaoAcolhimentoAnterior: "",
-      dataEntradaAcolhimentoAnterior: "",
-      dataSaidaAcolhimentoAnterior: "",
-      motivoAcolhimentoAnterior: "",
-      motivoDesacolhimentoAnterior: "",
-      encaminhamentosFamiliaAnteriormenteAoAcolhimento: "",
-      observacoesAcolhimento: "",
-      arranjoFamiliar: "",
-      familiaAmpliada: "",
-      interessadosNoIdoso: "",
-      familiaAtendidaPorProgramaSocial: "",
-      programaSocialDaFamilia: "",
-      quemEAtendidoNoProgramaSocialDaFamilia: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade:
-        "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato: "",
-      familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia: "",
-      infraestutura: "",
-      familiaAtendidaPorProgramaSaude: "",
-      servicoDeSaudeQueAtendeAFamilia: "",
-      localServicoDeSaudeQueAtendeAFamilia: "",
-      quemServicoDeSaudeQueAtendeAFamilia: "",
-      observacoesServicoDeSaude: "",
-      condicoesDeHabilidade: "",
-      infraestruturaDeComunidade: "",
-      relacaoComFamilia: "",
-      percepcaoDaFamiliaSobreIdoso: "",
-      percepcaoIdosoSobreFamilia: "",
-      percepcaoEquipeTecnicaSobreRelacaoFamiliar: "",
-      observacoesRelacaoFamiliar: "",
-      IdosoRecebeVisita: "",
-      comportamentosIdosoDuranteVisita: "",
-      comportamentosFamiliaresDuranteVisita: "",
-      idosoTemIrmaos: "",
-      nomeIrmaos: "",
-      idadeIrmaos: "",
-      localIrmaos: "",
-      parecerEquipeTecnica: "",
-      reavaliacao: "",
-    }
+  const [formDados, setFormDados] = useState<Partial<Idoso>>(
+    dadosIniciais || {}
   );
+
+  
+useEffect(() => {
+  if (dadosIniciais) {
+    setFormDados(dadosIniciais);
+  }
+}, [dadosIniciais]);
 
   const [familia, setFamilia] = useState({
     familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: "",
@@ -123,6 +51,9 @@ export default function FormularioIdoso({
   });
 
   const [mensagem, setMensagem] = useState("");
+  const [tipoMensagem, setTipoMensagem] = useState<
+    "sucesso" | "erro" | "informacao"
+  >("informacao");
   const [etapa, setEtapa] = useState(1);
   const [aplica, setAplica] = useState<string>("");
 
@@ -139,10 +70,10 @@ export default function FormularioIdoso({
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    console.log("⛔ handleSubmit disparado");
     e.preventDefault();
     e.stopPropagation();
     setMensagem("Enviando...");
+    setTipoMensagem("informacao");
 
     try {
       const token = localStorage.getItem("token");
@@ -157,17 +88,17 @@ export default function FormularioIdoso({
 
       const dados = await resposta.json();
       if (resposta.ok) {
-        setMensagem(`${textoBotao} realizado com sucesso!`);
+        setMensagem(dados.mensagem ||`${textoBotao} realizado com sucesso!`);
+        setTipoMensagem("sucesso");
       } else {
-        console.error("Erro no cadastro:", dados);
         setMensagem(dados.mensagem || `Erro ao ${textoBotao.toLowerCase()}.`);
+        setTipoMensagem("erro");
       }
     } catch {
       setMensagem("Erro ao conectar com o servidor.");
+      setTipoMensagem("erro");
     }
   };
-
-  console.log("🚀 Re-render FormularioIdoso, etapa:", etapa);
 
   return (
     <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
@@ -206,8 +137,8 @@ export default function FormularioIdoso({
                   <Input
                     type="date"
                     id="data_nascimento"
-                    name="data_nascimento"
-                    value={formDados.data_nascimento}
+                    name="dataNascimento"
+                    value={formatacaoData(formDados.dataNascimento)}
                     onChange={handleChange}
                     required
                   />
@@ -274,7 +205,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataEmissaoRg"
                     name="dataEmissaoRg"
-                    value={formDados.dataEmissaoRg}
+                    value={formatacaoData(formDados.dataEmissaoRg)}
                     onChange={handleChange}
                     required
                   />
@@ -543,7 +474,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataAcolhimento"
                     name="dataAcolhimento"
-                    value={formDados.dataAcolhimento}
+                    value={formatacaoData(formDados.dataAcolhimento)}
                     onChange={handleChange}
                     required
                   />
@@ -691,7 +622,9 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataEntradaAcolhimentoAnterior"
                     name="dataEntradaAcolhimentoAnterior"
-                    value={formDados.dataEntradaAcolhimentoAnterior}
+                    value={formatacaoData(
+                      formDados.dataEntradaAcolhimentoAnterior
+                    )}
                     onChange={handleChange}
                   />
                 </div>
@@ -705,7 +638,9 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataSaidaAcolhimentoAnterior"
                     name="dataSaidaAcolhimentoAnterior"
-                    value={formDados.dataSaidaAcolhimentoAnterior}
+                    value={formatacaoData(
+                      formDados.dataSaidaAcolhimentoAnterior
+                    )}
                     onChange={handleChange}
                   />
                 </div>
@@ -1404,7 +1339,11 @@ export default function FormularioIdoso({
               <Botao
                 tipo="button"
                 onClick={() => {
-                  handleSubmit(new SubmitEvent("submit") as unknown as FormEvent<HTMLFormElement>);
+                  handleSubmit(
+                    new SubmitEvent(
+                      "submit"
+                    ) as unknown as FormEvent<HTMLFormElement>
+                  );
                 }}
                 texto={textoBotao}
                 className="bg-green-600 text-white hover:bg-green-700 ml-auto"
@@ -1412,7 +1351,17 @@ export default function FormularioIdoso({
             )}
           </div>
           {mensagem && (
-            <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
+            <Mensagem
+              texto={mensagem}
+              tipo={
+                tipoMensagem === "sucesso"
+                  ? "sucesso"
+                  : tipoMensagem === "erro"
+                  ? "erro"
+                  : "informacao"
+              }
+              onClose={() => setMensagem("")}
+            />
           )}
         </form>
       </div>

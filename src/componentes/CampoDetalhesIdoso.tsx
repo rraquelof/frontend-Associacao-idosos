@@ -5,7 +5,7 @@ export default function CampoDetalhesIdoso({
   label: string;
   valor?: string | Date;
 }) {
-  if (!valor) return null; // não renderiza se estiver vazio
+  if (!valor) return null; 
 
   const valorFormatado =
     valor instanceof Date

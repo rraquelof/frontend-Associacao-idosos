@@ -5,15 +5,24 @@ import type Idoso from "../modelo/Idoso";
 
 export default function AtualizarIdoso() {
   const { id } = useParams();
-  const [dados, setDados] = useState<Record<string, Idoso> | null>(null);
+   const [dados, setDados] = useState<Idoso | null>(null);
 
   useEffect(() => {
     async function carregarIdoso() {
-      const resposta = await fetch(
-        `https://api-associacao-idosos.onrender.com/api/idoso/${id}`
-      );
-      const data = await resposta.json();
-      setDados(data);
+      const token = localStorage.getItem("token");
+
+    const resposta = await fetch(
+      `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    );
+       const dados = await resposta.json();
+       console.log("👉 Dados recebidos:", dados);
+      setDados({ ...dados, id: dados.id ?? dados._id });
     }
     carregarIdoso();
   }, [id]);

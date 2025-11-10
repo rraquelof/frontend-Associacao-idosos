@@ -2,29 +2,28 @@ import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface MenuItemProps {
-    icon: ReactNode;
-    label: string;
-    route: string;
-    className?: string;
+  icon: ReactNode;
+  label: string;
+  route: string;
+  className?: string;
 }
 
 export default function MenuItem({
-    icon,
-    label,
-    route,
-    className = ""
+  icon,
+  route,
+  className = "",
 }: MenuItemProps) {
-    const navigate = useNavigate();
-    function handleClick(){
-        navigate(route);
-    } 
+  const navigate = useNavigate();
+  function handleClick() {
+    navigate(route);
+  }
 
-    return (
-        <div className="flex flex-col items-center">
-            <button
-                type="button"
-                onClick={handleClick}
-                className={`
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        type="button"
+        onClick={handleClick}
+        className={`
                     cursor-pointer
                     bg-[#F4EEE8]
                     rounded-xl
@@ -37,12 +36,9 @@ export default function MenuItem({
                     transition
                     ${className}
                 `}
-            >
-                {icon}
-            </button>
-            <p className="mt-2 font-semibold text-lg text-black">
-                {label}
-            </p>
-        </div>
-    );
+      >
+        {icon}
+      </button>
+    </div>
+  );
 }
