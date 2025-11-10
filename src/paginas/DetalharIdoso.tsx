@@ -1,90 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CampoDetalhesIdoso from "../componentes/CampoDetalhesIdoso";
-
-interface Idoso {
-  id: string;
-  nome: string;
-  cpf: string;
-  rg: string;
-  dataEmissaoRg: string;
-  orgaoEmissorRg: string;
-  sus: string;
-  data_nascimento: string;
-  sexo: string;
-  nacionalidade: string;
-  naturalidade: string;
-  foto: string;
-  nomePai: string;
-  nomeMae: string;
-  responsavel: string;
-  ultimoEnderecoDoAcolhido: string;
-  cidade: string;
-  contato: string;
-  numCertidaoNascimento: string;
-  folha: string;
-  livro: string;
-  cartorio: string;
-  ctps: string;
-  serie: string;
-  pis: string;
-  tituloEleitor: string;
-  zonaTituloEleitor: string;
-  secaoTituloEleitor: string;
-  observacoesDadosPessoais: string;
-  dataAcolhimento: string;
-  localAcolhimento: string;
-  encaminhadoPor: string;
-  motivoDoAcolhimentoConformeOrgaoEmissor: string;
-  documentacaoRecebida: string;
-  condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia: string;
-  condicoesDeHigieneNoMomentoDoAcolhimento: string;
-  reacoesEComportamentos: string;
-  sinasDeViolencia: string;
-  instituicaoAcolhimentoAnterior: string;
-  dataEntradaAcolhimentoAnterior: string;
-  dataSaidaAcolhimentoAnterior: string;
-  motivoAcolhimentoAnterior: string;
-  motivoDesacolhimentoAnterior: string;
-  encaminhamentosFamiliaAnteriormenteAoAcolhimento: string;
-  observacoesAcolhimento: string;
-  arranjoFamiliar: string;
-  familiaAmpliada: string;
-  interessadosNoIdoso: string;
-  familiaAtendidaPorProgramaSocial: string;
-  programaSocialDaFamilia: string;
-  quemEAtendidoNoProgramaSocialDaFamilia: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade: string;
-  familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato: string;
-  infraestutura: string;
-  familiaAtendidaPorProgramaSaude: string;
-  servicoDeSaudeQueAtendeAFamilia: string;
-  localServicoDeSaudeQueAtendeAFamilia: string;
-  quemServicoDeSaudeQueAtendeAFamilia: string;
-  observacoesServicoDeSaude: string;
-  condicoesDeHabilidade: string;
-  infraestruturaDeComunidade: string;
-  relacaoComFamilia: string;
-  percepcaoDaFamiliaSobreIdoso: string;
-  percepcaoIdosoSobreFamilia: string;
-  percepcaoEquipeTecnicaSobreRelacaoFamiliar: string;
-  observacoesRelacaoFamiliar: string;
-  IdosoRecebeVisita: string;
-  comportamentosIdosoDuranteVisita: string;
-  comportamentosFamiliaresDuranteVisita: string;
-  idosoTemIrmaos: string;
-  nomeIrmaos: string;
-  idadeIrmaos: string;
-  localIrmaos: string;
-  parecerEquipeTecnica: string;
-  reavaliacao: string;
-}
+import type Idoso from "../modelo/Idoso";
 
 export default function DetalharIdoso() {
   const { id } = useParams(); 
@@ -147,7 +64,7 @@ useEffect(() => {
       <CampoDetalhesIdoso label="Data de emissão do RG" valor={idoso.dataEmissaoRg} />
       <CampoDetalhesIdoso label="Orgão Emissor do Rg" valor={idoso.orgaoEmissorRg} />
       <CampoDetalhesIdoso label="SUS" valor={idoso.sus} />
-      <CampoDetalhesIdoso label="Data de nascimento" valor={idoso.data_nascimento} />
+      <CampoDetalhesIdoso label="Data de nascimento" valor={idoso.dataNascimento} />
       <CampoDetalhesIdoso label="Sexo" valor={idoso.sexo} />
       <CampoDetalhesIdoso label="Nacionalidade" valor={idoso.nacionalidade} />
       <CampoDetalhesIdoso label="Naturalidade" valor={idoso.naturalidade} />
