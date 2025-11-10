@@ -23,10 +23,22 @@ export default function ListaIdosos() {
           }
         );
 
-        if (!resposta.ok) setMensagem("Erro ao buscar lista de idosos");
+        if (!resposta.ok) {
+          setMensagem("Erro ao buscar lista de idosos");
+          return;
+        }
+
         const dados = await resposta.json();
-        setIdosos(dados);
-      } catch {
+
+        // converte o campo `_id` para `id`
+        const idososFormatados = dados.map((i: any) => ({
+          ...i,
+          id: i._id,
+        }));
+
+        setIdosos(idososFormatados);
+      } catch (erro) {
+        console.error(erro);
         setMensagem("Falha ao carregar lista de idosos");
       }
     };
@@ -51,24 +63,23 @@ export default function ListaIdosos() {
                 <Botao
                   texto="Ver dados"
                   className="bg-gray-400 text-white hover:bg-gray-500"
-                  onClick={() => navegacao(`/dados/idoso`)}
+                  onClick={() => navegacao(`/dados/idoso/${idoso.id}`)}
                 />
 
-                {/* Deletar */}
                 <Botao
                   texto="Deletar"
                   className="bg-red-500 text-white hover:bg-red-600"
                   onClick={() => navegacao(`/deletar/idoso/${idoso.id}`)}
                 />
               </div>
-            </div>  
+            </div>
           ))}
 
           {mensagem && (
             <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
           )}
 
-          {idosos.length === 0 && (
+          {idosos.length === 0 && !mensagem && (
             <p className="text-gray-500 text-center py-4">
               Nenhum idoso cadastrado.
             </p>
