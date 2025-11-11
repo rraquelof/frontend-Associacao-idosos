@@ -87,6 +87,7 @@ useEffect(() => {
       });
 
       const dados = await resposta.json();
+      console.log("📦 Dados sendo enviados:", dados);
       if (resposta.ok) {
         setMensagem(dados.mensagem ||`${textoBotao} realizado com sucesso!`);
         setTipoMensagem("sucesso");
