@@ -60,7 +60,7 @@ export default function DetalharIdoso() {
       <h1 className="text-4xl font-bold text-center  text-black mb-6">
         Pefil do Idoso
       </h1>
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6 max-h-[60vh] overflow-y-auto flex flex-wrap gap-4 content-start">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6 max-h-[70vh] overflow-y-auto flex flex-wrap gap-4 content-start">
         <CampoDetalhesIdoso label="Nome" valor={idoso.nome} />
         <CampoDetalhesIdoso label="CPF" valor={idoso.cpf} />
         <CampoDetalhesIdoso label="RG" valor={idoso.rg} />
