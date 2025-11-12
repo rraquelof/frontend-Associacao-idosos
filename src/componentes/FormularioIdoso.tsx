@@ -1248,7 +1248,7 @@ useEffect(() => {
               </div>
 
               <p className="text-black text-lg font-medium">
-                Idoso tem irmões?
+                Idoso tem irmãos?
               </p>
 
               <div className="flex gap-20">
