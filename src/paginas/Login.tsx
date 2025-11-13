@@ -34,17 +34,14 @@ export default function Login() {
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        setMensagem("✅ Login realizado com sucesso!");
+        setMensagem(`✅  ${dados.message || "Login realizado com sucesso!"}`);
         localStorage.setItem("token", dados.token);
-
-        setMensagem("✅ Login realizado com sucesso!");
         
         setTimeout(() => navigate("/menu"), 1000);
       } else {
         setMensagem(`⚠️ ${dados.message || "Credenciais inválidas."}`);
       }
-    } catch (erro) {
-      console.error("Erro ao fazer login:", erro);
+    } catch {
       setMensagem("❌ Erro ao conectar com o servidor.");
     }
   };

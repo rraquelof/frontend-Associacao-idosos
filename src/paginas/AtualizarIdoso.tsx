@@ -21,7 +21,6 @@ export default function AtualizarIdoso() {
       }
     );
        const dados = await resposta.json();
-       console.log("👉 Dados recebidos:", dados);
       setDados({ ...dados, id: dados.id ?? dados._id });
     }
     carregarIdoso();

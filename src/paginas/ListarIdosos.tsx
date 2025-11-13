@@ -36,8 +36,7 @@ export default function ListaIdosos() {
         }));
 
         setIdosos(idososFormatados);
-      } catch (erro) {
-        console.error(erro);
+      } catch {
         setMensagem("Falha ao carregar lista de idosos");
       }
     };

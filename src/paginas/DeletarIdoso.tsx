@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Botao from "../componentes/Botao";
-import Mensagem from "../componentes/mensagem";
+import Mensagem from "../componentes/Mensagem";
 import { useState } from "react";
 
 export default function DeletarIdoso() {
@@ -28,7 +28,7 @@ export default function DeletarIdoso() {
 
     if (!resposta.ok) {
       const dados = await resposta.json();
-      setMensagem(dados.mensagem || "Erro ao deletar idoso");
+      setMensagem(dados.message || "Erro ao deletar idoso");
       setTipoMensagem("erro");
     }
   }
