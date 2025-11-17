@@ -2,6 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../componentes/Input";
 import Botao from "../componentes/Botao";
+import Select from "../componentes/Select";
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -128,31 +129,27 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               required
             />
 
-            <select
+            <Select
               name="tipo"
               value={formData.tipo}
               onChange={handleChange}
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
-              required
-            >
+              required>
               <option value="">Tipo de usuário</option>
               <option value="coordenador">Coordenador</option>
               <option value="voluntario">Voluntário</option>
               <option value="familiar">Familiar</option>
               <option value="enfermeiro">Enfermeiro</option>
-            </select>
+            </Select>
 
-            <select
+            <Select
               name="sexo"
               value={formData.sexo}
               onChange={handleChange}
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
-              required
-            >
+              required>
               <option value="">Sexo</option>
               <option value="feminino">Feminino</option>
               <option value="masculino">Masculino</option>
-            </select>
+            </Select>
 
             <Input
               type="text"
