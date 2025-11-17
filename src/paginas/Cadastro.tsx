@@ -1,5 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import Input from "../componentes/Input";
+import Botao from "../componentes/Botao";
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -90,43 +92,39 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
           <h2 className="text-3xl font-bold mb-6 text-center">Entre na sua conta</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
-            <input
+            <Input
               type="text"
               name="nome"
               value={formData.nome}
               onChange={handleChange}
               placeholder="Nome completo"
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
               required
             />
 
-            <input
+            <Input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Email"
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
+              placeholder="Digite seu e-mail"
               required
             />
 
-            <input
+            <Input
               type="text"
               name="cpf"
               value={formData.cpf}
               onChange={handleChange}
               placeholder="CPF (somente números)"
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
               required
             />
 
-            <input
+            <Input
               type="password"
               name="senha"
               value={formData.senha}
               onChange={handleChange}
               placeholder="Senha"
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
               required
             />
 
@@ -156,43 +154,38 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               <option value="masculino">Masculino</option>
             </select>
 
-            <input
+            <Input
               type="text"
               name="endereco"
               value={formData.endereco}
               onChange={handleChange}
               placeholder="Endereço"
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
               required
             />
 
-            <input
+            <Input
               type="tel"
               name="telefone"
               value={formData.telefone}
               onChange={handleChange}
               placeholder="Telefone"
-              className="border p-3 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
               required
             />
             
             <p className="text-center text-xl">
               Já possui conta?
-              <button
-                type="button"
+              <Botao
+                tipo="button"
                 onClick={() => navigate("/login")} 
-                className="text-blue-600 hover:underline"
-              >
-                Fazer login
-              </button>
+                texto="Fazer login"
+              />
             </p>
 
-            <button
-              type="submit"
-              className="bg-gradient-to-r from-purple-400 via-blue-300 to-purple-400 rounded-full shadow-md hover:shadow-lg transition-all text-lg font-semibold px-6 py-2"
-            >
-              Cadastrar
-            </button>
+            <Botao 
+              tipo="submit"
+              texto="Cadastrar"
+               className="bg-gradient-to-r from-purple-400 via-blue-300 to-purple-400 rounded-full shadow-md hover:shadow-lg transition-all text-lg font-semibold px-6 py-2"
+            />
 
             {mensagem && (
               <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
