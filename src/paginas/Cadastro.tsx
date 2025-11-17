@@ -169,7 +169,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               required
             />
             
-            <p className="text-center text-xl">
+            <p className="text-center text-xl text-gray-600">
               Já possui conta?
               <Botao
                 tipo="button"

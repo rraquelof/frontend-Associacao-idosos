@@ -83,7 +83,7 @@ export default function Login() {
               required
             />
 
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-xl text-gray-600">
             Não possui conta?
             <Botao 
               tipo="button"
