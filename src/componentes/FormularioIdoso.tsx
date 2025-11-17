@@ -45,12 +45,17 @@ export default function FormularioIdoso({
     familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato: "",
   });
 
-  const [irmoes, setIrmoes] = useState({
+  const [irmaos, setIrmaos] = useState({
     nomeIrmaos: "",
     idadeIrmaos: "",
     localIrmaos: "",
   });
-
+useEffect(() => {
+  console.log(irmaos); 
+}, [irmaos]);
+useEffect(() => {
+  console.log(familia); 
+}, [familia]);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<
     "sucesso" | "erro" | "informacao"
@@ -1405,7 +1410,7 @@ export default function FormularioIdoso({
                   campos={["nome", "idade", "local"]}
                   onChange={(valores) => {
                     const irmao = valores[0] || {};
-                    setIrmoes({
+                    setIrmaos({
                       nomeIrmaos: irmao.nome || "",
                       idadeIrmaos: irmao.idade || "",
                       localIrmaos: irmao.local || "",
