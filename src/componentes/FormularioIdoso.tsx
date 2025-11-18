@@ -7,7 +7,7 @@ import Option from "../componentes/Option";
 import Textarea from "../componentes/Textarea";
 import Campos from "../componentes/Campos";
 import type Idoso from "../modelo/Idoso";
-import { formatacaoData } from "../formatacao/formatacaoData";
+import { formatarData } from "../formatacao/formatarData";
 import Mensagem from "./Mensagem";
 import { useNavigate } from "react-router-dom";
 import ErroCampoObrigatorio from "./ErroCampoObrigatorio";
@@ -167,7 +167,7 @@ export default function FormularioIdoso({
                       type="date"
                       id="data_nascimento"
                       name="dataNascimento"
-                      value={formatacaoData(formDados.dataNascimento)}
+                      value={formatarData(formDados.dataNascimento)}
                       onChange={handleChange}
                       required
                     />
@@ -267,7 +267,7 @@ export default function FormularioIdoso({
                       type="date"
                       id="dataEmissaoRg"
                       name="dataEmissaoRg"
-                      value={formatacaoData(formDados.dataEmissaoRg)}
+                      value={formatarData(formDados.dataEmissaoRg)}
                       onChange={handleChange}
                       required
                     />
@@ -561,7 +561,7 @@ export default function FormularioIdoso({
                       type="date"
                       id="dataAcolhimento"
                       name="dataAcolhimento"
-                      value={formatacaoData(formDados.dataAcolhimento)}
+                      value={formatarData(formDados.dataAcolhimento)}
                       onChange={handleChange}
                       required
                     />
@@ -748,7 +748,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataEntradaAcolhimentoAnterior"
                     name="dataEntradaAcolhimentoAnterior"
-                    value={formatacaoData(
+                    value={formatarData(
                       formDados.dataEntradaAcolhimentoAnterior
                     )}
                     onChange={handleChange}
@@ -764,7 +764,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataSaidaAcolhimentoAnterior"
                     name="dataSaidaAcolhimentoAnterior"
-                    value={formatacaoData(
+                    value={formatarData(
                       formDados.dataSaidaAcolhimentoAnterior
                     )}
                     onChange={handleChange}

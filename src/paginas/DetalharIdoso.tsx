@@ -4,6 +4,7 @@ import CampoDetalhesIdoso from "../componentes/CampoDetalhesIdoso";
 import type Idoso from "../modelo/Idoso";
 import Botao from "../componentes/Botao";
 import { ChevronLeftIcon } from "lucide-react";
+import { formatarDataBR } from "../formatacao/formatarDataBr";
 
 export default function DetalharIdoso() {
   const { id } = useParams();
@@ -75,7 +76,7 @@ export default function DetalharIdoso() {
         <CampoDetalhesIdoso label="RG" valor={idoso.rg} />
         <CampoDetalhesIdoso
           label="Data de emissão do RG"
-          valor={idoso.dataEmissaoRg}
+          valor={formatarDataBR(idoso.dataEmissaoRg)}
         />
         <CampoDetalhesIdoso
           label="Orgão Emissor do Rg"
@@ -84,7 +85,7 @@ export default function DetalharIdoso() {
         <CampoDetalhesIdoso label="SUS" valor={idoso.sus} />
         <CampoDetalhesIdoso
           label="Data de nascimento"
-          valor={idoso.dataNascimento}
+          valor={formatarDataBR(idoso.dataNascimento)}
         />
         <CampoDetalhesIdoso label="Sexo" valor={idoso.sexo} />
         <CampoDetalhesIdoso label="Nacionalidade" valor={idoso.nacionalidade} />
@@ -127,7 +128,7 @@ export default function DetalharIdoso() {
         />
         <CampoDetalhesIdoso
           label="Data de Acolhimento"
-          valor={idoso.dataAcolhimento}
+          valor={formatarDataBR(idoso.dataAcolhimento)}
         />
         <CampoDetalhesIdoso
           label="Local de Acolhimento"
@@ -167,11 +168,11 @@ export default function DetalharIdoso() {
         />
         <CampoDetalhesIdoso
           label="Data de Entrada no Acolhimento Anterior"
-          valor={idoso.dataEntradaAcolhimentoAnterior}
+          valor={formatarDataBR(idoso.dataEntradaAcolhimentoAnterior)}
         />
         <CampoDetalhesIdoso
           label="Data de Saída do Acolhimento Anterior"
-          valor={idoso.dataSaidaAcolhimentoAnterior}
+          valor={formatarDataBR(idoso.dataSaidaAcolhimentoAnterior)}
         />
         <CampoDetalhesIdoso
           label="Motivo do Acolhimento Anterior"
