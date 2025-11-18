@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type Idoso from "../modelo/Idoso";
 import { useNavigate } from "react-router-dom";
 import Botao from "../componentes/Botao";
+import { ChevronLeftIcon } from "lucide-react";
 
 export default function ListaIdosos() {
   const [idosos, setIdosos] = useState<Idoso[]>([]);
@@ -45,8 +46,18 @@ export default function ListaIdosos() {
   }, []);
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-6">
-      <h1 className="text-4xl font-bold text-center text-black mb-6">Idosos</h1>
+    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
+      <div className="text-black p-6 w-full flex items-center relative">
+        <Botao
+          className="absolute left-0 top-3"
+          onClick={() => navegacao("/menu")}
+        >
+          <ChevronLeftIcon />
+        </Botao>
+        <h1 className="text-3xl font-bold text-center w-full">
+          Idosos
+        </h1>
+      </div>
 
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6">
         <div className="h-[60vh] overflow-y-auto">

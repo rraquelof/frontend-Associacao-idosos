@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CampoDetalhesIdoso from "../componentes/CampoDetalhesIdoso";
 import type Idoso from "../modelo/Idoso";
 import Botao from "../componentes/Botao";
+import { ChevronLeftIcon } from "lucide-react";
 
 export default function DetalharIdoso() {
   const { id } = useParams();
@@ -32,7 +33,6 @@ export default function DetalharIdoso() {
 
         const dados = await resposta.json();
         setIdoso({ ...dados, id: dados.id ?? dados._id });
-        
       } catch (err) {
         setErro((err as Error).message);
       } finally {
@@ -56,10 +56,19 @@ export default function DetalharIdoso() {
   }
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-6">
-      <h1 className="text-4xl font-bold text-center  text-black mb-6">
-        Pefil do Idoso
-      </h1>
+    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
+      <div className="text-black p-6 w-full flex items-center relative">
+        <Botao
+          className="absolute left-0 top-3"
+          onClick={() => ("/lista/idosos")}
+        >
+          <ChevronLeftIcon />
+        </Botao>
+        <h1 className="text-3xl font-bold text-center w-full">
+          Pefil do Idoso
+        </h1>
+      </div>
+
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6 max-h-[70vh] overflow-y-auto flex flex-wrap gap-4 content-start">
         <CampoDetalhesIdoso label="Nome" valor={idoso.nome} />
         <CampoDetalhesIdoso label="CPF" valor={idoso.cpf} />

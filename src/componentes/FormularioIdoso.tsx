@@ -11,6 +11,7 @@ import { formatacaoData } from "../formatacao/formatacaoData";
 import Mensagem from "./Mensagem";
 import { useNavigate } from "react-router-dom";
 import ErroCampoObrigatorio from "./ErroCampoObrigatorio";
+import { ChevronLeftIcon } from "lucide-react";
 
 interface IdosoFormProps {
   endpoint: string;
@@ -50,12 +51,12 @@ export default function FormularioIdoso({
     idadeIrmaos: "",
     localIrmaos: "",
   });
-useEffect(() => {
-  console.log(irmaos); 
-}, [irmaos]);
-useEffect(() => {
-  console.log(familia); 
-}, [familia]);
+  useEffect(() => {
+    console.log(irmaos);
+  }, [irmaos]);
+  useEffect(() => {
+    console.log(familia);
+  }, [familia]);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<
     "sucesso" | "erro" | "informacao"
@@ -96,10 +97,6 @@ useEffect(() => {
       });
 
       const dados = await resposta.json();
-      console.log(
-        "🔍 Resposta completa do backend:",
-        dados.errors.Array.Object.message
-      );
 
       if (resposta.ok) {
         setMensagem(dados.message || `${textoBotao} realizado com sucesso!`);
@@ -117,12 +114,18 @@ useEffect(() => {
 
   return (
     <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
-      <div className="text-black p-6">
-        <h1 className="text-3xl font-bold text-center">
+      <div className="text-black p-6 w-full flex items-center relative">
+        <Botao
+          className="absolute left-0 top-3 "
+          onClick={() => navegacao("/lista/idosos")}
+        >
+          <ChevronLeftIcon />
+        </Botao>
+        <h1 className="text-3xl font-bold text-center w-full">
           Plano Individual de Atendimento - PIA
         </h1>
       </div>
-
+      
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto mt-4 p-8 fixed top-24 overflow-hidden">
         <form
           onSubmit={handleSubmit}
