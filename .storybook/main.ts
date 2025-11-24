@@ -1,6 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import tailwindcss from "@tailwindcss/vite";
-import "../src/index.css";
+
 const config: StorybookConfig = {
   "stories": [
     "../src/**/*.mdx",
