@@ -13,7 +13,7 @@ const Botao = ({ tipo = "button", onClick, texto, className, children }: BotaoPr
     <button
       type={tipo}
       onClick={onClick}
-      className={`px-6 py-2  rounded-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg ${className}`}
+      className={`px-6 py-2 rounded-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg ${className}`}
     >
       {children ?? texto}
     </button>
