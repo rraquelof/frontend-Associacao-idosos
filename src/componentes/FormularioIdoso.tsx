@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import Botao from "../componentes/Botao";
+import Botao from "./Botao/Botao";
 import Input from "../componentes/Input";
 import Label from "../componentes/Label";
 import Select from "../componentes/Select";
@@ -1448,7 +1448,7 @@ export default function FormularioIdoso({
                 tipo="button"
                 onClick={etapaAnterior}
                 texto="Voltar"
-                className="bg-gray-400 text-white hover:bg-gray-500"
+                variant="gray"
               />
             )}
 
@@ -1457,7 +1457,7 @@ export default function FormularioIdoso({
                 tipo="button"
                 onClick={proximaEtapa}
                 texto="Próximo"
-                className="bg-purple-500 text-white hover:bg-purple-600 ml-auto"
+                variant="next"
               />
             )}
 

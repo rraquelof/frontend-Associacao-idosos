@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../componentes/Input";
-import Botao from "../componentes/Botao";
+import Botao from "../componentes/Botao/Botao";
 import Select from "../componentes/Select";
 
 export default function Cadastro() {
@@ -181,7 +181,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
             <Botao 
               tipo="submit"
               texto="Cadastrar"
-               className="bg-gradient-to-r from-purple-400 via-blue-300 to-purple-400 rounded-full shadow-md hover:shadow-lg transition-all text-lg font-semibold px-6 py-2"
+              variant="gradient"
             />
 
             {mensagem && (

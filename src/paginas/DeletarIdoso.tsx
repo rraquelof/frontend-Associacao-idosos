@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import Botao from "../componentes/Botao";
+import Botao from "../componentes/Botao/Botao";
 import Mensagem from "../componentes/Mensagem";
 import { useState } from "react";
 

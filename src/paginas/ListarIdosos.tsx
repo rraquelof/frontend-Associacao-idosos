@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type Idoso from "../modelo/Idoso";
 import { useNavigate } from "react-router-dom";
-import Botao from "../componentes/Botao";
+import Botao from "../componentes/Botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
 
 export default function ListaIdosos() {
@@ -91,7 +91,7 @@ export default function ListaIdosos() {
       <div className="mt-8">
         <Botao
           texto="Cadastrar novo idoso"
-          className="bg-gray-400 text-white hover:bg-gray-500"
+          variant="gray"
           onClick={() => navegacao(`/cadastro/idoso/`)}
         />
       </div>

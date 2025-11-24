@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CampoDetalhesIdoso from "../componentes/CampoDetalhesIdoso";
 import type Idoso from "../modelo/Idoso";
-import Botao from "../componentes/Botao";
+import Botao from "../componentes/Botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
 import { formatarDataBR } from "../formatacao/formatarDataBr";
 
@@ -349,12 +349,12 @@ export default function DetalharIdoso() {
       <div className="flex gap-30 mt-8">
         <Botao
           texto="Atualizar"
-          className="bg-blue-500 text-white hover:bg-blue-600"
+          variant="update"
           onClick={() => navegacao(`/atualizar/idoso/${idoso.id}`)}
         />
         <Botao
           texto="Deletar"
-          className="bg-red-500 text-white hover:bg-red-600"
+          variant="delete"
           onClick={() => navegacao(`/deletar/idoso/${idoso.id}`)}
         />
       </div>

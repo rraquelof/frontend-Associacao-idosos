@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../componentes/Input";
-import Botao from "../componentes/Botao";
+import Botao from "../componentes/Botao/Botao";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -95,7 +95,7 @@ export default function Login() {
             <Botao 
               tipo="submit"
               texto="Entrar"
-              className="bg-gradient-to-r from-purple-400 via-blue-300 to-purple-400 rounded-full shadow-md hover:shadow-lg transition-all text-lg font-semibold px-6 py-2"
+              variant="gradient"
             />
 
             {mensagem && (
