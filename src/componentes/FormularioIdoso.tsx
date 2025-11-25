@@ -5,7 +5,7 @@ import Label from "../componentes/Label";
 import Select from "./Select/Select";
 import Option from "../componentes/Option";
 import Textarea from "../componentes/Textarea";
-import Campos from "../componentes/Campos";
+import Campos from "./Campos/Campos";
 import type Idoso from "../modelo/Idoso";
 import { formatarData } from "../formatacao/formatarData";
 import Mensagem from "./Mensagem";

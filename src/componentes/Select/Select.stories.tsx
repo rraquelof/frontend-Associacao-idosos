@@ -19,8 +19,8 @@ export const Padrao: Story = {
     children: (
       <>
         <option value="">Selecione</option>
-        <option value="feminino">opção1</option>
-        <option value="masculino">opção2</option>
+        <option value="opcao1">opção1</option>
+        <option value="opcao2">opção2</option>
       </>
     ),
   },
