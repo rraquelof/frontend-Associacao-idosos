@@ -1,11 +1,11 @@
 import type { ReactNode, SelectHTMLAttributes } from "react";
 
-interface selectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   className?: string;
   children: ReactNode;
 }
 
-const select = ({ className, children, ...props }: selectProps) => {
+const Select = ({ className, children, ...props }: SelectProps) => {
   return (
     <select
       {...props}
@@ -16,4 +16,4 @@ const select = ({ className, children, ...props }: selectProps) => {
   );
 };
 
-export default select;
+export default Select;

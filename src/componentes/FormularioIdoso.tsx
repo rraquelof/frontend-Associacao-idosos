@@ -2,7 +2,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Botao from "./Botao/Botao";
 import Input from "./InputComponent/Input";
 import Label from "../componentes/Label";
-import Select from "../componentes/Select";
+import Select from "./Select/Select";
 import Option from "../componentes/Option";
 import Textarea from "../componentes/Textarea";
 import Campos from "../componentes/Campos";
