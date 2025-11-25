@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../componentes/Input";
+import Input from "../componentes/InputComponent/Input";
 import Botao from "../componentes/Botao/Botao";
 import Select from "../componentes/Select";
 
@@ -90,7 +90,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
       {/* Lado direito */}
       <div className="w-1/2 flex justify-center items-center p-10">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">Entre na sua conta</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center text-black">Entre na sua conta</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
             <Input

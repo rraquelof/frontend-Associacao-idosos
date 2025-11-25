@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../componentes/Input";
+import Input from "../componentes/InputComponent/Input";
 import Botao from "../componentes/Botao/Botao";
 
 export default function Login() {
@@ -61,7 +61,7 @@ export default function Login() {
       {/* Lado direito */}
       <div className="w-1/2 flex justify-center items-center p-10">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">Bem-vindo de volta</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-black">Bem-vindo de volta</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
            
