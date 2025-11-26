@@ -4,7 +4,7 @@ import Input from "./InputComponent/Input";
 import Label from "../componentes/Label";
 import Select from "./Select/Select";
 import Option from "../componentes/Option";
-import Textarea from "../componentes/Textarea";
+import Textarea from "./Textarea/Textarea";
 import Campos from "./Campos/Campos";
 import type Idoso from "../modelo/Idoso";
 import { formatarData } from "../formatacao/formatarData";
