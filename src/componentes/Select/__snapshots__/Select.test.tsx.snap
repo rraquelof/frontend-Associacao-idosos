@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testando Select > Renderiza corretamente as opções 1`] = `
+<DocumentFragment>
+  <select
+    class="border p-3 rounded-lg text-lg text-black bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-200 undefined"
+  >
+    <option
+      value=""
+    >
+      Selecione
+    </option>
+    <option
+      value="opcao1"
+    >
+      Opcao1
+    </option>
+    <option
+      value="opcao2"
+    >
+      Opcao2
+    </option>
+  </select>
+</DocumentFragment>
+`;
