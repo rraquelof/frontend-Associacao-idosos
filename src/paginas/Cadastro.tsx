@@ -1,8 +1,8 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../componentes/InputComponent/Input";
+import Input from "../componentes/input/Input";
 import Botao from "../componentes/Botao/Botao";
-import Select from "../componentes/Select/Select";
+import Select from "../componentes/select/Select";
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -19,36 +19,40 @@ export default function Cadastro() {
 
   const [mensagem, setMensagem] = useState("");
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-};
+  };
 
-const formatCPF = (cpf: string) => {
+  const formatCPF = (cpf: string) => {
     const numeros = cpf.replace(/\D/g, "");
     return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   };
 
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     console.log("Dados que serão enviados para a API:", formData);
     e.preventDefault();
     setMensagem("Enviando...");
     const dadosParaEnviar = {
       ...formData,
-      cpf: formatCPF(formData.cpf), 
+      cpf: formatCPF(formData.cpf),
     };
 
     try {
-      const resposta = await fetch("https://api-associacao-idosos.onrender.com/api/cadastrarUsuario", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dadosParaEnviar),
-      });
+      const resposta = await fetch(
+        "https://api-associacao-idosos.onrender.com/api/cadastrarUsuario",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dadosParaEnviar),
+        }
+      );
       console.log("Resposta da API:", resposta);
 
       const dados = await resposta.json();
@@ -70,7 +74,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         setMensagem(`⚠️ ${dados.message || "Erro ao cadastrar usuário."}`);
       }
     } catch (erro) {
-        console.error("Erro ao cadastrar usuário:", erro);
+      console.error("Erro ao cadastrar usuário:", erro);
       setMensagem("Erro ao conectar com o servidor.");
     }
   };
@@ -80,7 +84,9 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
       {/* Lado esquerdo */}
       <div className="w-1/2 bg-gray-200 flex flex-col justify-center items-center text-black p-10">
         <div className="flex flex-col items-center text-center space-y-4">
-          <h1 className="text-5xl font-bold">Apoio para Associações de Idosos</h1>
+          <h1 className="text-5xl font-bold">
+            Apoio para Associações de Idosos
+          </h1>
           <p className="text-lg max-w-md">
             Juntos construímos um envelhecimento mais digno e ativo.
           </p>
@@ -90,7 +96,9 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
       {/* Lado direito */}
       <div className="w-1/2 flex justify-center items-center p-10">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-3xl font-bold mb-6 text-center text-black">Entre na sua conta</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center text-black">
+            Entre na sua conta
+          </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
             <Input
@@ -133,7 +141,8 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               name="tipo"
               value={formData.tipo}
               onChange={handleChange}
-              required>
+              required
+            >
               <option value="">Tipo de usuário</option>
               <option value="coordenador">Coordenador</option>
               <option value="voluntario">Voluntário</option>
@@ -145,7 +154,8 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               name="sexo"
               value={formData.sexo}
               onChange={handleChange}
-              required>
+              required
+            >
               <option value="">Sexo</option>
               <option value="feminino">Feminino</option>
               <option value="masculino">Masculino</option>
@@ -168,24 +178,22 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               placeholder="Telefone"
               required
             />
-            
+
             <p className="text-center text-xl text-gray-600">
               Já possui conta?
               <Botao
                 tipo="button"
-                onClick={() => navigate("/login")} 
+                onClick={() => navigate("/login")}
                 texto="Fazer login"
               />
             </p>
 
-            <Botao 
-              tipo="submit"
-              texto="Cadastrar"
-              variant="gradient"
-            />
+            <Botao tipo="submit" texto="Cadastrar" variant="gradient" />
 
             {mensagem && (
-              <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
+              <p className="text-center text-sm mt-2 text-gray-700">
+                {mensagem}
+              </p>
             )}
           </form>
         </div>

@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../componentes/InputComponent/Input";
+import Input from "../componentes/input/Input";
 import Botao from "../componentes/Botao/Botao";
 
 export default function Login() {
@@ -25,18 +25,21 @@ export default function Login() {
     setMensagem("Verificando...");
 
     try {
-      const resposta = await fetch("https://api-associacao-idosos.onrender.com/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const resposta = await fetch(
+        "https://api-associacao-idosos.onrender.com/api/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const dados = await resposta.json();
 
       if (resposta.ok) {
         setMensagem(`✅  ${dados.message || "Login realizado com sucesso!"}`);
         localStorage.setItem("token", dados.token);
-        
+
         setTimeout(() => navigate("/menu"), 1000);
       } else {
         setMensagem(`⚠️ ${dados.message || "Credenciais inválidas."}`);
@@ -51,7 +54,9 @@ export default function Login() {
       {/* Lado esquerdo */}
       <div className="w-1/2 bg-gray-200 flex flex-col justify-center items-center text-black p-10">
         <div className="flex flex-col items-center text-center space-y-4">
-          <h1 className="text-5xl font-bold">Apoio para Associações de Idosos</h1>
+          <h1 className="text-5xl font-bold">
+            Apoio para Associações de Idosos
+          </h1>
           <p className="text-lg max-w-md">
             Conecte-se e continue fazendo a diferença na vida dos idosos.
           </p>
@@ -61,11 +66,12 @@ export default function Login() {
       {/* Lado direito */}
       <div className="w-1/2 flex justify-center items-center p-10">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold mb-6 text-center text-black">Bem-vindo de volta</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-black">
+            Bem-vindo de volta
+          </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-           
-            <Input 
+            <Input
               type="email"
               name="email"
               value={formData.email}
@@ -74,7 +80,7 @@ export default function Login() {
               required
             />
 
-            <Input 
+            <Input
               type="password"
               name="senha"
               value={formData.senha}
@@ -84,22 +90,20 @@ export default function Login() {
             />
 
             <p className="text-center text-xl text-gray-600">
-            Não possui conta?
-            <Botao 
-              tipo="button"
-              onClick={() => navigate("/cadastro")}
-              texto="Criar conta"
-            />
+              Não possui conta?
+              <Botao
+                tipo="button"
+                onClick={() => navigate("/cadastro")}
+                texto="Criar conta"
+              />
             </p>
 
-            <Botao 
-              tipo="submit"
-              texto="Entrar"
-              variant="gradient"
-            />
+            <Botao tipo="submit" texto="Entrar" variant="gradient" />
 
             {mensagem && (
-              <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
+              <p className="text-center text-sm mt-2 text-gray-700">
+                {mensagem}
+              </p>
             )}
           </form>
         </div>
@@ -107,4 +111,3 @@ export default function Login() {
     </div>
   );
 }
-

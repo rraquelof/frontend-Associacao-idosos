@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CampoDetalhesIdoso from "../componentes/CampoDetalhesIdoso/CampoDetalhesIdoso";
+import CampoDetalhesIdoso from "../componentes/campoDetalhesIdoso/CampoDetalhesIdoso";
 import type Idoso from "../modelo/Idoso";
 import Botao from "../componentes/Botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";

@@ -1,11 +1,11 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Botao from "./Botao/Botao";
-import Input from "./InputComponent/Input";
+import Input from "./input/Input";
 import Label from "../componentes/Label";
-import Select from "./Select/Select";
+import Select from "./select/Select";
 import Option from "../componentes/Option";
-import Textarea from "./Textarea/Textarea";
-import Campos from "./Campos/Campos";
+import Textarea from "./textarea/Textarea";
+import Campos from "./campos/Campos";
 import type Idoso from "../modelo/Idoso";
 import { formatarData } from "../formatacao/formatarData";
 import Mensagem from "./Mensagem";
@@ -125,7 +125,7 @@ export default function FormularioIdoso({
           Plano Individual de Atendimento - PIA
         </h1>
       </div>
-      
+
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto mt-4 p-8 fixed top-24 overflow-hidden">
         <form
           onSubmit={handleSubmit}
@@ -764,9 +764,7 @@ export default function FormularioIdoso({
                     type="date"
                     id="dataSaidaAcolhimentoAnterior"
                     name="dataSaidaAcolhimentoAnterior"
-                    value={formatarData(
-                      formDados.dataSaidaAcolhimentoAnterior
-                    )}
+                    value={formatarData(formDados.dataSaidaAcolhimentoAnterior)}
                     onChange={handleChange}
                   />
                 </div>

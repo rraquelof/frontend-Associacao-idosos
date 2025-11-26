@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testando Botao > Renderiza corretamente o texto 1`] = `
+<DocumentFragment>
+  <button
+    class="px-6 py-2 rounded-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg font-medium  text-base px-6 py-2 "
+    type="button"
+  >
+    Clique aqui
+  </button>
+</DocumentFragment>
+`;
