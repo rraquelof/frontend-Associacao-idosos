@@ -1,4 +1,4 @@
-import MenuItem from "../componentes/MenuItem";
+import MenuItem from "../componentes/MenuItem/MenuItem";
 import idososIcon from "../img/idosos.png";
 
 export default function Menu() {
