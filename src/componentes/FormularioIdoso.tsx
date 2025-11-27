@@ -3,7 +3,7 @@ import Botao from "./Botao/Botao";
 import Input from "./input/Input";
 import Label from "./Label";
 import Select from "./select/Select";
-import Option from "../componentes/Option";
+import Option from "./option/Option";
 import Textarea from "./textarea/Textarea";
 import Campos from "./campos/Campos";
 import type Idoso from "../modelo/Idoso";
