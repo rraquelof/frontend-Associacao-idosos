@@ -2,7 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../componentes/input/Input";
 import Botao from "../componentes/Botao/Botao";
-import Select from "../componentes/select/Select";
+import Select from "../componentes/Select/Select";
 
 export default function Cadastro() {
   const navigate = useNavigate();
