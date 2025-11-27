@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { test, expect } from "vitest";
 import MenuItem from "./MenuItem";
 import { describe, vi } from "vitest";
