@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Botao from "../componentes/Botao/Botao";
-import Mensagem from "../componentes/Mensagem";
+import Mensagem from "../componentes/mensagem/Mensagem";
 import { useState } from "react";
 
 export default function DeletarIdoso() {

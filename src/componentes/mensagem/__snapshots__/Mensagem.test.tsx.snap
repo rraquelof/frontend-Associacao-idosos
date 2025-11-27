@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testando Mensagem > Renderiza corretamente com texto e classe de sucesso 1`] = `
+<DocumentFragment>
+  <div
+    class="fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg bg-green-500 text-white transition-opacity duration-500"
+  >
+    Operação realizada!
+  </div>
+</DocumentFragment>
+`;
