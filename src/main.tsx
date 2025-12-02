@@ -12,7 +12,6 @@ import DetalharIdoso from './paginas/DetalharIdoso';
 import DeletarIdoso from './paginas/DeletarIdoso';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <Router>
       <Routes>
         <Route path='/cadastro' element={<Cadastro />}></Route>
@@ -25,5 +24,4 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/menu' element={<Menu/>}></Route>
       </Routes>
     </Router>
-  </StrictMode>,
 )

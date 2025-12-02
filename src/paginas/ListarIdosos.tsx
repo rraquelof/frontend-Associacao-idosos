@@ -10,40 +10,42 @@ export default function ListaIdosos() {
   const navegacao = useNavigate();
 
   useEffect(() => {
-    const carregarIdosos = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const resposta = await fetch(
-          "https://api-associacao-idosos.onrender.com/api/idosos",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token && { Authorization: `Bearer ${token}` }),
-            },
-          }
-        );
+  const carregarIdosos = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("TOKEN ENCONTRADO:", token);
 
-        if (!resposta.ok) {
-          setMensagem("Erro ao buscar lista de idosos");
-          return;
+      const resposta = await fetch(
+        "https://api-associacao-idosos.onrender.com/api/idosos",
+        {
+          method: "GET",
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
         }
+      );
 
-        const dados = await resposta.json();
+      const dados = await resposta.json();
+      console.log("RESPOSTA:", dados);
 
-        const idososFormatados = dados.map((i: any) => ({
-          ...i,
-          id: i._id,
-        }));
-
-        setIdosos(idososFormatados);
-      } catch {
-        setMensagem("Falha ao carregar lista de idosos");
+      if (!resposta.ok) {
+        setMensagem(dados.message || "Erro ao buscar lista de idosos");
+        return;
       }
-    };
 
-    carregarIdosos();
-  }, []);
+      const idososFormatados = dados.map((i: any) => ({
+        ...i,
+        id: i._id,
+      }));
+
+      setIdosos(idososFormatados);
+    } catch {
+      setMensagem("Falha ao carregar lista de idosos");
+    }
+  };
+
+  carregarIdosos();
+}, []);
 
   return (
     <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">

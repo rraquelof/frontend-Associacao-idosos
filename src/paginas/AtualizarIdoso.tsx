@@ -12,7 +12,7 @@ export default function AtualizarIdoso() {
       const token = localStorage.getItem("token");
 
     const resposta = await fetch(
-      `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
+      `https://api-associacao-idosos.onrender.com//api/idoso/${id}`,
       {
         headers: {
           "Content-Type": "application/json",

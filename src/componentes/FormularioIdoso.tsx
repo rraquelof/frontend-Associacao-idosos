@@ -157,7 +157,7 @@ export default function FormularioIdoso({
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
-                  <Label htmlFor="data_nascimento" texto="Data de Nascimento" />
+                  <Label htmlFor="dataNascimento" texto="Data de Nascimento" />
                   <ErroCampoObrigatorio
                     valor={formDados.dataNascimento}
                     obrigatorio
@@ -165,7 +165,7 @@ export default function FormularioIdoso({
                   >
                     <Input
                       type="date"
-                      id="data_nascimento"
+                      id="dataNascimento"
                       name="dataNascimento"
                       value={formatarData(formDados.dataNascimento)}
                       onChange={handleChange}
