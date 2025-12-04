@@ -5,6 +5,10 @@ e **Storybook**.
 É uma aplicação desenvolvida para gerenciar atividades, moradores e operações de um abrigo de idosos, oferecendo uma plataforma simples, rápida e eficiente para organização interna.
 O objetivo é facilitar o trabalho da equipe, garantir acompanhamento adequado dos residentes e melhorar a comunicação entre cuidadores, administração e familiares.
 
+
+Desenvolvido por: Ana Beatriz, Darkiane e Raquel 
+
+
 > ⚠️ **Requisito obrigatório:**\
 > É necessário ter **Node.js 20 ou superior** instalado.
 
