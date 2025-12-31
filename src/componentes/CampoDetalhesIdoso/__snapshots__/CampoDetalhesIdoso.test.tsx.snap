@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testando CampoDetalhesIdoso > Formata corretamente quando o valor é uma data 1`] = `
+<DocumentFragment>
+  <p
+    class="text-gray-800"
+  >
+    <strong>
+      Data de nascimento:
+    </strong>
+     20/05/1950
+  </p>
+</DocumentFragment>
+`;
+
+exports[`Testando CampoDetalhesIdoso > Renderiza corretamente label e valor string 1`] = `
+<DocumentFragment>
+  <p
+    class="text-gray-800"
+  >
+    <strong>
+      Nome:
+    </strong>
+     Maria da Silva
+  </p>
+</DocumentFragment>
+`;
