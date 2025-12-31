@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testando ErroCampoObrigatorio > Mostra erro quando obrigatório e após blur 1`] = `
+<DocumentFragment>
+  <div
+    class="flex flex-col"
+  >
+    <input
+      class=" border-red-500 focus:ring-red-400"
+      placeholder="Digite algo..."
+    />
+    <span
+      class="text-red-500 text-sm mt-1"
+    >
+      Campo obrigatório
+    </span>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Testando ErroCampoObrigatorio > Não mostra erro quando o valor está preenchido 1`] = `
+<DocumentFragment>
+  <div
+    class="flex flex-col"
+  >
+    <input
+      class=" "
+      placeholder="Digite algo..."
+    />
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Testando Label > Renderiza corretamente com o texto passado 1`] = `
+<DocumentFragment>
+  <label
+    class="text-black font-medium text-lg mb-1 transition-all duration-200 undefined"
+    for="nome"
+  >
+    Nome Completo
+  </label>
+</DocumentFragment>
+`;
