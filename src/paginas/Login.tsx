@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../componentes/input/Input";
-import Botao from "../componentes/Botao/Botao";
+import Botao from "../componentes/botao/Botao";
 
 export default function Login() {
   const navigate = useNavigate();

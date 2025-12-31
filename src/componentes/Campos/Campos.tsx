@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Input from "../input/Input";
-import Label from "../Label/Label";
+import Label from "../label/Label";
 import Botao from "../Botao/Botao";
 
 interface CamposDinamicosProps {

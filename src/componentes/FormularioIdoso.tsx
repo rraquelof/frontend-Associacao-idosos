@@ -1,11 +1,11 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import Botao from "./Botao/Botao";
+import Botao from "./botao/Botao";
 import Input from "./input/Input";
-import Label from "./Label/Label";
-import Select from "./Select/Select";
+import Label from "./label/Label";
+import Select from "./select/Select";
 import Option from "./option/Option";
-import Textarea from "./Textarea/Textarea";
-import Campos from "./Campos/Campos";
+import Textarea from "./textarea/Textarea";
+import Campos from "./campos/Campos";
 import type Idoso from "../modelo/Idoso";
 import { formatarData } from "../formatacao/formatarData";
 import Mensagem from "./mensagem/Mensagem";
@@ -51,16 +51,18 @@ export default function FormularioIdoso({
     idadeIrmaos: "",
     localIrmaos: "",
   });
+
   useEffect(() => {
-    console.log(irmaos);
   }, [irmaos]);
+
   useEffect(() => {
-    console.log(familia);
   }, [familia]);
+
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<
     "sucesso" | "erro" | "informacao"
   >("informacao");
+  
   const [etapa, setEtapa] = useState(1);
   const [aplica, setAplica] = useState<string>("");
   const [enviarVazio, setEnviarVazio] = useState(false);
@@ -158,41 +160,28 @@ export default function FormularioIdoso({
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="dataNascimento" texto="Data de Nascimento" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.dataNascimento}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="date"
                       id="dataNascimento"
                       name="dataNascimento"
                       value={formatarData(formDados.dataNascimento)}
                       onChange={handleChange}
-                      required
+
                     />
-                  </ErroCampoObrigatorio>
                 </div>
 
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="sexo" texto="Sexo" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.sexo}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Select
                       id="sexo"
                       name="sexo"
                       value={formDados.sexo}
                       onChange={handleChange}
-                      required
                     >
                       <Option value="" texto="Selecione" />
                       <Option value="feminino" texto="Feminino" />
                       <Option value="masculino" texto="Masculino" />
                     </Select>
-                  </ErroCampoObrigatorio>
                 </div>
               </div>
 
@@ -218,11 +207,6 @@ export default function FormularioIdoso({
 
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="sus" texto="SUS" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.sus}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="text"
                       id="sus"
@@ -230,20 +214,13 @@ export default function FormularioIdoso({
                       placeholder="xxxxxxxxxxxxxxx"
                       value={formDados.sus}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
               </div>
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="rg" texto="RG" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.rg}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="text"
                       id="rg"
@@ -251,36 +228,22 @@ export default function FormularioIdoso({
                       placeholder="x.xxx.xxx"
                       value={formDados.rg}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
 
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="dataEmissaoRg" texto="Data de Emissão" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.dataEmissaoRg}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="date"
                       id="dataEmissaoRg"
                       name="dataEmissaoRg"
                       value={formatarData(formDados.dataEmissaoRg)}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
 
                 <div className="flex flex-col w-1/3">
                   <Label htmlFor="orgaoEmissorRg" texto="Órgão Emissor" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.orgaoEmissorRg}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="text"
                       id="orgaoEmissorRg"
@@ -288,47 +251,31 @@ export default function FormularioIdoso({
                       placeholder="Exemplo: SSP-PB"
                       value={formDados.orgaoEmissorRg}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
               </div>
 
               <div className="flex gap-6">
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="nacionalidade" texto="Nacionalidade" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.nacionalidade}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="text"
                       id="nacionalidade"
                       name="nacionalidade"
                       value={formDados.nacionalidade}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
 
                 <div className="flex flex-col w-1/2">
                   <Label htmlFor="naturalidade" texto="Naturalidade" />
-                  <ErroCampoObrigatorio
-                    valor={formDados.naturalidade}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="text"
                       id="naturalidade"
                       name="naturalidade"
                       value={formDados.naturalidade}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
               </div>
 
@@ -552,20 +499,13 @@ export default function FormularioIdoso({
                     htmlFor="dataAcolhimento"
                     texto="Data do Acolhimento"
                   />
-                  <ErroCampoObrigatorio
-                    valor={formDados.dataAcolhimento}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="date"
                       id="dataAcolhimento"
                       name="dataAcolhimento"
                       value={formatarData(formDados.dataAcolhimento)}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
 
                 <div className="flex flex-col">
@@ -573,20 +513,13 @@ export default function FormularioIdoso({
                     htmlFor="localAcolhimento"
                     texto="Local do Acolhimento"
                   />
-                  <ErroCampoObrigatorio
-                    valor={formDados.localAcolhimento}
-                    obrigatorio
-                    envioVazio={enviarVazio}
-                  >
                     <Input
                       type="text"
                       id="localAcolhimento"
                       name="localAcolhimento"
                       value={formDados.localAcolhimento}
                       onChange={handleChange}
-                      required
                     />
-                  </ErroCampoObrigatorio>
                 </div>
 
                 <div className="flex flex-col">
@@ -606,19 +539,12 @@ export default function FormularioIdoso({
                   htmlFor="motivoDoAcolhimentoConformeOrgaoEmissor"
                   texto="Motivo do Acolhimento conforme o órgão encaminhador"
                 />
-                <ErroCampoObrigatorio
-                  valor={formDados.motivoDoAcolhimentoConformeOrgaoEmissor}
-                  obrigatorio
-                  envioVazio={enviarVazio}
-                >
                   <Textarea
                     id="motivoDoAcolhimentoConformeOrgaoEmissor"
                     name="motivoDoAcolhimentoConformeOrgaoEmissor"
                     value={formDados.motivoDoAcolhimentoConformeOrgaoEmissor}
                     onChange={handleChange}
-                    required
                   />
-                </ErroCampoObrigatorio>
               </div>
 
               <div className="flex flex-col">
@@ -640,13 +566,6 @@ export default function FormularioIdoso({
                   htmlFor="condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia"
                   texto="Condições em que ocorreu a retirada do idoso da família"
                 />
-                <ErroCampoObrigatorio
-                  valor={
-                    formDados.condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia
-                  }
-                  obrigatorio
-                  envioVazio={enviarVazio}
-                >
                   <Textarea
                     id="condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia"
                     name="condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia"
@@ -654,9 +573,7 @@ export default function FormularioIdoso({
                       formDados.condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia
                     }
                     onChange={handleChange}
-                    required
                   />
-                </ErroCampoObrigatorio>
               </div>
 
               <h4 className="text-black font-bold text-xl">
@@ -668,19 +585,12 @@ export default function FormularioIdoso({
                   htmlFor="condicoesDeHigieneNoMomentoDoAcolhimento"
                   texto="Higiene"
                 />
-                <ErroCampoObrigatorio
-                  valor={formDados.condicoesDeHigieneNoMomentoDoAcolhimento}
-                  obrigatorio
-                  envioVazio={enviarVazio}
-                >
                   <Textarea
                     id="condicoesDeHigieneNoMomentoDoAcolhimento"
                     name="condicoesDeHigieneNoMomentoDoAcolhimento"
                     value={formDados.condicoesDeHigieneNoMomentoDoAcolhimento}
                     onChange={handleChange}
-                    required
                   />
-                </ErroCampoObrigatorio>
               </div>
 
               <div className="flex flex-col">
@@ -688,36 +598,22 @@ export default function FormularioIdoso({
                   htmlFor="reacoesEComportamentos"
                   texto="Reações e comportamentos"
                 />
-                <ErroCampoObrigatorio
-                  valor={formDados.reacoesEComportamentos}
-                  obrigatorio
-                  envioVazio={enviarVazio}
-                >
                   <Textarea
                     id="reacoesEComportamentos"
                     name="reacoesEComportamentos"
                     value={formDados.reacoesEComportamentos}
                     onChange={handleChange}
-                    required
                   />
-                </ErroCampoObrigatorio>
               </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="sinasDeViolencia" texto="Sinais de violência" />
-                <ErroCampoObrigatorio
-                  valor={formDados.sinasDeViolencia}
-                  obrigatorio
-                  envioVazio={enviarVazio}
-                >
                   <Textarea
                     id="sinasDeViolencia"
                     name="sinasDeViolencia"
                     value={formDados.sinasDeViolencia}
                     onChange={handleChange}
-                    required
                   />
-                </ErroCampoObrigatorio>
               </div>
 
               <h4 className="text-black font-bold text-xl">

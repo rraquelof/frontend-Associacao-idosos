@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type Idoso from "../modelo/Idoso";
 import { useNavigate } from "react-router-dom";
-import Botao from "../componentes/Botao/Botao";
+import Botao from "../componentes/botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
 
 export default function ListaIdosos() {
@@ -13,8 +13,7 @@ export default function ListaIdosos() {
   const carregarIdosos = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log("TOKEN ENCONTRADO:", token);
-
+      
       const resposta = await fetch(
         "https://api-associacao-idosos.onrender.com/api/idosos",
         {
