@@ -2,14 +2,14 @@ export default interface Idoso {
   id: string
   nome: string;
   cpf: string;
-  rg?: string;
+  rg: string;
   dataEmissaoRg?: Date;
   orgaoEmissorRg?: string;
-  sus?: string;
-  dataNascimento?: Date;
-  sexo?: string;
-  nacionalidade?: string;
-  naturalidade?: string;
+  sus: string;
+  dataNascimento: Date;
+  sexo: string;
+  nacionalidade: string;
+  naturalidade: string;
   foto?: string;
   nomePai?: string;
   nomeMae?: string;
