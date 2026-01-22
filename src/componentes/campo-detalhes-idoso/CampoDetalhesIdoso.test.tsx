@@ -26,4 +26,32 @@ describe("Testando CampoDetalhesIdoso", () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  test("Não renderiza nada quando o valor é undefined", ()=>{
+    const { container } = render(
+      <CampoDetalhesIdoso label="Nome:" />
+    );
+
+    expect(container.firstChild).toBeNull();
+  });
+
+  test("Não renderiza nada quando o valor for uma string vazia", ()=>{
+    const { container } = render(
+      <CampoDetalhesIdoso label="Observações" valor={''}/>
+    );
+
+    expect(container.firstChild).toBeNull();
+  });
+
+  test("Renderiza label dentro de um elemento strong", ()=>{
+    const { container } = render(
+      <CampoDetalhesIdoso label="CPF" valor="123.123.123-00"/>
+    );
+
+    const strong = container.querySelector("strong");
+
+    expect(strong).not.toBeNull();
+    expect(strong).toHaveTextContent("CPF");
+  });
+
 });

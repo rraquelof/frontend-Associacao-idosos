@@ -24,4 +24,34 @@ describe("Testando Botao", () => {
 
         expect(handleClick).toHaveBeenCalledTimes(1);
     });
+
+    test("Renderia botao com tipo padrão 'button'", ()=>{
+        const { getByText } = render(
+            <Botao texto="Botão padrão" />
+        );
+
+        const botao = getByText("Botão padrão");
+        expect(botao).toHaveAttribute("type", "button");
+    });
+
+    test("Renderiza botao com tipo 'submit'", ()=>{
+        const { getByText } = render(
+            <Botao texto="Botão Submit" tipo="submit"/>
+        );
+
+        const botao = getByText("Botão Submit");
+        expect(botao).toHaveAttribute("type", "submit");
+    });
+
+    test("Renderiza children no lugar de texto", ()=>{
+        const { getByText, queryByText } = render(
+            <Botao texto="texto antigo">
+                <span>Conteúdo children</span>
+            </Botao>
+        );
+
+        expect(getByText("Conteúdo children")).toBeInTheDocument();
+        expect(queryByText("texto antigo")).not.toBeInTheDocument();
+    });
+
 });
