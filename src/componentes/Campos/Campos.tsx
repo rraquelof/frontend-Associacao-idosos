@@ -34,10 +34,11 @@ export default function Campos({ campos, onChange }: CamposDinamicosProps) {
           {campos.map((campo) => (
             <div key={campo} className="flex flex-col">
               <Label
-                htmlFor={campo}
+                htmlFor={`${campo}-${index}`}
                 texto={campo.charAt(0).toUpperCase() + campo.slice(1)}
               />
               <Input
+                id={`${campo}-${index}`}
                 type="text"
                 value={item[campo]}
                 onChange={(e) => handleChange(index, campo, e.target.value)}
