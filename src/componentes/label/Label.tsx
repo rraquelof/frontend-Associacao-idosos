@@ -4,7 +4,7 @@ interface LabelProps {
   className?: string;
 }
 
-const Label = ({ htmlFor, texto, className }: LabelProps) => {
+const Label = ({ htmlFor, texto, className = " " }: LabelProps) => {
   return (
     <label
       htmlFor={htmlFor}
