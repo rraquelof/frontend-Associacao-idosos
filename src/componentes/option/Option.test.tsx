@@ -31,4 +31,41 @@ describe("Testando Option", () => {
     expect(option).toBeInTheDocument();
     expect(option).toBeDisabled();
   });
+
+  test("Renderiza como selecionado quando selected é true", () => {
+    const { getByText } = render(
+      <select>
+        <Option texto="Selecionada" selected />
+      </select>
+    );
+
+    const option = getByText("Selecionada") as HTMLOptionElement;
+
+    expect(option.selected).toBe(true);
+  });
+
+  test("Renderiza corretamente mesmo sem value", () => {
+    const { getByText } = render(
+      <select>
+        <Option texto="Sem valor" />
+      </select>
+    );
+
+    const option = getByText("Sem valor");
+
+    expect(option).toBeInTheDocument();
+    expect(option).not.toHaveAttribute("value");
+  });
+
+  test("Aplica className passada via props", () => {
+    const { getByText } = render(
+      <select>
+        <Option texto="Com classe" className="minha-classe" />
+      </select>
+    );
+
+    const option = getByText("Com classe");
+
+    expect(option.className).toContain("minha-classe");
+  });
 });
