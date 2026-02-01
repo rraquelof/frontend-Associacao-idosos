@@ -2,6 +2,7 @@ import { render, fireEvent } from "@testing-library/react";
 import { test, expect } from "vitest";
 import MenuItem from "./MenuItem";
 import { describe, vi } from "vitest";
+import { beforeEach } from "node:test";
 
 const mockNavigate = vi.fn();
 
@@ -40,5 +41,42 @@ describe("Testando MenuItem", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
   });
 
+  test("Renderiza o botão com type='button'", () => {
+    const { getByRole } = render(
+      <MenuItem icon={<span />} label="Home" route="/home" />
+    );
+
+    const botao = getByRole("button");
+
+    expect(botao).toHaveAttribute("type", "button");
+  });
+
+  test("Aplica a className personalizada passada por props", () => {
+    const { getByRole } = render(
+      <MenuItem
+        icon={<span />}
+        label="Home"
+        route="/home"
+        className="classe-customizada"
+      />
+    );
+
+    const botao = getByRole("button");
+
+    expect(botao.className).toContain("classe-customizada");
+  });
+
+  beforeEach(() => {
+    mockNavigate.mockClear();
+  });
+
+  test("Não chama navigate automaticamente ao renderizar", () => {
+    mockNavigate.mockClear(); // ← linha decisiva
+
+    render(
+      <MenuItem icon={<span />} label="Home" route="/home" />
+    );
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
 });
 
