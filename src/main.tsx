@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Cadastro from './paginas/Cadastro';
 import Login from './paginas/Login';
 import CadastroIdoso from './paginas/CadastroIdoso';
@@ -19,6 +19,7 @@ if ("serviceWorker" in navigator) {
 createRoot(document.getElementById('root')!).render(
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path='/cadastro' element={<Cadastro />}></Route>
         <Route path='/login' element={<Login />}></Route>
         <Route path='/cadastro/idoso' element={<CadastroIdoso />}></Route>
