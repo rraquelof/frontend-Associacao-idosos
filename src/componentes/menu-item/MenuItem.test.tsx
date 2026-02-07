@@ -2,7 +2,7 @@ import { render, fireEvent } from "@testing-library/react";
 import { test, expect } from "vitest";
 import MenuItem from "./MenuItem";
 import { describe, vi } from "vitest";
-import { beforeEach } from "node:test";
+import { beforeEach } from "vitest";
 
 const mockNavigate = vi.fn();
 

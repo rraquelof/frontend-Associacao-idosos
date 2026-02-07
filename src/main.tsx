@@ -10,6 +10,12 @@ import ListaIdosos from './paginas/ListarIdosos';
 import DetalharIdoso from './paginas/DetalharIdoso';
 import DeletarIdoso from './paginas/DeletarIdoso';
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js");
+  });
+}
+
 createRoot(document.getElementById('root')!).render(
     <Router>
       <Routes>
@@ -22,5 +28,5 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/dados/idoso/:id' element={<DetalharIdoso />}></Route>
         <Route path='/menu' element={<Menu/>}></Route>
       </Routes>
-    </Router>
+    </Router> 
 )

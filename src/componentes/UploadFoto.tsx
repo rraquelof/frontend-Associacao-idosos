@@ -10,7 +10,7 @@ export default function UploadFoto() {
     if (!file) return;
 
     setArquivo(file);
-    setPreview(URL.createObjectURL(file)); // ← isso mostra a prévia
+    setPreview(URL.createObjectURL(file)); 
   }
 
   async function handleUpload() {
@@ -37,7 +37,6 @@ export default function UploadFoto() {
   return (
     <div className="flex flex-col gap-4 w-fit">
 
-      {/* Botão estilizado */}
       <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-fit">
         Selecionar Foto
         <input
@@ -48,7 +47,6 @@ export default function UploadFoto() {
         />
       </label>
 
-      {/* Preview da imagem */}
       {preview && (
         <img
           src={preview}
@@ -56,8 +54,6 @@ export default function UploadFoto() {
           className="w-36 rounded-lg shadow-md"
         />
       )}
-
-
     </div>
   );
 }
