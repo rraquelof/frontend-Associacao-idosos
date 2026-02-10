@@ -1,5 +1,14 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Testando Textarea > Aplica className customizada junto com as classes padrão 1`] = `
+<DocumentFragment>
+  <textarea
+    class="border p-3 rounded-lg text-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-200 bg-red-200"
+    placeholder="Texto"
+  />
+</DocumentFragment>
+`;
+
 exports[`Testando Textarea > Renderiza corretamente com placeholder 1`] = `
 <DocumentFragment>
   <textarea
