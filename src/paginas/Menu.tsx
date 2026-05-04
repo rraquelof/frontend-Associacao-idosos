@@ -1,5 +1,6 @@
 import MenuItem from "../componentes/menu-item/MenuItem";
 import idososIcon from "../img/idosos.png";
+import eventosIcon from "../img/eventos.png"; 
 
 export default function Menu() {
   return (
@@ -8,11 +9,19 @@ export default function Menu() {
         Menu Principal
       </h1>
 
-      <MenuItem
-        icon={<img src={idososIcon} className="w-full h-full object-contain" />}
-        label="Cadastro de Idosos"
-        route="/lista/idosos"
-      />
+      <div className="flex flex-col sm:flex-row gap-6">
+        <MenuItem
+          icon={<img src={idososIcon} alt="Ícone de Idosos" className="w-full h-full object-contain" />}
+          label="Cadastro de Idosos"
+          route="/lista/idosos"
+        />
+
+        <MenuItem
+          icon={<img src={eventosIcon} alt="Ícone de Eventos" className="w-full h-full object-contain" />}
+          label="Gerenciamento de Eventos"
+          route="/eventos" 
+        />
+      </div>
     </div>
   );
 }

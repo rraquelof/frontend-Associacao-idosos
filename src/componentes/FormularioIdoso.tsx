@@ -4,8 +4,8 @@ import Input from "./input/Input";
 import Label from "./label/Label";
 import Select from "./select/Select";
 import Option from "./option/Option";
-import Textarea from "./textarea/Textarea";
-import Campos from "./campos/Campos";
+import Textarea from "./Textarea/Textarea";
+import Campos from "./Campos/Campos";
 import type Idoso from "../modelo/Idoso";
 import { formatarData } from "../formatacao/formatarData";
 import Mensagem from "./mensagem/Mensagem";
@@ -17,7 +17,7 @@ interface IdosoFormProps {
   endpoint: string;
   metodo?: "POST" | "PUT";
   textoBotao: string;
-  dadosIniciais?: Partial<Idoso>;
+  dadosIniciais?: Partial<Idoso> & { foto?: string };
 }
 
 export default function FormularioIdoso({
@@ -26,9 +26,11 @@ export default function FormularioIdoso({
   textoBotao,
   dadosIniciais,
 }: IdosoFormProps) {
-  const [formDados, setFormDados] = useState<Partial<Idoso>>(
+  const [formDados, setFormDados] = useState<Partial<Idoso> & { foto?: string }>(
     dadosIniciais || {}
   );
+
+  const [fotoFile, setFotoFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (dadosIniciais) {
@@ -53,13 +55,10 @@ export default function FormularioIdoso({
   });
 
   useEffect(() => {}, [irmaos]);
-
   useEffect(() => {}, [familia]);
 
   const [mensagem, setMensagem] = useState("");
-  const [tipoMensagem, setTipoMensagem] = useState<
-    "sucesso" | "erro" | "informacao"
-  >("informacao");
+  const [tipoMensagem, setTipoMensagem] = useState<"sucesso" | "erro" | "informacao">("informacao");
 
   const [etapa, setEtapa] = useState(1);
   const [aplica, setAplica] = useState<string>("");
@@ -78,6 +77,12 @@ export default function FormularioIdoso({
     });
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFotoFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -87,14 +92,35 @@ export default function FormularioIdoso({
 
     try {
       const token = localStorage.getItem("token");
-      const resposta = await fetch(endpoint, {
-        method: metodo,
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify(formDados),
-      });
+      let resposta;
+
+      if (fotoFile) {
+        const formData = new FormData();
+        Object.entries(formDados).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            formData.append(key, String(value));
+          }
+        });
+        
+        formData.append("foto", fotoFile); 
+
+        resposta = await fetch(endpoint, {
+          method: metodo,
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+          body: formData,
+        });
+      } else {
+        resposta = await fetch(endpoint, {
+          method: metodo,
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+          body: JSON.stringify(formDados),
+        });
+      }
 
       const dados = await resposta.json();
 
@@ -136,6 +162,32 @@ export default function FormularioIdoso({
               <h3 className="text-black font-bold text-xl">
                 I - DADOS PESSOAIS
               </h3>
+
+              <div className="flex flex-col">
+                <Label htmlFor="foto" texto="Foto do Idoso" />
+                
+                {formDados.foto && !fotoFile && (
+                  <img 
+                    src={formDados.foto} 
+                    alt="Foto atual do idoso" 
+                    className="w-24 h-24 object-cover rounded-xl mt-2 mb-2 border border-gray-300" 
+                  />
+                )}
+                
+                <input
+                  type="file"
+                  id="foto"
+                  name="foto"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="mt-2 block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100 cursor-pointer"
+                />
+              </div>
 
               <div className="flex flex-col">
                 <Label htmlFor="nome" texto="Nome completo" />

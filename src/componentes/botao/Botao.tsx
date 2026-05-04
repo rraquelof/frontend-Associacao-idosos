@@ -9,6 +9,7 @@ interface BotaoProps {
   variant?: keyof typeof botaoEstilos.variants;
   size?: keyof typeof botaoEstilos.sizes;
   children?: ReactNode;
+  disabled?: boolean;
 }
 
 const Botao = ({
@@ -19,6 +20,7 @@ const Botao = ({
   variant = "primary",
   size = "md",
   className = "",
+  disabled,
 }: BotaoProps) => {
   const estilo =
     `${botaoEstilos.base} ` +
@@ -27,7 +29,7 @@ const Botao = ({
     className;
 
   return (
-    <button type={tipo} onClick={onClick} className={estilo}>
+    <button type={tipo} onClick={onClick} className={estilo} disabled={disabled}>
       {children ?? texto}
     </button>
   );
