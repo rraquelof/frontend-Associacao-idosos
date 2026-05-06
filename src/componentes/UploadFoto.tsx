@@ -13,26 +13,6 @@ export default function UploadFoto() {
     setPreview(URL.createObjectURL(file)); 
   }
 
-  async function handleUpload() {
-    if (!arquivo) return alert("Selecione uma imagem!");
-
-    const formData = new FormData();
-    formData.append("foto", arquivo);
-
-    try {
-      const response = await axios.post(
-        "https://api-associacao-idosos.onrender.com/uploads",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      console.log("Arquivo salvo como:", response.data.arquivo);
-      alert("Upload concluído!");
-    } catch (error) {
-      console.error("Erro no upload:", error);
-      alert("Falha no upload.");
-    }
-  }
 
   return (
     <div className="flex flex-col gap-4 w-fit">
