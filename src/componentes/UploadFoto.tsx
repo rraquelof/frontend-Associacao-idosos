@@ -1,15 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
 
 export default function UploadFoto() {
-  const [arquivo, setArquivo] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setArquivo(file);
     setPreview(URL.createObjectURL(file)); 
   }
 
