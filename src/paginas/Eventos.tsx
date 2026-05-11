@@ -12,8 +12,10 @@ export default function Eventos() {
   const navegacao = useNavigate();
   const [eventos, setEventos] = useState<any[]>([]);
   const [modoVisualizacao, setModoVisualizacao] = useState<"lista" | "calendario">("lista");
-  
   const [dataSelecionada, setDataSelecionada] = useState<Date | null>(null);
+  
+  const [eventoParaDeletar, setEventoParaDeletar] = useState<string | null>(null);
+  const [deletando, setDeletando] = useState(false);
 
   const carregarEventos = async () => {
     try {
@@ -30,23 +32,29 @@ export default function Eventos() {
     }
   };
 
-  const deletarEvento = async (id: string) => {
-    if (window.confirm("Tem certeza que deseja excluir este evento?")) {
-      try {
-        const token = localStorage.getItem("token");
-        const resposta = await fetch(`${API_URL}/eventos/${id}`, {
-          method: "DELETE",
-          headers: { ...(token && { Authorization: `Bearer ${token}` }) },
-        });
-        if (resposta.ok) {
-          carregarEventos(); 
-          setDataSelecionada(null); 
-        } else {
-          alert("Erro ao deletar evento. Verifique se você tem permissão.");
-        }
-      } catch (error) {
-        console.error("Erro ao deletar evento:", error);
+  const confirmarDelecao = async () => {
+    if (!eventoParaDeletar) return;
+    
+    setDeletando(true);
+    try {
+      const token = localStorage.getItem("token");
+      const resposta = await fetch(`${API_URL}/eventos/${eventoParaDeletar}`, {
+        method: "DELETE",
+        headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+      });
+      if (resposta.ok) {
+        carregarEventos(); 
+        setDataSelecionada(null);
+        setEventoParaDeletar(null);
+      } else {
+        alert("Erro ao deletar evento. Verifique se você tem permissão.");
+        setEventoParaDeletar(null);
       }
+    } catch (error) {
+      console.error("Erro ao deletar evento:", error);
+      setEventoParaDeletar(null);
+    } finally {
+      setDeletando(false);
     }
   };
 
@@ -104,6 +112,13 @@ export default function Eventos() {
     return null;
   };
 
+  const obterUrlImagem = (caminhoImagem: string) => {
+    if (!caminhoImagem) return "";
+    if (caminhoImagem.startsWith("http")) return caminhoImagem;
+    const urlServidor = "https://api-associacao-idosos.onrender.com";
+    return caminhoImagem.startsWith("/") ? `${urlServidor}${caminhoImagem}` : `${urlServidor}/${caminhoImagem}`;
+  };
+
   return (
     <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
       <div className="w-full max-w-5xl flex items-center justify-between mb-8 mt-10">
@@ -145,7 +160,6 @@ export default function Eventos() {
 
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-6 min-h-[60vh]">
         
-        {/* LISTA */}
         {modoVisualizacao === "lista" && (
           <div className="flex flex-col gap-4">
             {eventos.length === 0 ? (
@@ -159,7 +173,7 @@ export default function Eventos() {
                 >
                   <div className="flex gap-4 items-center">
                     {evento.imagem && (
-                      <img src={evento.imagem} alt={evento.nome} className="w-16 h-16 object-cover rounded-lg" />
+                      <img src={obterUrlImagem(evento.imagem)} alt={evento.nome} className="w-16 h-16 object-cover rounded-lg" />
                     )}
                     <div>
                       <h3 className="text-xl font-bold text-black">{evento.nome}</h3>
@@ -183,7 +197,7 @@ export default function Eventos() {
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        deletarEvento(evento._id);
+                        setEventoParaDeletar(evento._id);
                       }}
                       className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                       title="Deletar"
@@ -197,23 +211,19 @@ export default function Eventos() {
           </div>
         )}
 
-        {/* CALENDÁRIO */}
         {modoVisualizacao === "calendario" && (
           <div className="flex flex-col w-full pb-10">
             <div className="w-full bg-white rounded-2xl border border-gray-200 p-2 sm:p-6">
-              
               <Calendar 
                 className="!w-full !max-w-none border-none font-sans text-gray-800 [&_abbr]:no-underline"
-                
                 tileClassName={({ view }) => 
                   view === 'month' 
-                    ? 'min-h-[100px] sm:min-h-[120px] flex flex-col justify-start items-center p-1 border border-gray-100 hover:bg-purple-50 transition-all' 
+                    ? 'min-h-[100px] sm:min-h-[120px] flex flex-col justify-start items-center p-1 border border-gray-100 hover:bg-purple-50 transition-all cursor-pointer' 
                     : null
                 }
                 tileContent={renderizarConteudoDoDia}
                 onClickDay={(value) => setDataSelecionada(value)} 
               />
-              
             </div>
           </div>
         )}
@@ -221,7 +231,7 @@ export default function Eventos() {
 
       {dataSelecionada && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50 transition-opacity"
           onClick={() => setDataSelecionada(null)} 
         >
           <div 
@@ -262,7 +272,35 @@ export default function Eventos() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
 
+      {eventoParaDeletar && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 transition-opacity">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform transition-all text-center">
+            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={32} />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Excluir Evento</h3>
+            <p className="text-gray-600 mb-6">
+              Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex justify-center gap-3">
+              <Botao 
+                texto="Cancelar" 
+                onClick={() => setEventoParaDeletar(null)} 
+                variant="gray" 
+                className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+                disabled={deletando}
+              />
+              <Botao 
+                texto={deletando ? "Excluindo..." : "Excluir"} 
+                onClick={confirmarDelecao} 
+                className="bg-red-600 text-white hover:bg-red-700" 
+                disabled={deletando}
+              />
+            </div>
           </div>
         </div>
       )}
