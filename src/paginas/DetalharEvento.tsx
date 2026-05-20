@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Botao from "../componentes/botao/Botao";
 import { ChevronLeftIcon, CalendarDays, MapPin, Users, Plus, X, Trash2 } from "lucide-react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+const iconeMarcador = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
 const API_URL = "https://api-associacao-idosos.onrender.com/api";
 
@@ -198,17 +209,30 @@ export default function DetalharEvento() {
                 </p>
               </div>
             </div>
-
-            <div className="flex items-center gap-3 text-gray-700">
-              <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-                <MapPin size={24} />
+            
+            <div className="flex flex-col gap-2 text-gray-700 mt-2">
+              <div className="flex items-center gap-2">
+                <MapPin size={20} className="text-blue-600" />
+                <p className="text-md font-bold text-gray-800">Localização do Evento</p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Localização</p>
-                <p className="text-lg font-bold text-gray-900">
-                  Latitude: {evento.local?.coordinates[1]}, Longitude: {evento.local?.coordinates[0]}
-                </p>
-              </div>
+              
+              {evento.local?.coordinates ? (
+                <div className="w-full h-56 bg-gray-100 rounded-xl overflow-hidden border border-gray-200 relative z-0">
+                  <MapContainer 
+                    center={[evento.local.coordinates[1], evento.local.coordinates[0]]} 
+                    zoom={15} 
+                    style={{ height: "100%", width: "100%" }}
+                  >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <Marker 
+                      position={[evento.local.coordinates[1], evento.local.coordinates[0]]} 
+                      icon={iconeMarcador} 
+                    />
+                  </MapContainer>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">Localização não registrada no mapa.</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between gap-3 text-gray-700 bg-green-50 p-4 rounded-xl border border-green-100">
