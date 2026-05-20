@@ -1,6 +1,7 @@
 import MenuItem from "../componentes/menu-item/MenuItem";
 import idososIcon from "../img/idosos.png";
 import eventosIcon from "../img/eventos.png"; 
+import saudeIcon from "../img/saude.png";
 
 export default function Menu() {
   return (
@@ -21,6 +22,13 @@ export default function Menu() {
           label="Gerenciamento de Eventos"
           route="/eventos" 
         />
+      
+        <MenuItem
+          icon={<img src={saudeIcon} alt="Ícone de Saúde" className="w-full h-full object-contain" />}
+          label="Gerenciamento de Saúde"
+          route="/saude" 
+        />
+        
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import ListaIdosos from './paginas/ListarIdosos';
 import DetalharIdoso from './paginas/DetalharIdoso';
 import DeletarIdoso from './paginas/DeletarIdoso';
 import PrivacidadeRoute from './PrivacidadeRoute';
+import GerenciamentoSaude from './paginas/GerenciamentoSaude';
 
 import Eventos from './paginas/Eventos'; 
 import FormularioEvento from './componentes/FormularioEvento/FormularioEvento'; 
@@ -121,6 +122,13 @@ createRoot(document.getElementById('root')!).render(
           </PrivacidadeRoute>
         }
       />
+
+      <Route 
+        path="/saude" 
+        element={
+        <PrivacidadeRoute>
+            <GerenciamentoSaude />
+          </PrivacidadeRoute>} />
     </Routes>
   </Router> 
 );

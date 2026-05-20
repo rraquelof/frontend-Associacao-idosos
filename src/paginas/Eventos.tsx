@@ -123,7 +123,7 @@ export default function Eventos() {
     <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
       <div className="w-full max-w-5xl flex items-center justify-between mb-8 mt-10">
         <div className="flex items-center gap-4">
-          <Botao onClick={() => navegacao("/")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
+          <Botao onClick={() => navegacao("/menu")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
             <ChevronLeftIcon />
           </Botao>
           <h1 className="text-3xl font-bold text-black">Gerenciamento de Eventos</h1>
@@ -268,7 +268,7 @@ export default function Eventos() {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-500 text-lg">Não há eventos marcados para este dia.</p>
+                  <p className="text-gray-500 text-lg">Não hay eventos marcados para este dia.</p>
                 </div>
               )}
             </div>
