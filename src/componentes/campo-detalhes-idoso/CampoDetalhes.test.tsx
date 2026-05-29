@@ -1,11 +1,11 @@
 import { describe, test, expect } from "vitest";
 import { render } from "@testing-library/react";
-import CampoDetalhesIdoso from "./CampoDetalhesIdoso";
+import CampoDetalhes from "./CampoDetalhes";
 
-describe("Testando CampoDetalhesIdoso", () => {
+describe("Testando CampoDetalhes", () => {
   test("Renderiza corretamente label e valor string", () => {
     const { getByText, asFragment } = render(
-      <CampoDetalhesIdoso label="Nome" valor="Maria da Silva" />
+      <CampoDetalhes label="Nome" valor="Maria da Silva" />
     );
 
     expect(getByText("Nome:")).toBeInTheDocument();
@@ -18,7 +18,7 @@ describe("Testando CampoDetalhesIdoso", () => {
     const data = new Date(1950, 4, 20);
 
     const { getByText, asFragment } = render(
-      <CampoDetalhesIdoso label="Data de nascimento" valor={data} />
+      <CampoDetalhes label="Data de nascimento" valor={data} />
     );
 
     expect(getByText("Data de nascimento:")).toBeInTheDocument();
@@ -27,25 +27,25 @@ describe("Testando CampoDetalhesIdoso", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("Não renderiza nada quando o valor é undefined", ()=>{
+  test("Não renderiza nada quando o valor é undefined", () => {
     const { container } = render(
-      <CampoDetalhesIdoso label="Nome:" />
+      <CampoDetalhes label="Nome:" />
     );
 
     expect(container.firstChild).toBeNull();
   });
 
-  test("Não renderiza nada quando o valor for uma string vazia", ()=>{
+  test("Não renderiza nada quando o valor for uma string vazia", () => {
     const { container } = render(
-      <CampoDetalhesIdoso label="Observações" valor={''}/>
+      <CampoDetalhes label="Observações" valor={''} />
     );
 
     expect(container.firstChild).toBeNull();
   });
 
-  test("Renderiza label dentro de um elemento strong", ()=>{
+  test("Renderiza label dentro de um elemento strong", () => {
     const { container } = render(
-      <CampoDetalhesIdoso label="CPF" valor="123.123.123-00"/>
+      <CampoDetalhes label="CPF" valor="123.123.123-00" />
     );
 
     const strong = container.querySelector("strong");

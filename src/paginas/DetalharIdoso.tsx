@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CampoDetalhesIdoso from "../componentes/campo-detalhes-idoso/CampoDetalhesIdoso";
+import CampoDetalhes from "../componentes/campo-detalhes-idoso/CampoDetalhes";
 import type Idoso from "../modelo/Idoso";
 import Botao from "../componentes/botao/Botao";
 import { ChevronLeftIcon, User } from "lucide-react";
@@ -78,12 +78,12 @@ export default function DetalharIdoso() {
       </div>
 
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl max-h-[75vh] overflow-y-auto flex flex-col">
-        
+
         <div className="w-full flex flex-col items-center pt-10 pb-6 border-b border-gray-100 bg-gray-50">
           {idoso.foto ? (
-            <img 
-              src={obterUrlImagem(idoso.foto)} 
-              alt={`Foto de ${idoso.nome}`} 
+            <img
+              src={obterUrlImagem(idoso.foto)}
+              alt={`Foto de ${idoso.nome}`}
               className="w-40 h-40 object-cover rounded-full border-4 border-white shadow-lg bg-gray-200"
             />
           ) : (
@@ -96,272 +96,272 @@ export default function DetalharIdoso() {
         </div>
 
         <div className="p-8 flex flex-wrap gap-4 content-start">
-          <CampoDetalhesIdoso label="CPF" valor={idoso.cpf} />
-          <CampoDetalhesIdoso label="RG" valor={idoso.rg} />
-          <CampoDetalhesIdoso
+          <CampoDetalhes label="CPF" valor={idoso.cpf} />
+          <CampoDetalhes label="RG" valor={idoso.rg} />
+          <CampoDetalhes
             label="Data de emissão do RG"
             valor={formatarDataBR(idoso.dataEmissaoRg)}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Orgão Emissor do Rg"
             valor={idoso.orgaoEmissorRg}
           />
-          <CampoDetalhesIdoso label="SUS" valor={idoso.sus} />
-          <CampoDetalhesIdoso label="Sexo" valor={idoso.sexo} />
-          <CampoDetalhesIdoso label="Naturalidade" valor={idoso.naturalidade} />
-          <CampoDetalhesIdoso label="Nome do Pai" valor={idoso.nomePai} />
-          <CampoDetalhesIdoso label="Nome da Mãe" valor={idoso.nomeMae} />
-          <CampoDetalhesIdoso label="Responsável" valor={idoso.responsavel} />
-          <CampoDetalhesIdoso
+          <CampoDetalhes label="SUS" valor={idoso.sus} />
+          <CampoDetalhes label="Sexo" valor={idoso.sexo} />
+          <CampoDetalhes label="Naturalidade" valor={idoso.naturalidade} />
+          <CampoDetalhes label="Nome do Pai" valor={idoso.nomePai} />
+          <CampoDetalhes label="Nome da Mãe" valor={idoso.nomeMae} />
+          <CampoDetalhes label="Responsável" valor={idoso.responsavel} />
+          <CampoDetalhes
             label="Último Endereço do Acolhido"
             valor={idoso.ultimoEnderecoDoAcolhido}
           />
-          <CampoDetalhesIdoso label="Cidade" valor={idoso.cidade} />
-          <CampoDetalhesIdoso label="Contato" valor={idoso.contato} />
-          <CampoDetalhesIdoso
+          <CampoDetalhes label="Cidade" valor={idoso.cidade} />
+          <CampoDetalhes label="Contato" valor={idoso.contato} />
+          <CampoDetalhes
             label="Número da Certidão de Nascimento"
             valor={idoso.numCertidaoNascimento}
           />
-          <CampoDetalhesIdoso label="Folha" valor={idoso.folha} />
-          <CampoDetalhesIdoso label="Livro" valor={idoso.livro} />
-          <CampoDetalhesIdoso label="Cartório" valor={idoso.cartorio} />
-          <CampoDetalhesIdoso label="CTPS" valor={idoso.ctps} />
-          <CampoDetalhesIdoso label="Série" valor={idoso.serie} />
-          <CampoDetalhesIdoso label="PIS" valor={idoso.pis} />
-          <CampoDetalhesIdoso
+          <CampoDetalhes label="Folha" valor={idoso.folha} />
+          <CampoDetalhes label="Livro" valor={idoso.livro} />
+          <CampoDetalhes label="Cartório" valor={idoso.cartorio} />
+          <CampoDetalhes label="CTPS" valor={idoso.ctps} />
+          <CampoDetalhes label="Série" valor={idoso.serie} />
+          <CampoDetalhes label="PIS" valor={idoso.pis} />
+          <CampoDetalhes
             label="Título de Eleitor"
             valor={idoso.tituloEleitor}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Zona do Título de Eleitor"
             valor={idoso.zonaTituloEleitor}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Seção do Título de Eleitor"
             valor={idoso.secaoTituloEleitor}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Observações (Dados Pessoais)"
             valor={idoso.observacoesDadosPessoais}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Data de Acolhimento"
             valor={formatarDataBR(idoso.dataAcolhimento)}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Local de Acolhimento"
             valor={idoso.localAcolhimento}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Encaminhado por"
             valor={idoso.encaminhadoPor}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Motivo do Acolhimento conforme Órgão Emissor"
             valor={idoso.motivoDoAcolhimentoConformeOrgaoEmissor}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Documentação Recebida"
             valor={idoso.documentacaoRecebida}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Condições em que Ocorreu Retirada da Família"
             valor={idoso.condicoesEmQueOcorreuRetiradaDoIdosoDaFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Condições de Higiene no Momento do Acolhimento"
             valor={idoso.condicoesDeHigieneNoMomentoDoAcolhimento}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Reações e Comportamentos"
             valor={idoso.reacoesEComportamentos}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Sinais de Violência"
             valor={idoso.sinasDeViolencia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Instituição de Acolhimento Anterior"
             valor={idoso.instituicaoAcolhimentoAnterior}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Data de Entrada no Acolhimento Anterior"
             valor={formatarDataBR(idoso.dataEntradaAcolhimentoAnterior)}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Data de Saída do Acolhimento Anterior"
             valor={formatarDataBR(idoso.dataSaidaAcolhimentoAnterior)}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Motivo do Acolhimento Anterior"
             valor={idoso.motivoAcolhimentoAnterior}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Motivo do Desacolhimento Anterior"
             valor={idoso.motivoDesacolhimentoAnterior}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Encaminhamentos da Família Antes do Acolhimento"
             valor={idoso.encaminhamentosFamiliaAnteriormenteAoAcolhimento}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Observações sobre o Acolhimento"
             valor={idoso.observacoesAcolhimento}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Arranjo Familiar"
             valor={idoso.arranjoFamiliar}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Família Ampliada"
             valor={idoso.familiaAmpliada}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Interessados no Idoso"
             valor={idoso.interessadosNoIdoso}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Família Atendida por Programa Social"
             valor={idoso.familiaAtendidaPorProgramaSocial}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Programa Social da Família"
             valor={idoso.programaSocialDaFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Quem é Atendido no Programa Social da Família"
             valor={idoso.quemEAtendidoNoProgramaSocialDaFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Renda de Atividade Laboral ou Pensão Alimentícia"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Nome"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Idade"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaIdade
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Parentesco"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaParentesco
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Profissão"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaProfisao
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Religião"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaReligiao
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Escolaridade"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaEscolaridade
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Contato"
             valor={
               idoso.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaContato
             }
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Infraestrutura"
             valor={idoso.infraestutura}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Família Atendida por Programa de Saúde"
             valor={idoso.familiaAtendidaPorProgramaSaude}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Serviço de Saúde que Atende a Família"
             valor={idoso.servicoDeSaudeQueAtendeAFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Local do Serviço de Saúde"
             valor={idoso.localServicoDeSaudeQueAtendeAFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Quem é Atendido no Serviço de Saúde"
             valor={idoso.quemServicoDeSaudeQueAtendeAFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Observações sobre o Serviço de Saúde"
             valor={idoso.observacoesServicoDeSaude}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Condições de Habilidade"
             valor={idoso.condicoesDeHabilidade}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Infraestrutura da Comunidade"
             valor={idoso.infraestruturaDeComunidade}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Relação com a Família"
             valor={idoso.relacaoComFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Percepção da Família sobre o Idoso"
             valor={idoso.percepcaoDaFamiliaSobreIdoso}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Percepção do Idoso sobre a Família"
             valor={idoso.percepcaoIdosoSobreFamilia}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Percepção da Equipe Técnica sobre a Relação Familiar"
             valor={idoso.percepcaoEquipeTecnicaSobreRelacaoFamiliar}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Observações sobre a Relação Familiar"
             valor={idoso.observacoesRelacaoFamiliar}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Idoso Recebe Visita"
             valor={idoso.IdosoRecebeVisita}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Comportamentos do Idoso Durante a Visita"
             valor={idoso.comportamentosIdosoDuranteVisita}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Comportamentos dos Familiares Durante a Visita"
             valor={idoso.comportamentosFamiliaresDuranteVisita}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Idoso Tem Irmãos"
             valor={idoso.idosoTemIrmaos}
           />
-          <CampoDetalhesIdoso label="Nome dos Irmãos" valor={idoso.nomeIrmaos} />
-          <CampoDetalhesIdoso
+          <CampoDetalhes label="Nome dos Irmãos" valor={idoso.nomeIrmaos} />
+          <CampoDetalhes
             label="Idade dos Irmãos"
             valor={idoso.idadeIrmaos}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Local dos Irmãos"
             valor={idoso.localIrmaos}
           />
-          <CampoDetalhesIdoso
+          <CampoDetalhes
             label="Parecer da Equipe Técnica"
             valor={idoso.parecerEquipeTecnica}
           />
-          <CampoDetalhesIdoso label="Reavaliação" valor={idoso.reavaliacao} />
+          <CampoDetalhes label="Reavaliação" valor={idoso.reavaliacao} />
         </div>
       </div>
 

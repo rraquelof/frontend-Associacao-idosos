@@ -1,4 +1,4 @@
-export default function CampoDetalhesIdoso({
+export default function CampoDetalhes({
   label,
   valor,
 }: {
