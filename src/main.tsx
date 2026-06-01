@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom"; // Importei o useParams aqui
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom"; 
 import Cadastro from './paginas/Cadastro';
 import Login from './paginas/Login';
 import CadastroIdoso from './paginas/CadastroIdoso';
@@ -13,7 +13,7 @@ import PrivacidadeRoute from './PrivacidadeRoute';
 import ListarRegistroSaudeIdoso from './paginas/ListarRegistroSaudeIdoso';
 import CadastroSaudeIdoso from './paginas/CadastroRegistroSaude';
 import DetalharRegistroSaude from './paginas/DetalharRegistroSaude';
-
+import DeletarRegistroSaude from './paginas/DeletarRegistroSaude';
 import Eventos from './paginas/Eventos';
 import FormularioEvento from './componentes/FormularioEvento/FormularioEvento';
 import DetalharEvento from './paginas/DetalharEvento';
@@ -126,7 +126,7 @@ createRoot(document.getElementById('root')!).render(
       />
 
       <Route
-        path="/saude"
+        path="/lista/registro/saude"
         element={
           <PrivacidadeRoute>
             <ListarRegistroSaudeIdoso />
@@ -163,7 +163,7 @@ createRoot(document.getElementById('root')!).render(
         path="/deletar/registro/saude/:id"
         element={
           <PrivacidadeRoute>
-            <DetalharRegistroSaude />
+            <DeletarRegistroSaude />
           </PrivacidadeRoute>
         }
       />
