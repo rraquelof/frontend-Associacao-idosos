@@ -10,7 +10,7 @@ import ListaIdosos from './paginas/ListarIdosos';
 import DetalharIdoso from './paginas/DetalharIdoso';
 import DeletarIdoso from './paginas/DeletarIdoso';
 import PrivacidadeRoute from './PrivacidadeRoute';
-import ListarRegistroSaudeIdoso from './paginas/ListarRegistroSaudeIdoso';
+import ListarRegistroSaudeIdoso from './paginas/ListarRegistroSaude';
 import CadastroSaudeIdoso from './paginas/CadastroRegistroSaude';
 import DetalharRegistroSaude from './paginas/DetalharRegistroSaude';
 import DeletarRegistroSaude from './paginas/DeletarRegistroSaude';

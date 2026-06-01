@@ -119,7 +119,7 @@ export default function CadastroSaudeIdoso() {
       setTipoMensagem("sucesso");
 
       setTimeout(() => {
-        navegacao("/saude");
+        navegacao("/lista/registro/saude");
       }, 2000);
 
     } catch {
