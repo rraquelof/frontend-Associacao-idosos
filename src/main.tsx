@@ -14,6 +14,7 @@ import ListarRegistroSaudeIdoso from './paginas/ListarRegistroSaude';
 import CadastroSaudeIdoso from './paginas/CadastroRegistroSaude';
 import DetalharRegistroSaude from './paginas/DetalharRegistroSaude';
 import DeletarRegistroSaude from './paginas/DeletarRegistroSaude';
+import AtualizarRegistroSaude from './paginas/AtualizarRegistroSaude';
 import Eventos from './paginas/Eventos';
 import FormularioEvento from './componentes/FormularioEvento/FormularioEvento';
 import DetalharEvento from './paginas/DetalharEvento';
@@ -154,7 +155,7 @@ createRoot(document.getElementById('root')!).render(
         path="/atualizar/registro/saude/:id"
         element={
           <PrivacidadeRoute>
-            <DetalharRegistroSaude />
+            <AtualizarRegistroSaude />
           </PrivacidadeRoute>
         }
       />

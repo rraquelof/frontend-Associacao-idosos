@@ -26,7 +26,7 @@ export default function Menu() {
         <MenuItem
           icon={<img src={saudeIcon} alt="Ícone de Saúde" className="w-full h-full object-contain" />}
           label="Gerenciamento de Saúde"
-          route="/saude" 
+          route="/lista/registro/saude" 
         />
         
       </div>
