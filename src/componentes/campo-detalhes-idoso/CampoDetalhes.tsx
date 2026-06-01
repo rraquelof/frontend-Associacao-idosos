@@ -3,7 +3,7 @@ export default function CampoDetalhes({
   valor,
 }: {
   label: string;
-  valor?: string | Date;
+  valor?: string | Date | number;
 }) {
   if (!valor) return null; 
 

@@ -12,9 +12,10 @@ import DeletarIdoso from './paginas/DeletarIdoso';
 import PrivacidadeRoute from './PrivacidadeRoute';
 import ListarRegistroSaudeIdoso from './paginas/ListarRegistroSaudeIdoso';
 import CadastroSaudeIdoso from './paginas/CadastroRegistroSaude';
+import DetalharRegistroSaude from './paginas/DetalharRegistroSaude';
 
-import Eventos from './paginas/Eventos'; 
-import FormularioEvento from './componentes/FormularioEvento/FormularioEvento'; 
+import Eventos from './paginas/Eventos';
+import FormularioEvento from './componentes/FormularioEvento/FormularioEvento';
 import DetalharEvento from './paginas/DetalharEvento';
 
 function EdicaoEventoWrapper() {
@@ -34,7 +35,7 @@ createRoot(document.getElementById('root')!).render(
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/cadastro" element={<Cadastro />}></Route>
       <Route path="/login" element={<Login />}></Route>
-      
+
       <Route path="/menu"
         element={
           <PrivacidadeRoute>
@@ -124,10 +125,10 @@ createRoot(document.getElementById('root')!).render(
         }
       />
 
-      <Route 
-        path="/saude" 
+      <Route
+        path="/saude"
         element={
-        <PrivacidadeRoute>
+          <PrivacidadeRoute>
             <ListarRegistroSaudeIdoso />
           </PrivacidadeRoute>} />
 
@@ -140,7 +141,34 @@ createRoot(document.getElementById('root')!).render(
         }
       />
 
+      <Route
+        path="/dados/saude/:id"
+        element={
+          <PrivacidadeRoute>
+            <DetalharRegistroSaude />
+          </PrivacidadeRoute>
+        }
+      />
+
+      <Route
+        path="/atualizar/registro/saude/:id"
+        element={
+          <PrivacidadeRoute>
+            <DetalharRegistroSaude />
+          </PrivacidadeRoute>
+        }
+      />
+
+      <Route
+        path="/deletar/registro/saude/:id"
+        element={
+          <PrivacidadeRoute>
+            <DetalharRegistroSaude />
+          </PrivacidadeRoute>
+        }
+      />
+
     </Routes>
 
-  </Router> 
+  </Router>
 );

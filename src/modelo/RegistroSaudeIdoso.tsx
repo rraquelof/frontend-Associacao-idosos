@@ -1,6 +1,9 @@
 export default interface RegistroSaudeIdoso {
   _id: string;
-  usuarioId: string; 
+  usuarioId:  {
+    _id: string;
+    nome: string;
+  };  
   idosoId: {
     _id: string;
     nome: string;

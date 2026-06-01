@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CampoDetalhesIdoso from "../componentes/campo-detalhes-idoso/CampoDetalhes";
-import type RegistroSaudeIdoso from "../modelo/Idoso";
+import CampoDetalhes from "../componentes/campo-detalhes-idoso/CampoDetalhes";
+import type RegistroSaudeIdoso from "../modelo/RegistroSaudeIdoso";
 import Botao from "../componentes/botao/Botao";
-import { ChevronLeftIcon, User } from "lucide-react";
-import { formatarDataBR } from "../formatacao/formatarDataBr";
+import { ChevronLeftIcon } from "lucide-react";
 
 export default function DetalharRegistroSaude() {
     const { id } = useParams();
-    const [idoso, setIdoso] = useState<Idoso | null>(null);
+    const [registroSaude, setRegistroSaude] = useState<RegistroSaudeIdoso | null>(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState<string | null>(null);
     const navegacao = useNavigate();
@@ -18,7 +17,7 @@ export default function DetalharRegistroSaude() {
             try {
                 const token = localStorage.getItem("token");
                 const resposta = await fetch(
-                    `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
+                    `https://api-associacao-idosos.onrender.com/api/saudeIdoso/${id}`,
                     {
                         method: "GET",
                         headers: {
@@ -29,11 +28,11 @@ export default function DetalharRegistroSaude() {
                 );
 
                 if (!resposta.ok) {
-                    throw new Error("Erro ao buscar dados do idoso");
+                    throw new Error("Erro ao buscar dados do registro de saúde");
                 }
 
                 const dados = await resposta.json();
-                setIdoso({ ...dados, id: dados.id ?? dados._id });
+                setRegistroSaude({ ...dados, id: dados.id ?? dados._id });
             } catch (err) {
                 setErro((err as Error).message);
             } finally {
@@ -41,17 +40,78 @@ export default function DetalharRegistroSaude() {
             }
         };
 
-        if (id) buscarIdoso();
+        if (id) buscarRegistro();
     }, [id]);
 
     if (carregando) {
-        return <div className="min-h-screen bg-gray-200 flex justify-center items-center font-medium">Carregando detalhes...</div>;
+        return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">Carregando detalhes...</div>;
     }
 
     if (erro) {
         return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Erro: {erro}</div>;
     }
 
-    if (!idoso) {
-        return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-gray-500 font-bold">Idoso não encontrado.</div>;
+    if (!registroSaude) {
+        return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Registro não encontrado.</div>;
     }
+
+    return (
+        <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
+            <div className="text-black p-6 w-full max-w-4xl flex items-center relative mt-4">
+                <Botao
+                    className="absolute left-0 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100"
+                    onClick={() => navegacao("/saude")}
+                >
+                    <ChevronLeftIcon />
+                </Botao>
+                <h1 className="text-3xl font-bold text-center w-full">
+                    Registro de Saúde
+                </h1>
+            </div>
+            <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl max-h-[60vh] overflow-y-auto flex flex-col mt-16">
+                <div className="p-8 flex flex-wrap gap-6 content-start">
+                    <CampoDetalhes label="Nome do idoso" valor={registroSaude.idosoId?.nome || "Não informado"} />
+                    <CampoDetalhes label="Enfermeiro responsável" valor={registroSaude.usuarioId?.nome || "Não informado"} />
+                    <CampoDetalhes
+                        label="Data do registro"
+                        valor={registroSaude.dataConsulta ? new Date(registroSaude.dataConsulta).toLocaleDateString("pt-BR") : "Não informada"}
+                    />
+                    <CampoDetalhes label="Altura (cm)" valor={registroSaude.altura} />
+                    <CampoDetalhes label="Peso (kg)" valor={registroSaude.peso} />
+                    <CampoDetalhes label="Pressão (mmHg)" valor={registroSaude.pressao} />
+                    <CampoDetalhes label="Glicemia (mg/dL)" valor={registroSaude.glicemia} />
+                    <CampoDetalhes label="Estado Nutricional" valor={registroSaude.estadoNutricional} />
+
+                    <CampoDetalhes
+                        label="Alergias"
+                        valor={Array.isArray(registroSaude.alergias) ? registroSaude.alergias.join(", ") : registroSaude.alergias || "Nenhuma"}
+                    />
+                    <CampoDetalhes
+                        label="Doenças Crônicas"
+                        valor={Array.isArray(registroSaude.doencasCronicas) ? registroSaude.doencasCronicas.join(", ") : registroSaude.doencasCronicas || "Nenhuma"}
+                    />
+                </div>
+            </div>
+
+            <div className="flex flex-wrap justify-center items-center gap-6 mt-8 w-full max-w-4xl px-4">
+                <Botao
+                    texto="Ver dados do idoso"
+                    onClick={() => navegacao(`/dados/idoso/${registroSaude.idosoId?._id}`)}
+                    className="px-8 py-3 bg-emerald-600 text-gray-800 hover:bg-emerald-700 font-semibold shadow-md rounded-xl transition"
+                />
+                <Botao
+                    texto="Atualizar"
+                    variant="update"
+                    onClick={() => navegacao(`/atualizar/registro/saude/${registroSaude._id}`)}
+                    className="px-8 py-3 bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-md rounded-xl transition"
+                />
+                <Botao
+                    texto="Deletar"
+                    variant="delete"
+                    onClick={() => navegacao(`/deletar/registro/saude/${registroSaude._id}`)}
+                    className="px-8 py-3 bg-red-600 text-white hover:bg-red-700 font-semibold shadow-md rounded-xl transition"
+                />
+            </div>
+        </div>
+    );
+}
