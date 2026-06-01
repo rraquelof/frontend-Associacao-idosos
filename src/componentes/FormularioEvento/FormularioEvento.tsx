@@ -2,7 +2,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Botao from "../botao/Botao";
 import Input from "../input/Input";
 import Label from "../label/Label";
-import Textarea from "../Textarea/Textarea";
+import Textarea from "../textarea/Textarea";
 import Mensagem from "../mensagem/Mensagem";
 import ErroCampoObrigatorio from "../erroCampoObrigatorio/ErroCampoObrigatorio";
 import { useNavigate } from "react-router-dom";
@@ -193,24 +193,36 @@ export default function FormularioEvento({ eventoId }: EventoFormProps) {
     ? [Number(formDados.latitude), Number(formDados.longitude)] 
     : [-6.8894, -38.5586];
 
-  return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
-      <div className="text-black p-6 w-full flex items-center relative mt-10">
-        <Botao className="absolute left-6 top-5" onClick={() => navegacao("/eventos")}>
-          <ChevronLeftIcon />
-        </Botao>
-        <h1 className="text-3xl font-bold text-center w-full">
-          {metodo === "POST" ? "Novo Evento" : "Editar Evento"}
-        </h1>
+return (
+    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
+      <div className="w-full max-w-3xl flex items-center justify-between mb-6 mt-4 px-4 relative">
+        <div className="flex items-center gap-4 w-full">
+          <Botao 
+            onClick={() => navegacao("/eventos")} 
+            className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100 absolute left-0"
+          >
+            <ChevronLeftIcon />
+          </Botao>
+          <h1 className="text-3xl font-bold text-black text-center w-full">
+            {metodo === "POST" ? "Novo Evento" : "Editar Evento"}
+          </h1>
+        </div>
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto mt-4 p-8 overflow-hidden">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-8 overflow-hidden">
         {carregando ? (
           <div className="flex justify-center items-center h-40 text-gray-500 font-medium">
             Carregando informações do evento...
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-h-[70vh] overflow-y-auto pr-2">
+
+          <form 
+            onSubmit={handleSubmit} 
+            className="flex flex-col gap-6 max-h-[65vh] overflow-y-auto pr-2"
+          >
+            <h3 className="text-black font-bold text-xl uppercase tracking-wider">
+              Dados do Evento
+            </h3>
             
             <div className="flex flex-col border-b border-gray-100 pb-6 mb-2">
               <Label htmlFor="imagem" texto="Capa do Evento (Opcional)" />
@@ -268,8 +280,12 @@ export default function FormularioEvento({ eventoId }: EventoFormProps) {
               )}
             </div>
 
-            <div className="flex justify-end mt-6">
-              <Botao tipo="submit" texto={textoBotao} className="bg-green-600 text-white hover:bg-green-700" />
+            <div className="flex justify-end pt-4">
+              <Botao 
+                tipo="submit" 
+                texto={textoBotao} 
+                className="bg-green-600 text-white hover:bg-green-700 ml-auto" 
+              />
             </div>
 
             {mensagem && (

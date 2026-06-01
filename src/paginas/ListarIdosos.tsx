@@ -47,32 +47,34 @@ export default function ListaIdosos() {
 }, []);
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
-      <div className="text-black p-6 w-full flex items-center relative">
-        <Botao
-          className="absolute left-0 top-3"
-          onClick={() => navegacao("/menu")}
-        >
-          <ChevronLeftIcon />
-        </Botao>
-        <h1 className="text-3xl font-bold text-center w-full">
-          Idosos
-        </h1>
+   <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
+      <div className="w-full max-w-5xl flex items-center justify-between mb-8 mt-10">
+        <div className="flex items-center gap-4">
+          <Botao onClick={() => navegacao("/menu")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
+            <ChevronLeftIcon />
+          </Botao>
+          <h1 className="text-3xl font-bold text-black">Gerenciamento dos Idosos</h1>
+        </div>
+        <Botao 
+          onClick={() => navegacao("/cadastro/idoso")}
+          texto="+ Novo Idoso"
+          className="bg-blue-600 text-white hover:bg-blue-700"
+        />
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6">
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-6">
         <div className="h-[60vh] overflow-y-auto">
           {idosos.map((idoso) => (
             <div
-              key={idoso.id}
+              key={idoso._id}
               className="flex justify-between text-black items-center border-b py-2 px-2"
             >
               <span>{idoso.nome}</span>
               
                 <Botao
                   texto="Ver dados"
-                  className="bg-gray-400 text-white hover:bg-gray-500"
-                  onClick={() => navegacao(`/dados/idoso/${idoso.id}`)}
+                  className="bg-blue-300 text-white hover:bg-blue-500"
+                  onClick={() => navegacao(`/dados/idoso/${idoso._id}`)}
                 />
             </div>
           ))}
@@ -87,14 +89,6 @@ export default function ListaIdosos() {
             </p>
           )}
         </div>
-      </div>
-
-      <div className="mt-8">
-        <Botao
-          texto="Cadastrar novo idoso"
-          variant="gray"
-          onClick={() => navegacao(`/cadastro/idoso/`)}
-        />
       </div>
     </div>
   );

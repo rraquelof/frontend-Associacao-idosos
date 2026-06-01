@@ -12,7 +12,7 @@ export default function AtualizarIdoso() {
       const token = localStorage.getItem("token");
 
     const resposta = await fetch(
-      `https://api-associacao-idosos.onrender.com//api/idoso/${id}`,
+      `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export default function AtualizarIdoso() {
 
   if (!dados)
     return (
-      <p className="text-center text-sm mt-2 text-gray-700">
+      <p className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">
         Carregando dados...
       </p>
     );

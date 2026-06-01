@@ -1,5 +1,5 @@
 export default interface Idoso {
-  id: string
+  _id: string
   nome: string;
   cpf: string;
   rg: string;

@@ -45,7 +45,7 @@ export default function DetalharIdoso() {
   }, [id]);
 
   if (carregando) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center font-medium">Carregando detalhes...</div>;
+    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">Carregando detalhes...</div>;
   }
 
   if (erro) {
@@ -53,7 +53,7 @@ export default function DetalharIdoso() {
   }
 
   if (!idoso) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-gray-500 font-bold">Idoso não encontrado.</div>;
+    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Idoso não encontrado.</div>;
   }
 
   const obterUrlImagem = (caminhoImagem?: string) => {
@@ -67,7 +67,7 @@ export default function DetalharIdoso() {
     <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
       <div className="text-black p-6 w-full max-w-4xl flex items-center relative mt-4">
         <Botao
-          className="absolute left-6 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100"
+          className="absolute left-0 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100"
           onClick={() => navegacao("/lista/idosos")}
         >
           <ChevronLeftIcon />
@@ -369,14 +369,14 @@ export default function DetalharIdoso() {
         <Botao
           texto="Atualizar"
           variant="update"
-          onClick={() => navegacao(`/atualizar/idoso/${idoso.id}`)}
-          className="px-8 py-3"
+          onClick={() => navegacao(`/atualizar/idoso/${idoso._id}`)}
+          className="px-8 py-3 bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-md rounded-xl transition"
         />
         <Botao
           texto="Deletar"
           variant="delete"
-          onClick={() => navegacao(`/deletar/idoso/${idoso.id}`)}
-          className="px-8 py-3 bg-red-600 text-white hover:bg-red-700"
+          onClick={() => navegacao(`/deletar/idoso/${idoso._id}`)}
+          className="px-8 py-3 bg-red-600 text-white hover:bg-red-700 font-semibold shadow-md rounded-xl transition"
         />
       </div>
     </div>

@@ -60,7 +60,7 @@ export default function DetalharRegistroSaude() {
             <div className="text-black p-6 w-full max-w-4xl flex items-center relative mt-4">
                 <Botao
                     className="absolute left-0 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100"
-                    onClick={() => navegacao("/saude")}
+                    onClick={() => navegacao("/lista/registro/saude")}
                 >
                     <ChevronLeftIcon />
                 </Botao>

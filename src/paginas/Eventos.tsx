@@ -268,7 +268,7 @@ export default function Eventos() {
                 ))
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-500 text-lg">Não hay eventos marcados para este dia.</p>
+                  <p className="text-gray-500 text-lg">Não há eventos marcados para este dia.</p>
                 </div>
               )}
             </div>
