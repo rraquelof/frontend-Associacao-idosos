@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import FormularioRegistroSaude from "../componentes/formularioRegistroSaude/FormularioRegistroSaude";
+import FormularioRegistroSaude from "../../componentes/formularioRegistroSaude/FormularioRegistroSaude";
 import { useParams } from "react-router-dom";
-import type RegistroSaudeIdoso from "../modelo/RegistroSaudeIdoso";
+import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
 
 export default function AtualizarRegistroSaude() {
   const { id } = useParams();

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CampoDetalhes from "../componentes/campo-detalhes-idoso/CampoDetalhes";
-import type RegistroSaudeIdoso from "../modelo/RegistroSaudeIdoso";
-import Botao from "../componentes/botao/Botao";
+import CampoDetalhes from "../../componentes/campo-detalhes-idoso/CampoDetalhes";
+import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
+import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
 
 export default function DetalharRegistroSaude() {

@@ -1,4 +1,4 @@
-import FormularioIdoso from "../componentes/FormularioIdoso";
+import FormularioIdoso from "../../componentes/formularioIdoso/FormularioIdoso";
 
 export default function CadastroIdoso() {
   return (

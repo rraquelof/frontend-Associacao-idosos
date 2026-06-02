@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
-import Botao from "../componentes/botao/Botao";
-import Mensagem from "../componentes/mensagem/Mensagem";
+import Botao from "../../componentes/botao/Botao";
+import Mensagem from "../../componentes/mensagem/Mensagem";
 import { useState } from "react";
 
-export default function DeletarIdoso() {
+export default function DeletarRegistroSaude() {
   const { id } = useParams<{ id: string }>();
   const navegacao = useNavigate();
 
@@ -12,11 +12,11 @@ export default function DeletarIdoso() {
     "sucesso" | "erro" | "informacao"
   >("informacao");
 
-  async function deletarIdoso(id: string) {
+  async function deletarRegistroSaude(id: string) {
     const token = localStorage.getItem("token");
 
     const resposta = await fetch(
-      `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
+      `https://api-associacao-idosos.onrender.com/api/saudeIdoso/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -28,7 +28,7 @@ export default function DeletarIdoso() {
 
     if (!resposta.ok) {
       const dados = await resposta.json();
-      setMensagem(dados.message || "Erro ao deletar idoso");
+      setMensagem(dados.message || "Erro ao deletar registro de saúde");
       setTipoMensagem("erro");
     }
   }
@@ -40,19 +40,19 @@ export default function DeletarIdoso() {
       return;
     }
 
-    setMensagem("Excluindo idoso...");
+    setMensagem("Excluindo registro de saúde...");
     setTipoMensagem("informacao");
 
     try {
-      await deletarIdoso(id);
-      setMensagem("Idoso excluído com sucesso!");
+      await deletarRegistroSaude(id);
+      setMensagem("Registro de saúde excluído com sucesso!");
       setTipoMensagem("sucesso");
 
       setTimeout(() => {
-        navegacao("/lista/idosos");
+        navegacao("/lista/registro/saude");
       }, 2000);
     } catch {
-      setMensagem("Erro ao excluir idoso.");
+      setMensagem("Erro ao excluir registro de saúde.");
       setTipoMensagem("erro");
     }
   }
@@ -64,7 +64,7 @@ export default function DeletarIdoso() {
           Confirmar Exclusão
         </h1>
         <p className="text-black mb-6">
-          Tem certeza que deseja excluir este idoso?
+          Tem certeza que deseja excluir este registro de saúde?
         </p>
 
         <div className="flex gap-4 justify-center">
@@ -77,7 +77,7 @@ export default function DeletarIdoso() {
 
           <Botao
             tipo="button"
-            onClick={() => navegacao("/lista/idosos")}
+            onClick={() => navegacao("/lista/registro/saude")}
             texto="Cancelar"
             className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500"
           />

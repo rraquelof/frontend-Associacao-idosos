@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CampoDetalhes from "../componentes/campo-detalhes-idoso/CampoDetalhes";
-import type Idoso from "../modelo/Idoso";
-import Botao from "../componentes/botao/Botao";
+import CampoDetalhes from "../../componentes/campo-detalhes-idoso/CampoDetalhes";
+import type Idoso from "../../modelo/Idoso";
+import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon, User } from "lucide-react";
-import { formatarDataBR } from "../formatacao/formatarDataBr";
+import { formatarDataBR } from "../../formatacao/formatarDataBr";
 
 export default function DetalharIdoso() {
   const { id } = useParams();

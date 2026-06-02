@@ -1,16 +1,16 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import Botao from "./botao/Botao";
-import Input from "./input/Input";
-import Label from "./label/Label";
-import Select from "./select/Select";
-import Option from "./option/Option";
-import Textarea from "./textarea/Textarea";
-import Campos from "./campos/Campos";
-import type Idoso from "../modelo/Idoso";
-import { formatarData } from "../formatacao/formatarData";
-import Mensagem from "./mensagem/Mensagem";
+import Botao from "../botao/Botao";
+import Input from "../input/Input";
+import Label from "../label/Label";
+import Select from "../select/Select";
+import Option from "../option/Option";
+import Textarea from "../textarea/Textarea";
+import Campos from "../campos/Campos";
+import type Idoso from "../../modelo/Idoso";
+import { formatarData } from "../../formatacao/formatarData";
+import Mensagem from "../mensagem/Mensagem";
 import { useNavigate } from "react-router-dom";
-import ErroCampoObrigatorio from "./erroCampoObrigatorio/ErroCampoObrigatorio";
+import ErroCampoObrigatorio from "../erroCampoObrigatorio/ErroCampoObrigatorio";
 import { ChevronLeftIcon } from "lucide-react";
 
 interface IdosoFormProps {

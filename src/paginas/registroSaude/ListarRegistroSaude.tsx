@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type RegistroSaudeIdoso from "../modelo/RegistroSaudeIdoso";
+import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
 import { useNavigate } from "react-router-dom";
-import Botao from "../componentes/botao/Botao";
+import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
 
 export default function ListarRegistroSaudeIdoso() {
@@ -45,15 +45,15 @@ export default function ListarRegistroSaudeIdoso() {
 
   const datasDoIdosoSelecionado = registrosSaude
     .filter((registro) => registro.idosoId?._id === idosoSelecionado?._id)
-   
+
     .sort((a, b) => {
       const dataA = a.dataConsulta ? new Date(a.dataConsulta).getTime() : 0;
       const dataB = b.dataConsulta ? new Date(b.dataConsulta).getTime() : 0;
-      return dataB - dataA; 
+      return dataB - dataA;
     })
-   
+
     .filter((registro) => {
-      if (!dataPesquisa) return true; 
+      if (!dataPesquisa) return true;
       if (!registro.dataConsulta) return false;
 
       const dataRegistroFormatoInput = new Date(registro.dataConsulta).toISOString().split("T")[0];
@@ -70,7 +70,7 @@ export default function ListarRegistroSaudeIdoso() {
           </Botao>
           <h1 className="text-3xl font-bold text-black">Gerenciamento dos Registros de Saúde dos Idosos</h1>
         </div>
-        <Botao 
+        <Botao
           onClick={() => navegacao("/registro/saude")}
           texto="+ Novo Registro"
           className="bg-blue-600 text-white hover:bg-blue-700"
@@ -87,14 +87,14 @@ export default function ListarRegistroSaudeIdoso() {
               <span className="text-lg font-medium">
                 {registro.idosoId?.nome || "Idoso não identificado"}
               </span>
-              
+
               <Botao
                 texto="Ver dados"
                 className="bg-blue-300 text-white hover:bg-blue-500"
                 onClick={() => {
                   if (registro.idosoId) {
                     setIdosoSelecionado({ _id: registro.idosoId._id, nome: registro.idosoId.nome });
-                    setDataPesquisa(""); 
+                    setDataPesquisa("");
                   }
                 }}
               />
@@ -152,14 +152,14 @@ export default function ListarRegistroSaudeIdoso() {
                 </p>
               ) : (
                 datasDoIdosoSelecionado.map((reg) => (
-                  <div 
-                    key={reg._id} 
+                  <div
+                    key={reg._id}
                     className="flex justify-between items-center bg-gray-100 p-3 rounded-xl border border-gray-200"
                   >
                     <span className="text-gray-800 font-medium">
                       📅 {reg.dataConsulta ? new Date(reg.dataConsulta).toLocaleDateString("pt-BR") : "Data indisponível"}
                     </span>
-                    
+
                     <Botao
                       texto="Detalhes do registro"
                       onClick={() => navegacao(`/dados/saude/${reg._id}`)}

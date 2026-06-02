@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Botao from "../componentes/botao/Botao";
+import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon, CalendarDays, MapPin, Users, Plus, X, Trash2 } from "lucide-react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";

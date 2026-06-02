@@ -1,4 +1,4 @@
-import FormularioRegistroSaude from "../componentes/formularioRegistroSaude/FormularioRegistroSaude";
+import FormularioRegistroSaude from "../../componentes/formularioRegistroSaude/FormularioRegistroSaude";
 
 export default function CadastroSaudeIdoso() {
   return (
