@@ -9,7 +9,7 @@ export default function ListarVisitas() {
   const [mensagem, setMensagem] = useState("");
   const navegacao = useNavigate();
   const localizacao = useLocation();
-  const [idosoSelecionado, setIdosoSelecionado] = useState<{
+  const [visitaSelecionada, setVisitaSelecionada] = useState<{
     _id: string;
     nome: string;
   } | null>(null);
@@ -44,7 +44,7 @@ export default function ListarVisitas() {
 
   const idososUnicos = visitas.filter(
     (visita, index, self) =>
-      index === self.findIndex((v) => v.nome === visita.nome)
+      index === self.findIndex((v) => v.nome === visita.nome),
   );
 
   return (
@@ -83,7 +83,7 @@ export default function ListarVisitas() {
                 texto="Ver dados"
                 className="bg-blue-300 text-white hover:bg-blue-500"
                 onClick={() => {
-                  setIdosoSelecionado({
+                  setVisitaSelecionada({
                     _id: visita._id || "",
                     nome: visita.nome,
                   });
@@ -104,23 +104,33 @@ export default function ListarVisitas() {
         </div>
       </div>
 
-      {idosoSelecionado && (
+      {visitaSelecionada && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-2xl text-black">
             <h2 className="text-xl font-bold mb-4">Dados da Visita</h2>
             <div className="flex flex-col gap-4 mb-6">
               <div>
-                <p className="text-gray-600 text-sm font-semibold">Idoso:</p>
-                <p className="text-lg text-black">{idosoSelecionado.nome}</p>
+                <p className="text-gray-600 text-sm font-semibold">
+                  Visitante:
+                </p>
+                <p className="text-lg text-black">{visitaSelecionada.nome}</p>
               </div>
               <div>
-                <p className="text-gray-600 text-sm font-semibold">Data:</p>
+                <p className="text-gray-600 text-sm font-semibold">
+                  Data e Hora:
+                </p>
                 <p className="text-lg text-black">
-                  {visitas.find((v) => v._id === idosoSelecionado._id)?.data
+                  {visitas.find((v) => v._id === visitaSelecionada._id)?.data
                     ? new Date(
-                        visitas.find((v) => v._id === idosoSelecionado._id)
+                        visitas.find((v) => v._id === visitaSelecionada._id)
                           ?.data || "",
-                      ).toLocaleDateString("pt-BR")
+                      ).toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                     : "Data indisponível"}
                 </p>
               </div>
@@ -130,21 +140,21 @@ export default function ListarVisitas() {
               <Botao
                 texto="Editar"
                 onClick={() =>
-                  navegacao(`/atualizar/visita/${idosoSelecionado._id}`)
+                  navegacao(`/atualizar/visita/${visitaSelecionada._id}`)
                 }
                 className="bg-yellow-500 text-white hover:bg-yellow-600 text-sm py-2 px-3 rounded-md font-medium shadow-sm transition flex-1"
               />
               <Botao
                 texto="Deletar"
                 onClick={() =>
-                  navegacao(`/deletar/visita/${idosoSelecionado._id}`)
+                  navegacao(`/deletar/visita/${visitaSelecionada._id}`)
                 }
                 className="bg-red-500 text-white hover:bg-red-600 text-sm py-2 px-3 rounded-md font-medium shadow-sm transition flex-1"
               />
             </div>
 
             <Botao
-              onClick={() => setIdosoSelecionado(null)}
+              onClick={() => setVisitaSelecionada(null)}
               texto="Fechar"
               className="mt-4 w-full bg-gray-500 text-white font-bold py-2 rounded-xl hover:bg-gray-600 transition"
             />

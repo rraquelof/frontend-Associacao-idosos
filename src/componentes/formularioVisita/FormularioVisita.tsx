@@ -2,18 +2,11 @@ import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../input/Input";
 import Botao from "../botao/Botao";
-import Select from "../select/Select";
 import Label from "../label/Label";
-import Option from "../option/Option";
 import Mensagem from "../mensagem/Mensagem";
 import ErroCampoObrigatorio from "../erroCampoObrigatorio/ErroCampoObrigatorio";
 import { ChevronLeftIcon } from "lucide-react";
 import type Visita from "../../modelo/Visita";
-
-interface IdosoSimplificado {
-  _id: string;
-  nome: string;
-}
 
 interface FormularioProps {
   endpoint: string;
@@ -32,7 +25,6 @@ export default function FormularioVisita({
 }: FormularioProps) {
   const navegacao = useNavigate();
 
-  const [listaIdosos, setListaIdosos] = useState<IdosoSimplificado[]>([]);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<
     "sucesso" | "erro" | "informacao"
@@ -40,40 +32,13 @@ export default function FormularioVisita({
   const [enviarVazio, setEnviarVazio] = useState(false);
 
   const [formData, setFormData] = useState({
-    idosoId: "",
     dataVisita: "",
     nome: "",
   });
 
   useEffect(() => {
-    const carregarListaIdosos = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
-
-        const respIdosos = await fetch(
-          "https://api-associacao-idosos.onrender.com/api/idosos",
-          { headers },
-        );
-        if (respIdosos.ok) {
-          const dados = await respIdosos.json();
-          setListaIdosos(
-            dados.map((i: any) => ({ _id: i._id || i.id, nome: i.nome })),
-          );
-        }
-      } catch {
-        setMensagem("Erro ao carregar a lista de idosos.");
-        setTipoMensagem("erro");
-      }
-    };
-
-    carregarListaIdosos();
-  }, []);
-
-  useEffect(() => {
     if (dadosIniciais) {
       setFormData({
-        idosoId: "",
         dataVisita: dadosIniciais.data
           ? formatarDataParaInputLocal(dadosIniciais.data)
           : "",
@@ -81,15 +46,6 @@ export default function FormularioVisita({
       });
     }
   }, [dadosIniciais]);
-
-  useEffect(() => {
-    if (formData.idosoId) {
-      const idoso = listaIdosos.find((i) => i._id === formData.idosoId);
-      if (idoso) {
-        setFormData((prev) => ({ ...prev, nome: idoso.nome }));
-      }
-    }
-  }, [formData.idosoId, listaIdosos]);
 
   const formatarDataParaInputLocal = (dataBanco: string) => {
     if (!dataBanco) return "";
@@ -109,7 +65,7 @@ export default function FormularioVisita({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!formData.idosoId || !formData.dataVisita) {
+    if (!formData.dataVisita || !formData.nome) {
       setEnviarVazio(true);
       setMensagem("Por favor, preencha todos os campos obrigatórios.");
       setTipoMensagem("erro");
@@ -130,7 +86,6 @@ export default function FormularioVisita({
           ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
-          idosoId: formData.idosoId,
           data: new Date(formData.dataVisita).toISOString(),
           nome: formData.nome,
         }),
@@ -189,24 +144,21 @@ export default function FormularioVisita({
           </h3>
 
           <div className="flex flex-col">
-            <Label htmlFor="idosoId" texto="Idoso a Visitar *" />
+            <Label htmlFor="nome" texto="Nome do Visitante *" />
             <ErroCampoObrigatorio
-              valor={formData.idosoId}
+              valor={formData.nome}
               obrigatorio
               envioVazio={enviarVazio}
             >
-              <Select
-                id="idosoId"
-                name="idosoId"
-                value={formData.idosoId}
+              <Input
+                type="text"
+                id="nome"
+                name="nome"
+                value={formData.nome}
                 onChange={handleChange}
+                placeholder="Digite o nome do visitante"
                 required
-              >
-                <Option value="" texto="Selecione o Idoso" />
-                {listaIdosos.map((i) => (
-                  <Option key={i._id} value={i._id} texto={i.nome} />
-                ))}
-              </Select>
+              />
             </ErroCampoObrigatorio>
           </div>
 

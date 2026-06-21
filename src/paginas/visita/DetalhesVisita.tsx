@@ -98,10 +98,10 @@ export default function DetalhesVisita() {
             <div className="grid grid-cols-1 gap-4">
               <div className="flex flex-col">
                 <span className="text-gray-600 text-sm font-semibold">
-                  Idoso
+                  Visitante
                 </span>
                 <span className="text-black text-lg font-medium">
-                  {visita.idosoId?.nome || "N/A"}
+                  {visita.nome || "N/A"}
                 </span>
               </div>
 
