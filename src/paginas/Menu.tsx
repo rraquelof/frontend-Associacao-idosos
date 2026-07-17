@@ -3,6 +3,7 @@ import idososIcon from "../img/idosos.png";
 import eventosIcon from "../img/eventos.png";
 import saudeIcon from "../img/saude.png";
 import visitaIcon from "../img/visita.png";
+import { UserRound } from "lucide-react";
 
 export default function Menu() {
   return (
@@ -57,6 +58,17 @@ export default function Menu() {
           }
           label="Gerenciamento de Visitas"
           route="/lista/visitas"
+        />
+
+        <MenuItem
+          icon={
+            <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+              <span className="font-bold text-black">Perfil</span>
+              <UserRound className="w-14 h-14 text-black" />
+            </div>
+          }
+          label="Meu Perfil"
+          route="/perfil"
         />
       </div>
     </div>
