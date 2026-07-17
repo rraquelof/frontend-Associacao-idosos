@@ -29,6 +29,7 @@ import CadastroVisita from "./paginas/visita/CadastroVisita";
 import AtualizarVisita from "./paginas/visita/AtualizarVisita";
 import DeletarVisita from "./paginas/visita/DeletarVisita";
 import DetalhesVisita from "./paginas/visita/DetalhesVisita";
+import Perfil from "./paginas/usuario/Perfil";
 
 function EdicaoEventoWrapper() {
   const { id } = useParams();
@@ -224,6 +225,15 @@ createRoot(document.getElementById("root")!).render(
         element={
           <PrivacidadeRoute>
             <DetalhesVisita />
+          </PrivacidadeRoute>
+        }
+      />
+
+      <Route
+        path="/perfil"
+        element={
+          <PrivacidadeRoute>
+            <Perfil />
           </PrivacidadeRoute>
         }
       />
