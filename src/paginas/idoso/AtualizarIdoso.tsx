@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
-import FormularioIdoso from "../componentes/FormularioIdoso";
+import FormularioIdoso from "../../componentes/formularioIdoso/FormularioIdoso";
 import { useParams } from "react-router-dom";
-import type Idoso from "../modelo/Idoso";
+import type Idoso from "../../modelo/Idoso";
 
 export default function AtualizarIdoso() {
   const { id } = useParams();
-   const [dados, setDados] = useState<Idoso | null>(null);
+  const [dados, setDados] = useState<Idoso | null>(null);
 
   useEffect(() => {
     async function carregarIdoso() {
       const token = localStorage.getItem("token");
 
-    const resposta = await fetch(
-      `https://api-associacao-idosos.onrender.com//api/idoso/${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      }
-    );
-       const dados = await resposta.json();
+      const resposta = await fetch(
+        `https://api-associacao-idosos.onrender.com/api/idoso/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+        }
+      );
+      const dados = await resposta.json();
       setDados({ ...dados, id: dados.id ?? dados._id });
     }
     carregarIdoso();
@@ -28,7 +28,7 @@ export default function AtualizarIdoso() {
 
   if (!dados)
     return (
-      <p className="text-center text-sm mt-2 text-gray-700">
+      <p className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">
         Carregando dados...
       </p>
     );

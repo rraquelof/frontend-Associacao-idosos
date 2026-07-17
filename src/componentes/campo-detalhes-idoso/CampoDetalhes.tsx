@@ -1,9 +1,9 @@
-export default function CampoDetalhesIdoso({
+export default function CampoDetalhes({
   label,
   valor,
 }: {
   label: string;
-  valor?: string | Date;
+  valor?: string | Date | number;
 }) {
   if (!valor) return null; 
 

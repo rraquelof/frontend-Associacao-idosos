@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import CampoDetalhesIdoso from "./CampoDetalhesIdoso";
+import CampoDetalhesIdoso from "./CampoDetalhes";
 
 const meta: Meta<typeof CampoDetalhesIdoso> = {
   title: "Componentes/CampoDetalhesIdoso",
