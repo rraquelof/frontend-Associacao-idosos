@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import FormularioVisita from "../../componentes/formularioVisita/FormularioVisita";
 import type Visita from "../../modelo/Visita";
+import Layout from "../../componentes/layout/Layout";
 
 export default function AtualizarVisita() {
   const { id } = useParams();
@@ -37,9 +38,11 @@ export default function AtualizarVisita() {
 
   if (carregando) {
     return (
-      <div className="w-screen min-h-screen bg-gray-200 flex items-center justify-center">
+      <Layout>
+      <div className="w-full flex items-center justify-center py-24">
         <p className="text-gray-700 font-medium">Carregando visita...</p>
       </div>
+      </Layout>
     );
   }
 

@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import type Visita from "../../modelo/Visita";
 import { useNavigate, useLocation } from "react-router-dom";
 import Botao from "../../componentes/botao/Botao";
-import { ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon, UserCheck, Loader2 } from "lucide-react";
+import Layout from "../../componentes/layout/Layout";
+import visitaIcon from "../../img/visita.png";
 
 export default function ListarVisitas() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
   const [mensagem, setMensagem] = useState("");
+  const [carregando, setCarregando] = useState(true);
   const navegacao = useNavigate();
   const localizacao = useLocation();
   const [visitaSelecionada, setVisitaSelecionada] = useState<{
@@ -36,6 +39,8 @@ export default function ListarVisitas() {
         setVisitas(dadosVisitas);
       } catch {
         setMensagem("Falha ao carregar os dados de visitas");
+      } finally {
+        setCarregando(false);
       }
     };
 
@@ -48,8 +53,9 @@ export default function ListarVisitas() {
   );
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
-      <div className="w-full max-w-5xl flex items-center justify-between mb-8 mt-10">
+    <Layout>
+    <div className="w-full flex flex-col items-center p-4 sm:p-8 relative">
+      <div className="w-full max-w-5xl flex flex-wrap items-center justify-between gap-4 mb-8 mt-6 sm:mt-10">
         <div className="flex items-center gap-4">
           <Botao
             onClick={() => navegacao("/menu")}
@@ -57,49 +63,72 @@ export default function ListarVisitas() {
           >
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black">
-            Gerenciamento de Visitas
-          </h1>
+          <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
+            <img src={visitaIcon} alt="" className="w-8 h-8 object-contain" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-800">
+              Gerenciamento de Visitas
+            </h1>
+            <p className="text-gray-500 text-sm mt-0.5">Entrada, autorização e histórico de visitantes</p>
+          </div>
         </div>
         <Botao
           onClick={() => navegacao("/cadastro/visita")}
           texto="+ Nova Visita"
-          className="bg-blue-600 text-white hover:bg-blue-700"
+          className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500 text-white rounded-full shadow-md hover:shadow-lg transition-all font-semibold"
         />
       </div>
 
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-6">
-        <div className="h-[60vh] overflow-y-auto">
-          {idososUnicos.map((visita) => (
-            <div
-              key={visita._id}
-              className="flex justify-between text-black items-center border-b py-4 px-2 last:border-0"
-            >
-              <span className="text-lg font-medium">
-                {visita.nome || "Visita não identificada"}
-              </span>
-
-              <Botao
-                texto="Ver dados"
-                className="bg-blue-300 text-white hover:bg-blue-500"
-                onClick={() => {
-                  setVisitaSelecionada({
-                    _id: visita._id || "",
-                    nome: visita.nome,
-                  });
-                }}
-              />
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-4 sm:p-6">
+        <div className={`overflow-y-auto ${idososUnicos.length > 0 ? "h-[60vh]" : ""}`}>
+          {carregando ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-orange-400 animate-spin" />
+              </div>
+              <p className="text-gray-500 font-medium">Carregando visitas...</p>
             </div>
-          ))}
+          ) : (
+            <>
+              {idososUnicos.map((visita) => (
+                <div
+                  key={visita._id}
+                  className="flex flex-wrap gap-2 justify-between text-black items-center border-b py-4 px-2 last:border-0"
+                >
+                  <span className="text-lg font-medium break-words">
+                    {visita.nome || "Visita não identificada"}
+                  </span>
 
-          {mensagem && (
-            <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
-          )}
+                  <Botao
+                    texto="Ver dados"
+                    className="bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={() => {
+                      setVisitaSelecionada({
+                        _id: visita._id || "",
+                        nome: visita.nome,
+                      });
+                    }}
+                  />
+                </div>
+              ))}
 
-          {visitas.length === 0 && !mensagem && (
-            <p className="text-gray-500 text-center py-4">
-              Nenhuma visita cadastrada.
-            </p>
+              {mensagem && (
+                <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
+              )}
+
+              {visitas.length === 0 && !mensagem && (
+                <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                  <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center">
+                    <UserCheck className="w-8 h-8 text-orange-400" />
+                  </div>
+                  <p className="text-gray-600 font-medium">Nenhuma visita cadastrada</p>
+                  <p className="text-gray-400 text-sm -mt-2">
+                    Clique em "+ Nova Visita" para registrar a primeira.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -162,5 +191,6 @@ export default function ListarVisitas() {
         </div>
       )}
     </div>
+    </Layout>
   );
 }

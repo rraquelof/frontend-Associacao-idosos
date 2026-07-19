@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import type Visita from "../../modelo/Visita";
 import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
+import Layout from "../../componentes/layout/Layout";
 
 export default function DetalhesVisita() {
   const { id } = useParams();
@@ -42,15 +43,18 @@ export default function DetalhesVisita() {
 
   if (carregando) {
     return (
-      <div className="w-screen min-h-screen bg-gray-200 flex items-center justify-center">
+      <Layout>
+      <div className="w-full flex items-center justify-center py-24">
         <p className="text-gray-700 font-medium">Carregando visita...</p>
       </div>
+      </Layout>
     );
   }
 
   if (!visita) {
     return (
-      <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center justify-center gap-4">
+      <Layout>
+      <div className="w-full flex flex-col items-center justify-center gap-4 p-4 py-24">
         <p className="text-gray-700 font-medium">
           {mensagem || "Visita não encontrada."}
         </p>
@@ -60,6 +64,7 @@ export default function DetalhesVisita() {
           className="bg-blue-600 text-white hover:bg-blue-700"
         />
       </div>
+      </Layout>
     );
   }
 
@@ -75,8 +80,9 @@ export default function DetalhesVisita() {
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8">
-      <div className="w-full max-w-3xl flex items-center justify-between mb-8 mt-10">
+    <Layout>
+    <div className="w-full flex flex-col items-center p-4 sm:p-8">
+      <div className="w-full max-w-3xl flex items-center justify-between mb-8 mt-6 sm:mt-10">
         <div className="flex items-center gap-4">
           <Botao
             onClick={() => navegacao("/lista/visitas")}
@@ -84,14 +90,14 @@ export default function DetalhesVisita() {
           >
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black">Detalhes da Visita</h1>
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Detalhes da Visita</h1>
         </div>
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-4 sm:p-8">
         <div className="space-y-6">
           <div className="border-b pb-4">
-            <h3 className="text-black font-bold text-xl uppercase tracking-wider mb-4">
+            <h3 className="text-blue-800 font-bold text-xl uppercase tracking-wider mb-4">
               Informações da Visita
             </h3>
 
@@ -131,25 +137,26 @@ export default function DetalhesVisita() {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Botao
               onClick={() => navegacao(`/atualizar/visita/${id}`)}
               texto="Editar"
-              className="bg-yellow-500 text-white hover:bg-yellow-600 flex-1"
+              className="bg-yellow-500 text-white hover:bg-yellow-600 flex-1 min-w-[100px]"
             />
             <Botao
               onClick={() => navegacao(`/deletar/visita/${id}`)}
               texto="Deletar"
-              className="bg-red-500 text-white hover:bg-red-600 flex-1"
+              className="bg-red-500 text-white hover:bg-red-600 flex-1 min-w-[100px]"
             />
             <Botao
               onClick={() => navegacao("/lista/visitas")}
               texto="Voltar"
-              className="bg-gray-400 text-white hover:bg-gray-500 flex-1"
+              className="bg-gray-400 text-white hover:bg-gray-500 flex-1 min-w-[100px]"
             />
           </div>
         </div>
       </div>
     </div>
+    </Layout>
   );
 }
