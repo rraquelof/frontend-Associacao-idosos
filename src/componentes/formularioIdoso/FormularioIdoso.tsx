@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import Botao from "../botao/Botao";
 import Input from "../input/Input";
 import Label from "../label/Label";
@@ -12,6 +12,120 @@ import Mensagem from "../mensagem/Mensagem";
 import { useNavigate } from "react-router-dom";
 import ErroCampoObrigatorio from "../erroCampoObrigatorio/ErroCampoObrigatorio";
 import { ChevronLeftIcon } from "lucide-react";
+import Layout from "../layout/Layout";
+
+// Traduz o "path" que o backend retorna (validação com Zod) para o rótulo
+// visível no formulário, para mostrar exatamente qual campo falhou.
+const ROTULOS_CAMPOS_IDOSO: Record<string, string> = {
+  nome: "Nome",
+  cpf: "CPF",
+  rg: "RG",
+  sus: "Cartão SUS",
+  dataNascimento: "Data de nascimento",
+  sexo: "Sexo",
+  nacionalidade: "Nacionalidade",
+  naturalidade: "Naturalidade",
+  dataEmissaoRg: "Data de emissão do RG",
+  orgaoEmissorRg: "Órgão emissor do RG",
+  dataAcolhimento: "Data de acolhimento",
+  dataEntradaAcolhimentoAnterior: "Data de entrada no acolhimento anterior",
+  dataSaidaAcolhimentoAnterior: "Data de saída do acolhimento anterior",
+};
+
+// O Zod (biblioteca de validação do backend) manda mensagens padrão em
+// inglês quando o campo nem foi enviado ("Invalid input: expected string,
+// received undefined") ou quando o valor não é uma das opções aceitas
+// ("Invalid option: expected one of..."). Aqui a gente traduz esses casos
+// genéricos; mensagens específicas (como a de formato de CPF/RG/SUS) já
+// vêm em português direto do backend e passam sem alteração.
+function traduzirMensagemErro(mensagem: string): string {
+  if (/expected .* received undefined/i.test(mensagem)) {
+    return "Campo obrigatório";
+  }
+  if (/invalid option/i.test(mensagem)) {
+    return "Valor inválido para este campo";
+  }
+  if (/invalid input/i.test(mensagem)) {
+    return "Valor inválido";
+  }
+  return mensagem;
+}
+
+const PAISES = [
+  "Brasil",
+  "Alemanha",
+  "Angola",
+  "Argentina",
+  "Austrália",
+  "Áustria",
+  "Bélgica",
+  "Bolívia",
+  "Cabo Verde",
+  "Canadá",
+  "Chile",
+  "China",
+  "Colômbia",
+  "Coreia do Sul",
+  "Cuba",
+  "Dinamarca",
+  "Egito",
+  "Equador",
+  "Espanha",
+  "Estados Unidos",
+  "França",
+  "Guiné-Bissau",
+  "Guiana",
+  "Holanda",
+  "Índia",
+  "Inglaterra",
+  "Irlanda",
+  "Itália",
+  "Japão",
+  "México",
+  "Moçambique",
+  "Noruega",
+  "Paraguai",
+  "Peru",
+  "Polônia",
+  "Portugal",
+  "Reino Unido",
+  "Rússia",
+  "Suécia",
+  "Suíça",
+  "Suriname",
+  "Uruguai",
+  "Venezuela",
+  "Outro",
+];
+
+function formatarCPF(valor: string) {
+  return valor
+    .replace(/\D/g, "")
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+function formatarRG(valor: string) {
+  // RG não tem tamanho fixo (varia de 7 a 9 dígitos entre os estados),
+  // então agrupamos de 3 em 3 a partir da direita, como em "4.382.868".
+  // O dígito verificador "X" (quando existir) fica separado por "-" no final.
+  const limpo = valor.replace(/[^0-9Xx]/g, "").toUpperCase().slice(0, 9);
+  const terminaComX = limpo.endsWith("X");
+  const somenteDigitos = terminaComX ? limpo.slice(0, -1) : limpo;
+  const comPontos = somenteDigitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return terminaComX ? `${comPontos}-X` : comPontos;
+}
+
+function formatarSUS(valor: string) {
+  return valor
+    .replace(/\D/g, "")
+    .slice(0, 15)
+    .replace(/(\d{3})(\d)/, "$1 $2")
+    .replace(/(\d{3} \d{4})(\d)/, "$1 $2")
+    .replace(/(\d{3} \d{4} \d{4})(\d)/, "$1 $2");
+}
 
 interface IdosoFormProps {
   endpoint: string;
@@ -31,12 +145,30 @@ export default function FormularioIdoso({
   );
 
   const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [cidadesBrasil, setCidadesBrasil] = useState<string[]>([]);
 
   useEffect(() => {
     if (dadosIniciais) {
       setFormDados(dadosIniciais);
     }
   }, [dadosIniciais]);
+
+  useEffect(() => {
+    fetch("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((dados) => {
+        if (!Array.isArray(dados)) return;
+        const nomes = dados
+          .map((m: { nome?: string; microrregiao?: { mesorregiao?: { UF?: { sigla?: string } } } }) => {
+            const uf = m.microrregiao?.mesorregiao?.UF?.sigla;
+            return uf ? `${m.nome} - ${uf}` : m.nome;
+          })
+          .filter((n): n is string => Boolean(n))
+          .sort((a, b) => a.localeCompare(b, "pt-BR"));
+        setCidadesBrasil(nomes);
+      })
+      .catch(() => {});
+  }, []);
 
   const [familia, setFamilia] = useState({
     familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticiaNome: "",
@@ -64,9 +196,14 @@ export default function FormularioIdoso({
   const [aplica, setAplica] = useState<string>("");
   const [enviarVazio, setEnviarVazio] = useState(false);
   const navegacao = useNavigate();
+  const formScrollRef = useRef<HTMLFormElement>(null);
 
   const proximaEtapa = () => setEtapa((prev) => prev + 1);
   const etapaAnterior = () => setEtapa((prev) => prev - 1);
+
+  useEffect(() => {
+    formScrollRef.current?.scrollTo({ top: 0 });
+  }, [etapa]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -75,6 +212,34 @@ export default function FormularioIdoso({
       ...formDados,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleChangeCpf = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormDados({
+      ...formDados,
+      cpf: formatarCPF(e.target.value),
+    });
+  };
+
+  const handleChangeRg = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormDados({
+      ...formDados,
+      rg: formatarRG(e.target.value),
+    });
+  };
+
+  const handleChangeSus = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormDados({
+      ...formDados,
+      sus: formatarSUS(e.target.value),
+    });
+  };
+
+  const handleCheckboxToggle = (name: string) => {
+    setFormDados((prev) => ({
+      ...prev,
+      [name]: !(prev as Record<string, unknown>)[name],
+    }));
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -94,9 +259,17 @@ export default function FormularioIdoso({
       const token = localStorage.getItem("token");
       let resposta;
 
+      // O campo SUS é exibido com espaços (000 0000 0000 0000) pra facilitar
+      // a leitura, mas a API exige exatamente 15 dígitos sem espaços. O
+      // valor mascarado só existe na tela — aqui a gente limpa antes de enviar.
+      const dadosParaEnviar = {
+        ...formDados,
+        sus: formDados.sus ? formDados.sus.replace(/\D/g, "") : formDados.sus,
+      };
+
       if (fotoFile) {
         const formData = new FormData();
-        Object.entries(formDados).forEach(([key, value]) => {
+        Object.entries(dadosParaEnviar).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
             formData.append(key, String(value));
           }
@@ -118,7 +291,7 @@ export default function FormularioIdoso({
             "Content-Type": "application/json",
             ...(token && { Authorization: `Bearer ${token}` }),
           },
-          body: JSON.stringify(formDados),
+          body: JSON.stringify(dadosParaEnviar),
         });
       }
 
@@ -128,6 +301,19 @@ export default function FormularioIdoso({
         setMensagem(dados.message || `${textoBotao} realizado com sucesso!`);
         setTipoMensagem("sucesso");
         setTimeout(() => navegacao("/lista/idosos"), 1000);
+      } else if (Array.isArray(dados.errors) && dados.errors.length > 0) {
+        // O backend retorna um array de erros do Zod com o campo (path) e o
+        // motivo. Antes isso era ignorado e só aparecia "Dados inválidos".
+        const detalhes = dados.errors
+          .map((erro: { path?: (string | number)[]; message: string }) => {
+            const campo = erro.path?.[0] ? String(erro.path[0]) : "";
+            const rotulo = ROTULOS_CAMPOS_IDOSO[campo] || campo;
+            const mensagem = traduzirMensagemErro(erro.message);
+            return rotulo ? `${rotulo}: ${mensagem}` : mensagem;
+          })
+          .join(" — ");
+        setMensagem(`⚠️ ${dados.message || "Dados inválidos"}: ${detalhes}`);
+        setTipoMensagem("erro");
       } else {
         setMensagem(dados.message || `Erro ao ${textoBotao.toLowerCase()}.`);
         setTipoMensagem("erro");
@@ -139,25 +325,26 @@ export default function FormularioIdoso({
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
-      <div className="w-full max-w-3xl flex items-center justify-between mb-6 mt-4 px-4 relative">
-        <div className="flex items-center gap-4 w-full">
-          <Botao onClick={() => navegacao("/lista/registro/saude")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100 absolute left-4">
-            <ChevronLeftIcon />
-          </Botao>
-          <h1 className="text-3xl font-bold text-black text-center w-full">
-            Plano Individual de Atendimento - PIA
-          </h1>
-        </div>
+    <Layout>
+    <div className="w-full box-border flex flex-col items-center py-6 sm:py-8 px-2 sm:px-0">
+      <div className="w-full max-w-3xl flex items-center gap-3 sm:gap-4 mb-6 mt-4 px-4">
+        <Botao onClick={() => navegacao("/lista/idosos")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100 shrink-0">
+          <ChevronLeftIcon />
+        </Botao>
+        <h1 className="text-base sm:text-3xl font-bold text-gray-800 text-center flex-1 leading-snug">
+          Plano Individual de Atendimento - PIA
+        </h1>
+      </div>
 
-        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto mt-4 p-8 fixed top-24 overflow-hidden">
-          <form
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-4 sm:p-8 overflow-hidden">
+        <form
+            ref={formScrollRef}
             onSubmit={handleSubmit}
             className="flex flex-col gap-6 h-[70vh] overflow-y-auto pr-2"
           >
             {etapa === 1 && (
               <>
-                <h3 className="text-black font-bold text-xl">
+                <h3 className="text-blue-800 font-bold text-xl">
                   I - DADOS PESSOAIS
                 </h3>
 
@@ -205,8 +392,8 @@ export default function FormularioIdoso({
                   </ErroCampoObrigatorio>
                 </div>
 
-                <div className="flex gap-6">
-                  <div className="flex flex-col w-1/2">
+                <div className="flex flex-wrap gap-6">
+                  <div className="flex flex-col w-full sm:w-1/2">
                     <Label htmlFor="dataNascimento" texto="Data de Nascimento" />
                     <ErroCampoObrigatorio
                       valor={formDados.dataNascimento}
@@ -224,7 +411,7 @@ export default function FormularioIdoso({
                     </ErroCampoObrigatorio>
                   </div>
 
-                  <div className="flex flex-col w-1/2">
+                  <div className="flex flex-col w-full sm:w-1/2">
                     <Label htmlFor="sexo" texto="Sexo" />
                     <ErroCampoObrigatorio
                       valor={formDados.sexo}
@@ -246,8 +433,8 @@ export default function FormularioIdoso({
                   </div>
                 </div>
 
-                <div className="flex gap-6">
-                  <div className="flex flex-col w-1/2">
+                <div className="flex flex-wrap gap-6">
+                  <div className="flex flex-col w-full sm:w-1/2">
                     <Label htmlFor="cpf" texto="CPF" />
                     <ErroCampoObrigatorio
                       valor={formDados.cpf}
@@ -258,15 +445,17 @@ export default function FormularioIdoso({
                         type="text"
                         id="cpf"
                         name="cpf"
-                        placeholder="xxx.xxx.xxx-xx"
+                        placeholder="000.000.000-00"
                         value={formDados.cpf}
-                        onChange={handleChange}
+                        onChange={handleChangeCpf}
+                        inputMode="numeric"
+                        maxLength={14}
                         required
                       />
                     </ErroCampoObrigatorio>
                   </div>
 
-                  <div className="flex flex-col w-1/2">
+                  <div className="flex flex-col w-full sm:w-1/2">
                     <Label htmlFor="sus" texto="SUS" />
                     <ErroCampoObrigatorio
                       valor={formDados.sus}
@@ -277,17 +466,19 @@ export default function FormularioIdoso({
                         type="text"
                         id="sus"
                         name="sus"
-                        placeholder="xxxxxxxxxxxxxxx"
+                        placeholder="000 0000 0000 0000"
                         value={formDados.sus}
-                        onChange={handleChange}
+                        onChange={handleChangeSus}
+                        inputMode="numeric"
+                        maxLength={18}
                         required
                       />
                     </ErroCampoObrigatorio>
                   </div>
                 </div>
 
-                <div className="flex gap-6">
-                  <div className="flex flex-col w-1/3">
+                <div className="flex flex-wrap gap-6">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="rg" texto="RG" />
                     <ErroCampoObrigatorio
                       valor={formDados.rg}
@@ -298,15 +489,16 @@ export default function FormularioIdoso({
                         type="text"
                         id="rg"
                         name="rg"
-                        placeholder="x.xxx.xxx"
+                        placeholder="Somente números"
                         value={formDados.rg}
-                        onChange={handleChange}
+                        onChange={handleChangeRg}
+                        maxLength={12}
                         required
                       />
                     </ErroCampoObrigatorio>
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="dataEmissaoRg" texto="Data de Emissão" />
                     <Input
                       type="date"
@@ -317,7 +509,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="orgaoEmissorRg" texto="Órgão Emissor" />
                     <Input
                       type="text"
@@ -330,29 +522,33 @@ export default function FormularioIdoso({
                   </div>
                 </div>
 
-                <div className="flex gap-6">
-                  <div className="flex flex-col w-1/2">
+                <div className="flex flex-wrap gap-6">
+                  <div className="flex flex-col w-full sm:w-1/2">
                     <Label htmlFor="nacionalidade" texto="Nacionalidade" />
                     <ErroCampoObrigatorio
                       valor={formDados.nacionalidade}
                       obrigatorio
                       envioVazio={enviarVazio}
                     >
-                      <Input
-                        type="text"
+                      <Select
                         id="nacionalidade"
                         name="nacionalidade"
-                        value={formDados.nacionalidade}
+                        value={formDados.nacionalidade || ""}
                         onChange={handleChange}
                         required
-                      />
+                      >
+                        <Option value="" texto="Selecione" />
+                        {PAISES.map((pais) => (
+                          <Option key={pais} value={pais} texto={pais} />
+                        ))}
+                      </Select>
                     </ErroCampoObrigatorio>
                   </div>
 
-                  <div className="flex flex-col w-1/2">
+                  <div className="flex flex-col w-full sm:w-1/2">
                     <Label htmlFor="naturalidade" texto="Naturalidade" />
                     <ErroCampoObrigatorio
-                      valor={formDados.nacionalidade}
+                      valor={formDados.naturalidade}
                       obrigatorio
                       envioVazio={enviarVazio}
                     >
@@ -360,18 +556,32 @@ export default function FormularioIdoso({
                         type="text"
                         id="naturalidade"
                         name="naturalidade"
+                        list={formDados.nacionalidade === "Brasil" ? "lista-cidades-brasil" : undefined}
+                        placeholder={
+                          formDados.nacionalidade === "Brasil"
+                            ? "Digite para buscar a cidade"
+                            : "Cidade ou local de nascimento"
+                        }
                         value={formDados.naturalidade}
                         onChange={handleChange}
+                        autoComplete="off"
                         required
                       />
                     </ErroCampoObrigatorio>
+                    {formDados.nacionalidade === "Brasil" && (
+                      <datalist id="lista-cidades-brasil">
+                        {cidadesBrasil.map((cidade) => (
+                          <option key={cidade} value={cidade} />
+                        ))}
+                      </datalist>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <p className="text-black font-bold text-lg">Filiação</p>
-                  <div className="flex gap-6">
-                    <div className="flex flex-col w-1/2">
+                  <p className="text-blue-800 font-bold text-lg">Filiação</p>
+                  <div className="flex flex-wrap gap-6">
+                    <div className="flex flex-col w-full sm:w-1/2">
                       <Label htmlFor="nomePai" texto="Nome do Pai" />
                       <Input
                         type="text"
@@ -382,7 +592,7 @@ export default function FormularioIdoso({
                       />
                     </div>
 
-                    <div className="flex flex-col w-1/2">
+                    <div className="flex flex-col w-full sm:w-1/2">
                       <Label htmlFor="nomeMae" texto="Nome da Mãe" />
                       <Input
                         type="text"
@@ -442,8 +652,8 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="flex flex-col w-1/3">
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label
                       htmlFor="numCertidaoNascimento"
                       texto="Nº da Certidão de Nascimento"
@@ -457,7 +667,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3 mt-6">
+                  <div className="flex flex-col w-full sm:w-1/3 mt-6">
                     <Label htmlFor="folhaCertidao" texto="Folha" />
                     <Input
                       type="text"
@@ -468,7 +678,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3 mt-6">
+                  <div className="flex flex-col w-full sm:w-1/3 mt-6">
                     <Label htmlFor="livroCertidao" texto="Livro" />
                     <Input
                       type="text"
@@ -492,8 +702,8 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="flex flex-col w-1/3">
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="ctps" texto="CTPS" />
                     <Input
                       type="text"
@@ -504,7 +714,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="serieCtps" texto="Série" />
                     <Input
                       type="text"
@@ -515,7 +725,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="pis" texto="PIS" />
                     <Input
                       type="text"
@@ -528,8 +738,8 @@ export default function FormularioIdoso({
                   </div>
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="flex flex-col w-1/3">
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="tituloEleitor" texto="Título de Eleitor" />
                     <Input
                       type="text"
@@ -540,7 +750,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="zonaTituloEleitor" texto="Zona" />
                     <Input
                       type="text"
@@ -551,7 +761,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label htmlFor="secaoTituloEleitor" texto="Seção" />
                     <Input
                       type="text"
@@ -578,11 +788,11 @@ export default function FormularioIdoso({
 
             {etapa === 2 && (
               <>
-                <h3 className="text-black font-bold text-xl">
+                <h3 className="text-blue-800 font-bold text-xl">
                   II - DADOS DO ACOLHIMENTO
                 </h3>
 
-                <div className="flex gap-6">
+                <div className="flex flex-wrap gap-6">
                   <div className="flex flex-col">
                     <Label
                       htmlFor="dataAcolhimento"
@@ -665,7 +875,7 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <h4 className="text-black font-bold text-xl">
+                <h4 className="text-blue-800 font-bold text-xl">
                   Condições do idoso no momento do acolhimento:
                 </h4>
 
@@ -705,12 +915,12 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <h4 className="text-black font-bold text-xl">
+                <h4 className="text-blue-800 font-bold text-xl">
                   Acolhimento anterior:
                 </h4>
 
-                <div className="flex gap-6">
-                  <div className="flex flex-col w-1/3">
+                <div className="flex flex-wrap gap-6">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label
                       htmlFor="instituicaoAcolhimentoAnterior"
                       texto="Instituição"
@@ -724,7 +934,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label
                       htmlFor="dataEntradaAcolhimentoAnterior"
                       texto="Data de entrada"
@@ -740,7 +950,7 @@ export default function FormularioIdoso({
                     />
                   </div>
 
-                  <div className="flex flex-col w-1/3">
+                  <div className="flex flex-col w-full sm:w-1/3">
                     <Label
                       htmlFor="dataSaidaAcolhimentoAnterior"
                       texto="Data da saída"
@@ -810,9 +1020,9 @@ export default function FormularioIdoso({
 
             {etapa === 3 && (
               <>
-                <h3 className="text-black font-bold text-xl">III - FAMÍLIA</h3>
+                <h3 className="text-blue-800 font-bold text-xl">III - FAMÍLIA</h3>
 
-                <h4 className="text-black font-bold text-xl">
+                <h4 className="text-blue-800 font-bold text-xl">
                   Dados da família:
                 </h4>
 
@@ -855,17 +1065,18 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <p className="text-black text-lg font-medium">
+                <p className="text-gray-800 text-lg font-medium">
                   A família é atendida por programa/benefício social?
                 </p>
 
-                <div className="flex">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-8">
                   <div className="flex items-center gap-2">
                     <Input
                       type="radio"
                       id="recebeProgramaSocial"
                       name="familiaAtendidaPorProgramaSocial"
-                      value={formDados.familiaAtendidaPorProgramaSocial}
+                      value="sim"
+                      checked={formDados.familiaAtendidaPorProgramaSocial === "sim"}
                       onChange={handleChange}
                     />
                     <Label
@@ -879,7 +1090,8 @@ export default function FormularioIdoso({
                       type="radio"
                       id="naoRecebeProgramaSocial"
                       name="familiaAtendidaPorProgramaSocial"
-                      value={formDados.familiaAtendidaPorProgramaSocial}
+                      value="nao"
+                      checked={formDados.familiaAtendidaPorProgramaSocial === "nao"}
                       onChange={handleChange}
                     />
                     <Label
@@ -889,15 +1101,19 @@ export default function FormularioIdoso({
                   </div>
                 </div>
 
-                <div className="flex gap-20">
+                {formDados.familiaAtendidaPorProgramaSocial === "sim" && (
+                <>
+                <p className="text-gray-800 font-medium -mb-2">Se sim, qual?</p>
+
+                <div className="flex flex-wrap gap-6 sm:gap-20">
                   <div>
                     <div className="flex items-center gap-2">
                       <Input
                         type="checkbox"
                         id="programaTransferenciaRenda"
-                        name="programaSocialDaFamilia"
-                        value={formDados.programaSocialDaFamilia}
-                        onChange={handleChange}
+                        name="programaTransferenciaRenda"
+                        checked={!!(formDados as Record<string, unknown>).programaTransferenciaRenda}
+                        onChange={() => handleCheckboxToggle("programaTransferenciaRenda")}
                       />
                       <Label
                         htmlFor="programaTransferenciaRenda"
@@ -909,9 +1125,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="programaAtendimentoFamilia"
-                        name="programaSocialDaFamilia"
-                        value={formDados.programaSocialDaFamilia}
-                        onChange={handleChange}
+                        name="programaAtendimentoFamilia"
+                        checked={!!(formDados as Record<string, unknown>).programaAtendimentoFamilia}
+                        onChange={() => handleCheckboxToggle("programaAtendimentoFamilia")}
                       />
                       <Label
                         htmlFor="programaAtendimentoFamilia"
@@ -923,9 +1139,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="beneficioPrestacaoContinua"
-                        name="programaSocialDaFamilia"
-                        value={formDados.programaSocialDaFamilia}
-                        onChange={handleChange}
+                        name="beneficioPrestacaoContinua"
+                        checked={!!(formDados as Record<string, unknown>).beneficioPrestacaoContinua}
+                        onChange={() => handleCheckboxToggle("beneficioPrestacaoContinua")}
                       />
                       <Label
                         htmlFor="beneficioPrestacaoContinua"
@@ -937,9 +1153,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="beneficioPrevidenciario"
-                        name="programaSocialDaFamilia"
-                        value={formDados.programaSocialDaFamilia}
-                        onChange={handleChange}
+                        name="beneficioPrevidenciario"
+                        checked={!!(formDados as Record<string, unknown>).beneficioPrevidenciario}
+                        onChange={() => handleCheckboxToggle("beneficioPrevidenciario")}
                       />
                       <Label
                         htmlFor="beneficioPrevidenciario"
@@ -951,9 +1167,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="programaHabitacao"
-                        name="programaSocialDaFamilia"
-                        value={formDados.programaSocialDaFamilia}
-                        onChange={handleChange}
+                        name="programaHabitacao"
+                        checked={!!(formDados as Record<string, unknown>).programaHabitacao}
+                        onChange={() => handleCheckboxToggle("programaHabitacao")}
                       />
                       <Label
                         htmlFor="programaHabitacao"
@@ -966,8 +1182,8 @@ export default function FormularioIdoso({
                       <Input
                         type="text"
                         id="outroProgramaBeneficio"
-                        name="programaSocialDaFamilia"
-                        value={formDados.programaSocialDaFamilia}
+                        name="outroProgramaSocialDaFamilia"
+                        value={(formDados as Record<string, unknown>).outroProgramaSocialDaFamilia as string || ""}
                         onChange={handleChange}
                       />
                     </div>
@@ -987,17 +1203,19 @@ export default function FormularioIdoso({
                     />
                   </div>
                 </div>
+                </>
+                )}
 
-                <h4 className="text-black font-bold text-xl">
+                <h4 className="text-blue-800 font-bold text-xl">
                   Composição da renda familiar:
                 </h4>
 
-                <p className="text-black text-lg font-medium">
+                <p className="text-gray-800 text-lg font-medium">
                   Familiares possuem renda proveniente de atividade laboral e/ou
                   pensão alimentícia?
                 </p>
 
-                <div className="flex gap-20">
+                <div className="flex flex-wrap gap-6 sm:gap-20">
                   <div className="flex items-center gap-2">
                     <Input
                       type="radio"
@@ -1025,7 +1243,7 @@ export default function FormularioIdoso({
                       value="nao"
                       checked={
                         formDados.familiaresPossuemRendaDeAtividadeLaboralOuPensaoAlimenticia ===
-                        "não"
+                        "nao"
                       }
                       onChange={(e) => {
                         handleChange(e);
@@ -1105,16 +1323,17 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <p className="text-black text-lg font-medium">
+                <p className="text-gray-800 text-lg font-medium">
                   A família é atendida pelos serviços de saúde?
                 </p>
 
-                <div className="flex gap-20">
+                <div className="flex flex-wrap gap-6 sm:gap-20">
                   <div className="flex items-center gap-2">
                     <Input
                       type="radio"
                       id="temAtendimentoSaude"
                       name="familiaAtendidaPorProgramaSaude"
+                      value="sim"
                       checked={
                         formDados.familiaAtendidaPorProgramaSaude === "sim"
                       }
@@ -1131,27 +1350,28 @@ export default function FormularioIdoso({
                       type="radio"
                       id="naoTemAtendimentoSaude"
                       name="familiaAtendidaPorProgramaSaude"
+                      value="nao"
                       checked={
-                        formDados.familiaAtendidaPorProgramaSaude === "sim"
+                        formDados.familiaAtendidaPorProgramaSaude === "nao"
                       }
                       onChange={(e) => {
                         handleChange(e);
-                        setAplica("sim");
+                        setAplica("nao");
                       }}
                     />
-                    <Label htmlFor="naoRecebePrograma" texto="Não" />
+                    <Label htmlFor="naoTemAtendimentoSaude" texto="Não" />
                   </div>
                 </div>
 
-                <div className="flex gap-20">
+                <div className="flex flex-wrap gap-6 sm:gap-20">
                   <div>
                     <div className="flex items-center gap-2">
                       <Input
                         type="checkbox"
                         id="programaAtencaoBasica"
-                        name="servicoDeSaudeQueAtendeAFamilia"
-                        value={formDados.servicoDeSaudeQueAtendeAFamilia}
-                        onChange={handleChange}
+                        name="programaAtencaoBasica"
+                        checked={!!(formDados as Record<string, unknown>).programaAtencaoBasica}
+                        onChange={() => handleCheckboxToggle("programaAtencaoBasica")}
                       />
                       <Label
                         htmlFor="programaAtencaoBasica"
@@ -1163,9 +1383,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="caps"
-                        name="servicoDeSaudeQueAtendeAFamilia"
-                        value={formDados.servicoDeSaudeQueAtendeAFamilia}
-                        onChange={handleChange}
+                        name="caps"
+                        checked={!!(formDados as Record<string, unknown>).caps}
+                        onChange={() => handleCheckboxToggle("caps")}
                       />
                       <Label htmlFor="caps" texto="CAPS" />
                     </div>
@@ -1174,9 +1394,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="capsAd"
-                        name="servicoDeSaudeQueAtendeAFamilia"
-                        value={formDados.servicoDeSaudeQueAtendeAFamilia}
-                        onChange={handleChange}
+                        name="capsAd"
+                        checked={!!(formDados as Record<string, unknown>).capsAd}
+                        onChange={() => handleCheckboxToggle("capsAd")}
                       />
                       <Label htmlFor="capsAd" texto="CAPS - AD" />
                     </div>
@@ -1185,9 +1405,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="capsi"
-                        name="servicoDeSaudeQueAtendeAFamilia"
-                        value={formDados.servicoDeSaudeQueAtendeAFamilia}
-                        onChange={handleChange}
+                        name="capsi"
+                        checked={!!(formDados as Record<string, unknown>).capsi}
+                        onChange={() => handleCheckboxToggle("capsi")}
                       />
                       <Label htmlFor="capsi" texto="CAPSI" />
                     </div>
@@ -1196,9 +1416,9 @@ export default function FormularioIdoso({
                       <Input
                         type="checkbox"
                         id="alcoolDrogas"
-                        name="servicoDeSaudeQueAtendeAFamilia"
-                        value={formDados.servicoDeSaudeQueAtendeAFamilia}
-                        onChange={handleChange}
+                        name="alcoolDrogas"
+                        checked={!!(formDados as Record<string, unknown>).alcoolDrogas}
+                        onChange={() => handleCheckboxToggle("alcoolDrogas")}
                       />
                       <Label
                         htmlFor="alcoolDrogas"
@@ -1211,8 +1431,8 @@ export default function FormularioIdoso({
                       <Input
                         type="text"
                         id="outroProgramaSaude"
-                        name="servicoDeSaudeQueAtendeAFamilia"
-                        value={formDados.servicoDeSaudeQueAtendeAFamilia}
+                        name="outroProgramaSaude"
+                        value={(formDados as Record<string, unknown>).outroProgramaSaude as string || ""}
                         onChange={handleChange}
                       />
                     </div>
@@ -1246,7 +1466,7 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <h4 className="text-black font-bold text-xl">
+                <h4 className="text-blue-800 font-bold text-xl">
                   Relações familiares:
                 </h4>
 
@@ -1355,16 +1575,16 @@ export default function FormularioIdoso({
                   />
                 </div>
 
-                <p className="text-black text-lg font-medium">
+                <p className="text-gray-800 text-lg font-medium">
                   Idoso tem irmãos?
                 </p>
 
-                <div className="flex gap-20">
+                <div className="flex flex-wrap gap-6 sm:gap-20">
                   <div className="flex items-center gap-2">
                     <Input
                       type="radio"
                       id="temIrmao"
-                      name="irmao"
+                      name="idosoTemIrmaos"
                       value="sim"
                       checked={formDados.idosoTemIrmaos === "sim"}
                       onChange={(e) => {
@@ -1379,15 +1599,15 @@ export default function FormularioIdoso({
                     <Input
                       type="radio"
                       id="naoTemIrmao"
-                      name="irmao"
+                      name="idosoTemIrmaos"
                       value="nao"
-                      checked={formDados.idosoTemIrmaos === "não"}
+                      checked={formDados.idosoTemIrmaos === "nao"}
                       onChange={(e) => {
                         handleChange(e);
                         setAplica("nao");
                       }}
                     />
-                    <Label htmlFor="naotemIrmao" texto="Não" />
+                    <Label htmlFor="naoTemIrmao" texto="Não" />
                   </div>
                 </div>
 
@@ -1472,9 +1692,9 @@ export default function FormularioIdoso({
                 onClose={() => setMensagem("")}
               />
             )}
-          </form>
-        </div>
+        </form>
       </div>
     </div>
+    </Layout>
   );
 }
