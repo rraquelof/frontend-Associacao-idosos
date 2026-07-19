@@ -5,6 +5,7 @@ import type Idoso from "../../modelo/Idoso";
 import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon, User } from "lucide-react";
 import { formatarDataBR } from "../../formatacao/formatarDataBr";
+import Layout from "../../componentes/layout/Layout";
 
 export default function DetalharIdoso() {
   const { id } = useParams();
@@ -45,15 +46,15 @@ export default function DetalharIdoso() {
   }, [id]);
 
   if (carregando) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">Carregando detalhes...</div>;
+    return <Layout><div className="flex justify-center items-center py-24 text-blue-500 font-medium">Carregando detalhes...</div></Layout>;
   }
 
   if (erro) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Erro: {erro}</div>;
+    return <Layout><div className="flex justify-center items-center py-24 text-red-500 font-bold">Erro: {erro}</div></Layout>;
   }
 
   if (!idoso) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Idoso não encontrado.</div>;
+    return <Layout><div className="flex justify-center items-center py-24 text-red-500 font-bold">Idoso não encontrado.</div></Layout>;
   }
 
   const obterUrlImagem = (caminhoImagem?: string) => {
@@ -64,38 +65,44 @@ export default function DetalharIdoso() {
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
-      <div className="text-black p-6 w-full max-w-4xl flex items-center relative mt-4">
+    <Layout>
+    <div className="w-full box-border flex flex-col items-center">
+      <div className="text-black p-4 sm:p-6 w-full max-w-4xl flex items-center relative mt-4">
         <Botao
           className="absolute left-0 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100"
           onClick={() => navegacao("/lista/idosos")}
         >
           <ChevronLeftIcon />
         </Botao>
-        <h1 className="text-3xl font-bold text-center w-full">
+        <h1 className="text-xl sm:text-3xl font-bold text-gray-800 text-center w-full">
           Perfil do Idoso
         </h1>
+        <Botao
+          texto="Relatório de saúde"
+          className="absolute right-0 bg-rose-50 text-rose-600 hover:bg-rose-100 text-sm"
+          onClick={() => navegacao(`/relatorio/idoso/${idoso._id}`)}
+        />
       </div>
 
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl max-h-[75vh] overflow-y-auto flex flex-col">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl max-h-[75vh] overflow-y-auto flex flex-col mx-2 sm:mx-0">
 
-        <div className="w-full flex flex-col items-center pt-10 pb-6 border-b border-gray-100 bg-gray-50">
+        <div className="w-full flex flex-col items-center pt-10 pb-6 px-4 border-b border-gray-100 bg-gray-50">
           {idoso.foto ? (
             <img
               src={obterUrlImagem(idoso.foto)}
               alt={`Foto de ${idoso.nome}`}
-              className="w-40 h-40 object-cover rounded-full border-4 border-white shadow-lg bg-gray-200"
+              className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full border-4 border-white shadow-lg bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40"
             />
           ) : (
-            <div className="w-40 h-40 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center text-gray-400">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-lg bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 flex items-center justify-center text-gray-400">
               <User size={64} />
             </div>
           )}
-          <h2 className="text-3xl font-extrabold text-gray-900 mt-4">{idoso.nome}</h2>
-          <p className="text-gray-500 font-medium">{idoso.nacionalidade} • {formatarDataBR(idoso.dataNascimento)}</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-4 text-center break-words">{idoso.nome}</h2>
+          <p className="text-gray-500 font-medium text-center">{idoso.nacionalidade} • {formatarDataBR(idoso.dataNascimento)}</p>
         </div>
 
-        <div className="p-8 flex flex-wrap gap-4 content-start">
+        <div className="p-4 sm:p-8 flex flex-wrap gap-4 content-start">
           <CampoDetalhes label="CPF" valor={idoso.cpf} />
           <CampoDetalhes label="RG" valor={idoso.rg} />
           <CampoDetalhes
@@ -365,7 +372,7 @@ export default function DetalharIdoso() {
         </div>
       </div>
 
-      <div className="flex gap-6 mt-8 mb-8">
+      <div className="flex flex-wrap gap-4 sm:gap-6 justify-center mt-8 mb-8 px-4">
         <Botao
           texto="Atualizar"
           variant="update"
@@ -380,5 +387,6 @@ export default function DetalharIdoso() {
         />
       </div>
     </div>
+    </Layout>
   );
 }
