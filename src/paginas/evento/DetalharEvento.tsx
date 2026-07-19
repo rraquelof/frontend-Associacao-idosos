@@ -5,6 +5,7 @@ import { ChevronLeftIcon, CalendarDays, MapPin, Users, Plus, X, Trash2 } from "l
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import Layout from "../../componentes/layout/Layout";
 
 const iconeMarcador = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -140,11 +141,11 @@ export default function DetalharEvento() {
   };
   
   if (carregando) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center font-medium">Carregando detalhes...</div>;
+    return <Layout><div className="flex justify-center items-center py-24 font-medium">Carregando detalhes...</div></Layout>;
   }
 
   if (!evento) {
-    return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Evento não encontrado.</div>;
+    return <Layout><div className="flex justify-center items-center py-24 text-red-500 font-bold">Evento não encontrado.</div></Layout>;
   }
 
   const obterUrlImagem = (caminhoImagem: string) => {
@@ -172,24 +173,25 @@ export default function DetalharEvento() {
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
-      <div className="w-full max-w-4xl flex items-center mb-8 mt-10 relative">
+    <Layout>
+    <div className="w-full flex flex-col items-center p-4 sm:p-8 relative">
+      <div className="w-full max-w-4xl flex items-center mb-8 mt-6 sm:mt-10 relative">
         <Botao onClick={() => navegacao("/eventos")} className="absolute left-0 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
           <ChevronLeftIcon />
         </Botao>
-        <h1 className="text-3xl font-bold text-black text-center w-full">Detalhes do Evento</h1>
+        <h1 className="text-xl sm:text-3xl font-bold text-gray-800 text-center w-full">Detalhes do Evento</h1>
       </div>
 
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden">
         {evento.imagem && (
-          <div className="w-full h-64 bg-gray-300">
+          <div className="w-full h-48 sm:h-64 bg-gray-300">
             <img src={obterUrlImagem(evento.imagem)} alt={evento.nome} className="w-full h-full object-cover" />
           </div>
         )}
 
-        <div className="p-8 flex flex-col gap-6">
+        <div className="p-4 sm:p-8 flex flex-col gap-6">
           <div>
-            <h2 className="text-4xl font-extrabold text-gray-900 mb-2">{evento.nome}</h2>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-gray-900 mb-2 break-words">{evento.nome}</h2>
             <p className="text-gray-600 text-lg leading-relaxed">
               {evento.descricao ? evento.descricao : "Nenhuma descrição informada."}
             </p>
@@ -199,7 +201,7 @@ export default function DetalharEvento() {
 
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3 text-gray-700">
-              <div className="bg-purple-100 p-3 rounded-full text-purple-600">
+              <div className="bg-orange-100 p-3 rounded-full text-orange-600">
                 <CalendarDays size={24} />
               </div>
               <div>
@@ -235,8 +237,8 @@ export default function DetalharEvento() {
               )}
             </div>
 
-            <div className="flex items-center justify-between gap-3 text-gray-700 bg-green-50 p-4 rounded-xl border border-green-100">
-              <div 
+            <div className="flex flex-wrap items-center justify-between gap-3 text-gray-700 bg-green-50 p-4 rounded-xl border border-green-100">
+              <div
                 className="flex items-center gap-3 cursor-pointer hover:bg-green-100 p-2 -ml-2 rounded-lg transition-colors"
                 onClick={() => setModalVisualizarAberto(true)}
                 title="Clique para ver a lista de participantes"
@@ -298,7 +300,7 @@ export default function DetalharEvento() {
                   >
                     <input 
                       type="checkbox" 
-                      className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 cursor-pointer"
+                      className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 cursor-pointer"
                       checked={idososSelecionados.includes(idoso._id)}
                       onChange={() => alternarSelecaoIdoso(idoso._id)}
                     />
@@ -313,12 +315,12 @@ export default function DetalharEvento() {
                 texto="Cancelar" 
                 onClick={() => setModalAberto(false)} 
                 variant="gray" 
-                className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+                className="bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 text-gray-800 hover:bg-gray-300"
               />
               <Botao 
-                texto={salvandoIdosos ? "Salvando..." : "Salvar Participantes"} 
-                onClick={salvarIdososNoEvento} 
-                className="bg-purple-600 text-white hover:bg-purple-700" 
+                texto={salvandoIdosos ? "Salvando..." : "Salvar Participantes"}
+                onClick={salvarIdososNoEvento}
+                variant="gradient"
                 disabled={salvandoIdosos}
               />
             </div>
@@ -381,7 +383,7 @@ export default function DetalharEvento() {
                 texto="Fechar" 
                 onClick={() => setModalVisualizarAberto(false)} 
                 variant="gray" 
-                className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+                className="bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 text-gray-800 hover:bg-gray-300"
               />
             </div>
 
@@ -390,5 +392,6 @@ export default function DetalharEvento() {
       )}
 
     </div>
+    </Layout>
   );
 }

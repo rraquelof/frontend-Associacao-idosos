@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Botao from "../../componentes/botao/Botao";
-import { ChevronLeftIcon, Calendar as CalendarIcon, List as ListIcon, Trash2, Edit, X } from "lucide-react";
+import { ChevronLeftIcon, Calendar as CalendarIcon, List as ListIcon, Trash2, Edit, X, PartyPopper, Loader2 } from "lucide-react";
 
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import Layout from "../../componentes/layout/Layout";
+import eventosIcon from "../../img/eventos.png";
 
 const API_URL = "https://api-associacao-idosos.onrender.com/api";
 
 export default function Eventos() {
   const navegacao = useNavigate();
   const [eventos, setEventos] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
   const [modoVisualizacao, setModoVisualizacao] = useState<"lista" | "calendario">("lista");
   const [dataSelecionada, setDataSelecionada] = useState<Date | null>(null);
 
@@ -29,6 +32,8 @@ export default function Eventos() {
       }
     } catch (error) {
       console.error("Erro ao carregar eventos:", error);
+    } finally {
+      setCarregando(false);
     }
   };
 
@@ -99,7 +104,7 @@ export default function Eventos() {
             {eventosDoDia.map((ev) => (
               <div
                 key={ev._id}
-                className="text-[10px] sm:text-xs leading-tight bg-purple-200 text-purple-900 rounded p-1 truncate w-full shadow-sm font-medium"
+                className="text-[10px] sm:text-xs leading-tight bg-orange-200 text-orange-900 rounded p-1 truncate w-full shadow-sm font-medium"
                 title={ev.nome}
               >
                 {formatarHoraBR(ev.data)} - {ev.nome}
@@ -120,61 +125,83 @@ export default function Eventos() {
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
-      <div className="w-full max-w-5xl flex items-center justify-between mb-8 mt-10">
+    <Layout>
+    <div className="w-full flex flex-col items-center p-4 sm:p-8 relative">
+      <div className="w-full max-w-5xl flex flex-wrap items-center justify-between gap-4 mb-8 mt-6 sm:mt-10">
         <div className="flex items-center gap-4">
           <Botao onClick={() => navegacao("/menu")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black">Gerenciamento de Eventos</h1>
+          <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center shrink-0">
+            <img src={eventosIcon} alt="" className="w-8 h-8 object-contain" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Gerenciamento de Eventos</h1>
+            <p className="text-gray-500 text-sm mt-0.5">Atividades, compromissos e calendário</p>
+          </div>
         </div>
         <Botao
           onClick={() => navegacao("/eventos/novo")}
           texto="+ Novo Evento"
-          className="bg-blue-600 text-white hover:bg-blue-700"
+          className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500 text-white rounded-full shadow-md hover:shadow-lg transition-all font-semibold"
         />
       </div>
 
-      <div className="w-full max-w-5xl flex gap-4 mb-6">
+      <div className="w-full max-w-5xl flex flex-wrap gap-4 mb-6">
         <button
           onClick={() => setModoVisualizacao("lista")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-200 ${modoVisualizacao === "lista"
-              ? "bg-purple-600 text-white shadow-md border-transparent"
-              : "bg-white text-gray-700 border border-gray-300 hover:bg-purple-50"
+          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all duration-200 ${modoVisualizacao === "lista"
+              ? "bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500 text-white shadow-md border-transparent"
+              : "bg-white text-gray-700 border border-gray-300 hover:bg-orange-50"
             }`}
         >
           <ListIcon size={20} /> Lista
         </button>
         <button
           onClick={() => setModoVisualizacao("calendario")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-200 ${modoVisualizacao === "calendario"
-              ? "bg-purple-600 text-white shadow-md border-transparent"
-              : "bg-white text-gray-700 border border-gray-300 hover:bg-purple-50"
+          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all duration-200 ${modoVisualizacao === "calendario"
+              ? "bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500 text-white shadow-md border-transparent"
+              : "bg-white text-gray-700 border border-gray-300 hover:bg-orange-50"
             }`}
         >
           <CalendarIcon size={20} /> Calendário
         </button>
       </div>
 
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-6 min-h-[60vh]">
+      <div className={`w-full max-w-5xl bg-white rounded-2xl shadow-xl p-3 sm:p-6 ${eventos.length > 0 || modoVisualizacao === "calendario" ? "min-h-[60vh]" : ""}`}>
 
         {modoVisualizacao === "lista" && (
           <div className="flex flex-col gap-4">
-            {eventos.length === 0 ? (
-              <p className="text-center text-gray-500 mt-10">Nenhum evento cadastrado ainda.</p>
+            {carregando ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+                </div>
+                <p className="text-gray-500 font-medium">Carregando eventos...</p>
+              </div>
+            ) : eventos.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center">
+                  <PartyPopper className="w-8 h-8 text-amber-400" />
+                </div>
+                <p className="text-gray-600 font-medium">Nenhum evento cadastrado</p>
+                <p className="text-gray-400 text-sm -mt-2">
+                  Clique em "+ Novo Evento" para criar o primeiro.
+                </p>
+              </div>
             ) : (
               eventos.map((evento) => (
                 <div
                   key={evento._id}
                   onClick={() => navegacao(`/eventos/detalhes/${evento._id}`)}
-                  className="border border-gray-200 rounded-xl p-4 flex justify-between items-center hover:bg-purple-50 transition-colors cursor-pointer shadow-sm"
+                  className="border border-gray-200 rounded-xl p-4 flex flex-wrap justify-between items-center gap-3 hover:bg-orange-50 transition-colors cursor-pointer shadow-sm"
                 >
-                  <div className="flex gap-4 items-center">
+                  <div className="flex gap-4 items-center min-w-0">
                     {evento.imagem && (
-                      <img src={obterUrlImagem(evento.imagem)} alt={evento.nome} className="w-16 h-16 object-cover rounded-lg" />
+                      <img src={obterUrlImagem(evento.imagem)} alt={evento.nome} className="w-16 h-16 object-cover rounded-lg shrink-0" />
                     )}
-                    <div>
-                      <h3 className="text-xl font-bold text-black">{evento.nome}</h3>
+                    <div className="min-w-0">
+                      <h3 className="text-xl font-bold text-gray-800 break-words">{evento.nome}</h3>
                       <p className="text-gray-600 text-sm font-medium">
                         {formatarDataBR(evento.data)} às {formatarHoraBR(evento.data)}
                       </p>
@@ -216,7 +243,7 @@ export default function Eventos() {
                 className="!w-full !max-w-none border-none font-sans text-gray-800 [&_abbr]:no-underline"
                 tileClassName={({ view }) =>
                   view === 'month'
-                    ? 'min-h-[100px] sm:min-h-[120px] flex flex-col justify-start items-center p-1 border border-gray-100 hover:bg-purple-50 transition-all cursor-pointer'
+                    ? 'min-h-[100px] sm:min-h-[120px] flex flex-col justify-start items-center p-1 border border-gray-100 hover:bg-orange-50 transition-all cursor-pointer'
                     : null
                 }
                 tileContent={renderizarConteudoDoDia}
@@ -254,14 +281,14 @@ export default function Eventos() {
                 pegarEventosDoDia(dataSelecionada).map((ev) => (
                   <div
                     key={ev._id}
-                    className="border border-purple-100 bg-purple-50 p-4 rounded-xl cursor-pointer hover:bg-purple-100 transition-colors shadow-sm flex justify-between items-center"
+                    className="border border-orange-100 bg-orange-50 p-4 rounded-xl cursor-pointer hover:bg-orange-100 transition-colors shadow-sm flex justify-between items-center"
                     onClick={() => navegacao(`/eventos/detalhes/${ev._id}`)}
                   >
                     <div>
-                      <p className="font-bold text-purple-900 text-lg">{ev.nome}</p>
-                      <p className="text-sm font-medium text-purple-700">{formatarHoraBR(ev.data)}</p>
+                      <p className="font-bold text-orange-900 text-lg">{ev.nome}</p>
+                      <p className="text-sm font-medium text-orange-700">{formatarHoraBR(ev.data)}</p>
                     </div>
-                    <ChevronLeftIcon className="rotate-180 text-purple-400" />
+                    <ChevronLeftIcon className="rotate-180 text-orange-400" />
                   </div>
                 ))
               ) : (
@@ -289,7 +316,7 @@ export default function Eventos() {
                 texto="Cancelar"
                 onClick={() => setEventoParaDeletar(null)}
                 variant="gray"
-                className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+                className="bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 text-gray-800 hover:bg-gray-300"
                 disabled={deletando}
               />
               <Botao
@@ -304,5 +331,6 @@ export default function Eventos() {
       )}
 
     </div>
+    </Layout>
   );
 }

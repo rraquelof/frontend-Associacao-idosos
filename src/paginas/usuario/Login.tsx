@@ -2,6 +2,8 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../componentes/input/Input";
 import Botao from "../../componentes/botao/Botao";
+import Label from "../../componentes/label/Label";
+import logo from "../../img/logo.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -50,46 +52,59 @@ export default function Login() {
   };
 
   return (
-    <div className="w-screen min-h-screen flex bg-gray-200 box-border">
+    <div className="w-full min-h-screen flex flex-col md:flex-row bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 box-border">
       {/* Lado esquerdo */}
-      <div className="w-1/2 bg-gray-200 flex flex-col justify-center items-center text-black p-10">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <h1 className="text-5xl font-bold">
-            Apoio para Associações de Idosos
-          </h1>
-          <p className="text-lg max-w-md">
-            Conecte-se e continue fazendo a diferença na vida dos idosos.
+      <div className="w-full md:w-1/2 bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 flex flex-col justify-center items-center text-black p-6 sm:p-10">
+        <div className="flex flex-col items-center text-center">
+          <img src={logo} alt="SIGAAI" className="w-56 sm:w-72 h-auto" />
+          <p className="text-gray-500 text-sm sm:text-base flex items-center gap-3 -mt-2">
+            <span className="w-6 h-px bg-blue-600" />
+            Sistema de gerenciamento de abrigo de idosos
+            <span className="w-6 h-px bg-emerald-600" />
           </p>
         </div>
       </div>
 
       {/* Lado direito */}
-      <div className="w-1/2 flex justify-center items-center p-10">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold mb-6 text-center text-black">
+      <div className="w-full md:w-1/2 flex justify-center items-center p-4 sm:p-10">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-5 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900">
             Bem-vindo de volta
           </h2>
+          <p className="text-gray-500 text-sm text-center mb-6">
+            Acesse sua conta para continuar
+          </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-            <Input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Digite seu e-mail"
-              required
-            />
+            <div className="flex flex-col">
+              <Label htmlFor="email" texto="E-mail" />
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="seu@email.com"
+                required
+                className="w-full"
+              />
+            </div>
 
-            <Input
-              type="password"
-              name="senha"
-              value={formData.senha}
-              onChange={handleChange}
-              placeholder="Digite sua senha"
-              required
-            />
+            <div className="flex flex-col">
+              <Label htmlFor="senha" texto="Senha" />
+              <Input
+                id="senha"
+                type="password"
+                name="senha"
+                value={formData.senha}
+                onChange={handleChange}
+                placeholder="Sua senha"
+                required
+                className="w-full"
+              />
+            </div>
 
-            <p className="text-center text-xl text-gray-600">
+            <p className="text-center text-base sm:text-xl text-gray-600 flex flex-wrap items-center justify-center gap-2">
               Não possui conta?
               <Botao
                 tipo="button"

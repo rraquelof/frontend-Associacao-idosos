@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FormularioIdoso from "../../componentes/formularioIdoso/FormularioIdoso";
 import { useParams } from "react-router-dom";
 import type Idoso from "../../modelo/Idoso";
+import Layout from "../../componentes/layout/Layout";
 
 export default function AtualizarIdoso() {
   const { id } = useParams();
@@ -28,9 +29,11 @@ export default function AtualizarIdoso() {
 
   if (!dados)
     return (
-      <p className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">
+      <Layout>
+      <p className="flex justify-center items-center py-24 text-blue-500 font-medium">
         Carregando dados...
       </p>
+      </Layout>
     );
 
   return (

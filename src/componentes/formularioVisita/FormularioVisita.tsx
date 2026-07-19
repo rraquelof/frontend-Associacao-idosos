@@ -7,6 +7,7 @@ import Mensagem from "../mensagem/Mensagem";
 import ErroCampoObrigatorio from "../erroCampoObrigatorio/ErroCampoObrigatorio";
 import { ChevronLeftIcon } from "lucide-react";
 import type Visita from "../../modelo/Visita";
+import Layout from "../layout/Layout";
 
 interface FormularioProps {
   endpoint: string;
@@ -119,7 +120,8 @@ export default function FormularioVisita({
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
+    <Layout>
+    <div className="w-full box-border flex flex-col items-center py-6 sm:py-8 px-2 sm:px-0">
       <div className="w-full max-w-3xl flex items-center justify-between mb-6 mt-4 px-4 relative">
         <div className="flex items-center gap-4 w-full">
           <Botao
@@ -128,18 +130,18 @@ export default function FormularioVisita({
           >
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black text-center w-full">
+          <h1 className="text-lg sm:text-3xl font-bold text-gray-800 text-center w-full">
             {tituloFormulario}
           </h1>
         </div>
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-8 overflow-hidden">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-4 sm:p-8 overflow-hidden">
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-6 max-h-[65vh] overflow-y-auto pr-2"
         >
-          <h3 className="text-black font-bold text-xl uppercase tracking-wider">
+          <h3 className="text-blue-800 font-bold text-xl uppercase tracking-wider">
             Dados da Visita
           </h3>
 
@@ -198,5 +200,6 @@ export default function FormularioVisita({
         </form>
       </div>
     </div>
+    </Layout>
   );
 }
