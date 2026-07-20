@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Botao from "../../componentes/botao/Botao";
 import Mensagem from "../../componentes/mensagem/Mensagem";
 import { useState } from "react";
+import Layout from "../../componentes/layout/Layout";
 
 export default function DeletarRegistroSaude() {
   const { id } = useParams<{ id: string }>();
@@ -58,8 +59,9 @@ export default function DeletarRegistroSaude() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col justify-center items-center bg-gray-200">
-      <div className="bg-white p-8 rounded-xl shadow-xl text-center">
+    <Layout>
+    <div className="w-full flex flex-col justify-center items-center p-4 py-16">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl text-center w-full max-w-md">
         <h1 className="text-2xl font-bold text-red-600 mb-4">
           Confirmar Exclusão
         </h1>
@@ -97,5 +99,6 @@ export default function DeletarRegistroSaude() {
         />
       )}
     </div>
+    </Layout>
   );
 }

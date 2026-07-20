@@ -18,3 +18,22 @@ export function obterIdUsuarioLogado(): string | null {
     return null;
   }
 }
+
+// Extrai o tipo do usuário logado (coordenador, enfermeiro, voluntario, familiar)
+// a partir do mesmo token JWT, usado para liberar/restringir acesso a páginas.
+export function obterTipoUsuarioLogado(): string | null {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const payloadJson = atob(
+      payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
+    );
+    const payload = JSON.parse(payloadJson);
+
+    return payload.tipo ?? null;
+  } catch {
+    return null;
+  }
+}

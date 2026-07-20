@@ -11,6 +11,7 @@ import { ChevronLeftIcon } from "lucide-react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import Layout from "../layout/Layout";
 
 const iconeMarcador = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -194,22 +195,23 @@ export default function FormularioEvento({ eventoId }: EventoFormProps) {
     : [-6.8894, -38.5586];
 
 return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
+    <Layout>
+    <div className="w-full box-border flex flex-col items-center py-6 sm:py-8 px-2 sm:px-0">
       <div className="w-full max-w-3xl flex items-center justify-between mb-6 mt-4 px-4 relative">
         <div className="flex items-center gap-4 w-full">
-          <Botao 
-            onClick={() => navegacao("/eventos")} 
+          <Botao
+            onClick={() => navegacao("/eventos")}
             className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100 absolute left-0"
           >
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black text-center w-full">
+          <h1 className="text-lg sm:text-3xl font-bold text-gray-800 text-center w-full">
             {metodo === "POST" ? "Novo Evento" : "Editar Evento"}
           </h1>
         </div>
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-8 overflow-hidden">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-4 sm:p-8 overflow-hidden">
         {carregando ? (
           <div className="flex justify-center items-center h-40 text-gray-500 font-medium">
             Carregando informações do evento...
@@ -220,7 +222,7 @@ return (
             onSubmit={handleSubmit} 
             className="flex flex-col gap-6 max-h-[65vh] overflow-y-auto pr-2"
           >
-            <h3 className="text-black font-bold text-xl uppercase tracking-wider">
+            <h3 className="text-blue-800 font-bold text-xl uppercase tracking-wider">
               Dados do Evento
             </h3>
             
@@ -295,5 +297,6 @@ return (
         )}
       </div>
     </div>
+    </Layout>
   );
 }

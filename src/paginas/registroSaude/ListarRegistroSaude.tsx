@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
 import { useNavigate } from "react-router-dom";
 import Botao from "../../componentes/botao/Botao";
-import { ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon, HeartPulse, Loader2 } from "lucide-react";
+import Layout from "../../componentes/layout/Layout";
+import saudeIcon from "../../img/saude.png";
+import { useUsuarioLogado } from "../../hooks/useUsuarioLogado";
 
 export default function ListarRegistroSaudeIdoso() {
   const [registrosSaude, setRegistrosSaude] = useState<RegistroSaudeIdoso[]>([]);
   const [mensagem, setMensagem] = useState("");
+  const [carregando, setCarregando] = useState(true);
   const navegacao = useNavigate();
+  const { usuario: usuarioLogado, carregando: carregandoUsuario } = useUsuarioLogado();
   const [idosoSelecionado, setIdosoSelecionado] = useState<{ _id: string; nome: string } | null>(null);
   const [dataPesquisa, setDataPesquisa] = useState("");
 
@@ -26,24 +31,38 @@ export default function ListarRegistroSaudeIdoso() {
         const dadosSaude = await respostaSaude.json();
 
         if (!respostaSaude.ok) {
-          setMensagem(dadosSaude.message || "Erro ao buscar registros de saúde");
+          if (respostaSaude.status === 404) {
+            setRegistrosSaude([]);
+          } else {
+            setMensagem(dadosSaude.message || "Erro ao buscar registros de saúde");
+          }
           return;
         }
 
         setRegistrosSaude(dadosSaude);
       } catch {
         setMensagem("Falha ao carregar os dados de saúde");
+      } finally {
+        setCarregando(false);
       }
     };
 
     carregarDadosSaude();
   }, []);
 
-  const idososUnicos = registrosSaude.filter((registro, index, self) =>
+  // Familiares só podem ver os registros de saúde do idoso vinculado à conta deles.
+  const registrosVisiveis =
+    usuarioLogado?.tipo === "familiar"
+      ? registrosSaude.filter((r) => r.idosoId?._id === usuarioLogado.idosoVinculado)
+      : registrosSaude;
+
+  const idososUnicos = registrosVisiveis.filter((registro, index, self) =>
     index === self.findIndex((r) => r.idosoId?._id === registro.idosoId?._id)
   );
 
-  const datasDoIdosoSelecionado = registrosSaude
+  const carregandoTudo = carregando || carregandoUsuario;
+
+  const datasDoIdosoSelecionado = registrosVisiveis
     .filter((registro) => registro.idosoId?._id === idosoSelecionado?._id)
 
     .sort((a, b) => {
@@ -61,54 +80,89 @@ export default function ListarRegistroSaudeIdoso() {
     });
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 flex flex-col items-center p-8 relative">
+    <Layout>
+    <div className="w-full flex flex-col items-center p-4 sm:p-8 relative">
 
-      <div className="w-full max-w-5xl flex items-center justify-between mb-8 mt-10">
+      <div className="w-full max-w-5xl flex flex-wrap items-center justify-between gap-4 mb-8 mt-6 sm:mt-10">
         <div className="flex items-center gap-4">
           <Botao onClick={() => navegacao("/menu")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black">Gerenciamento dos Registros de Saúde dos Idosos</h1>
+          <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center shrink-0">
+            <img src={saudeIcon} alt="" className="w-8 h-8 object-contain" />
+          </div>
+          <div>
+            <h1 className="text-lg sm:text-3xl font-bold text-gray-800">Gerenciamento dos Registros de Saúde dos Idosos</h1>
+            <p className="text-gray-500 text-sm mt-0.5">Acompanhamentos, prontuários e medicamentos</p>
+          </div>
         </div>
         <Botao
           onClick={() => navegacao("/registro/saude")}
           texto="+ Novo Registro"
-          className="bg-blue-600 text-white hover:bg-blue-700"
+          className="bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500 text-white rounded-full shadow-md hover:shadow-lg transition-all font-semibold"
         />
       </div>
 
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-6">
-        <div className="h-[60vh] overflow-y-auto">
-          {idososUnicos.map((registro) => (
-            <div
-              key={registro._id}
-              className="flex justify-between text-black items-center border-b py-4 px-2 last:border-0"
-            >
-              <span className="text-lg font-medium">
-                {registro.idosoId?.nome || "Idoso não identificado"}
-              </span>
-
-              <Botao
-                texto="Ver dados"
-                className="bg-blue-300 text-white hover:bg-blue-500"
-                onClick={() => {
-                  if (registro.idosoId) {
-                    setIdosoSelecionado({ _id: registro.idosoId._id, nome: registro.idosoId.nome });
-                    setDataPesquisa("");
-                  }
-                }}
-              />
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-4 sm:p-6">
+        <div className={`overflow-y-auto ${idososUnicos.length > 0 ? "h-[60vh]" : ""}`}>
+          {carregandoTudo ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-rose-400 animate-spin" />
+              </div>
+              <p className="text-gray-500 font-medium">Carregando registros...</p>
             </div>
-          ))}
+          ) : (
+            <>
+              {idososUnicos.map((registro) => (
+                <div
+                  key={registro._id}
+                  className="flex flex-wrap gap-2 justify-between text-black items-center border-b py-4 px-2 last:border-0"
+                >
+                  <span className="text-lg font-medium break-words">
+                    {registro.idosoId?.nome || "Idoso não identificado"}
+                  </span>
 
-          {mensagem && (
-            <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
-          )}
+                  <div className="flex gap-2">
+                    <Botao
+                      texto="Relatório"
+                      className="bg-rose-50 text-rose-600 hover:bg-rose-100"
+                      onClick={() => {
+                        if (registro.idosoId) {
+                          navegacao(`/relatorio/idoso/${registro.idosoId._id}`);
+                        }
+                      }}
+                    />
+                    <Botao
+                      texto="Ver dados"
+                      className="bg-blue-600 text-white hover:bg-blue-700"
+                      onClick={() => {
+                        if (registro.idosoId) {
+                          setIdosoSelecionado({ _id: registro.idosoId._id, nome: registro.idosoId.nome });
+                          setDataPesquisa("");
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
 
-          {registrosSaude.length === 0 && !mensagem && (
-            <p className="text-gray-500 text-center py-4">
-              Nenhum registro de saúde cadastrado.
-            </p>
+              {mensagem && (
+                <p className="text-center text-sm mt-2 text-gray-700">{mensagem}</p>
+              )}
+
+              {registrosVisiveis.length === 0 && !mensagem && (
+                <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                  <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center">
+                    <HeartPulse className="w-8 h-8 text-rose-400" />
+                  </div>
+                  <p className="text-gray-600 font-medium">Nenhum registro de saúde cadastrado</p>
+                  <p className="text-gray-400 text-sm -mt-2">
+                    Clique em "+ Novo Registro" para adicionar o primeiro.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -154,7 +208,7 @@ export default function ListarRegistroSaudeIdoso() {
                 datasDoIdosoSelecionado.map((reg) => (
                   <div
                     key={reg._id}
-                    className="flex justify-between items-center bg-gray-100 p-3 rounded-xl border border-gray-200"
+                    className="flex flex-wrap gap-2 justify-between items-center bg-gray-100 p-3 rounded-xl border border-gray-200"
                   >
                     <span className="text-gray-800 font-medium">
                       📅 {reg.dataConsulta ? new Date(reg.dataConsulta).toLocaleDateString("pt-BR") : "Data indisponível"}
@@ -180,5 +234,6 @@ export default function ListarRegistroSaudeIdoso() {
       )}
 
     </div>
+    </Layout>
   );
 }

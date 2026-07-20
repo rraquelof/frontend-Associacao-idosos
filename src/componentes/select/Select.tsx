@@ -9,7 +9,7 @@ const Select = ({ className, children, ...props }: SelectProps) => {
   return (
     <select
       {...props}
-      className={`border p-3 rounded-lg text-lg text-black bg-white focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all duration-200 ${className}`}
+      className={`border p-3 rounded-lg text-lg text-black bg-white focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all duration-200 ${className}`}
     >
       {children}
     </select>

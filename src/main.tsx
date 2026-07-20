@@ -15,6 +15,7 @@ import AtualizarIdoso from "./paginas/idoso/AtualizarIdoso";
 import ListaIdosos from "./paginas/idoso/ListarIdosos";
 import DetalharIdoso from "./paginas/idoso/DetalharIdoso";
 import DeletarIdoso from "./paginas/idoso/DeletarIdoso";
+import RelatorioSaudeIdoso from "./paginas/idoso/RelatorioSaudeIdoso";
 import PrivacidadeRoute from "./PrivacidadeRoute";
 import ListarRegistroSaudeIdoso from "./paginas/registroSaude/ListarRegistroSaude";
 import CadastroSaudeIdoso from "./paginas/registroSaude/CadastroRegistroSaude";
@@ -61,7 +62,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/lista/idosos"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="idosos">
             <ListaIdosos />
           </PrivacidadeRoute>
         }
@@ -70,7 +71,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/cadastro/idoso"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="idosos">
             <CadastroIdoso />
           </PrivacidadeRoute>
         }
@@ -79,7 +80,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/atualizar/idoso/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="idosos">
             <AtualizarIdoso />
           </PrivacidadeRoute>
         }
@@ -88,7 +89,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/dados/idoso/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="idosos">
             <DetalharIdoso />
           </PrivacidadeRoute>
         }
@@ -97,7 +98,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/deletar/idoso/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="idosos">
             <DeletarIdoso />
           </PrivacidadeRoute>
         }
@@ -106,7 +107,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/eventos"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="eventos">
             <Eventos />
           </PrivacidadeRoute>
         }
@@ -115,7 +116,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/eventos/novo"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="eventos">
             <FormularioEvento />
           </PrivacidadeRoute>
         }
@@ -124,7 +125,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/eventos/editar/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="eventos">
             <EdicaoEventoWrapper />
           </PrivacidadeRoute>
         }
@@ -133,7 +134,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/eventos/detalhes/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="eventos">
             <DetalharEvento />
           </PrivacidadeRoute>
         }
@@ -142,7 +143,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/lista/registro/saude"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="saude">
             <ListarRegistroSaudeIdoso />
           </PrivacidadeRoute>
         }
@@ -151,7 +152,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/registro/saude"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="saude">
             <CadastroSaudeIdoso />
           </PrivacidadeRoute>
         }
@@ -160,8 +161,17 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/dados/saude/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="saude">
             <DetalharRegistroSaude />
+          </PrivacidadeRoute>
+        }
+      />
+
+      <Route
+        path="/relatorio/idoso/:id"
+        element={
+          <PrivacidadeRoute pagina="saude">
+            <RelatorioSaudeIdoso />
           </PrivacidadeRoute>
         }
       />
@@ -169,7 +179,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/atualizar/registro/saude/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="saude">
             <AtualizarRegistroSaude />
           </PrivacidadeRoute>
         }
@@ -178,7 +188,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/deletar/registro/saude/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="saude">
             <DeletarRegistroSaude />
           </PrivacidadeRoute>
         }
@@ -187,7 +197,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/lista/visitas"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="visitas">
             <ListarVisitas />
           </PrivacidadeRoute>
         }
@@ -196,7 +206,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/cadastro/visita"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="visitas">
             <CadastroVisita />
           </PrivacidadeRoute>
         }
@@ -205,7 +215,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/atualizar/visita/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="visitas">
             <AtualizarVisita />
           </PrivacidadeRoute>
         }
@@ -214,7 +224,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/deletar/visita/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="visitas">
             <DeletarVisita />
           </PrivacidadeRoute>
         }
@@ -223,7 +233,7 @@ createRoot(document.getElementById("root")!).render(
       <Route
         path="/dados/visita/:id"
         element={
-          <PrivacidadeRoute>
+          <PrivacidadeRoute pagina="visitas">
             <DetalhesVisita />
           </PrivacidadeRoute>
         }

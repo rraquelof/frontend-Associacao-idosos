@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FormularioRegistroSaude from "../../componentes/formularioRegistroSaude/FormularioRegistroSaude";
 import { useParams } from "react-router-dom";
 import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
+import Layout from "../../componentes/layout/Layout";
 
 export default function AtualizarRegistroSaude() {
   const { id } = useParams();
@@ -28,9 +29,11 @@ export default function AtualizarRegistroSaude() {
 
   if (!dados)
     return (
-      <p className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">
+      <Layout>
+      <p className="flex justify-center items-center py-24 text-blue-500 font-medium">
         Carregando dados...
       </p>
+      </Layout>
     );
 
   return (

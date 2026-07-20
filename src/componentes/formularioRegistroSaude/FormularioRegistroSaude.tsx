@@ -9,13 +9,10 @@ import Mensagem from "../mensagem/Mensagem";
 import ErroCampoObrigatorio from "../erroCampoObrigatorio/ErroCampoObrigatorio";
 import { ChevronLeftIcon } from "lucide-react";
 import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
+import Layout from "../layout/Layout";
+import { obterIdUsuarioLogado } from "../../utilitarios/authUsuario";
 
 interface IdosoSimplificado {
-  _id: string;
-  nome: string;
-}
-
-interface EnfermeiroSimplificado {
   _id: string;
   nome: string;
 }
@@ -38,14 +35,16 @@ export default function FormularioRegistroSaude({
   const navegacao = useNavigate();
 
   const [listaIdosos, setListaIdosos] = useState<IdosoSimplificado[]>([]);
-  const [listaEnfermeiros, setListaEnfermeiros] = useState<EnfermeiroSimplificado[]>([]);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<"sucesso" | "erro" | "informacao">("informacao");
   const [enviarVazio, setEnviarVazio] = useState(false);
 
+  // Quem registra a consulta é sempre o usuário logado no momento — não faz
+  // sentido escolher manualmente. Em edição, o valor original é preservado
+  // pelo useEffect de dadosIniciais logo abaixo.
   const [formData, setFormData] = useState({
     idosoId: "",
-    usuarioId: "",
+    usuarioId: obterIdUsuarioLogado() || "",
     altura: "",
     peso: "",
     pressao: "",
@@ -56,7 +55,7 @@ export default function FormularioRegistroSaude({
   });
 
   useEffect(() => {
-    const carregarListas = async () => {
+    const carregarIdosos = async () => {
       try {
         const token = localStorage.getItem("token");
         const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
@@ -66,20 +65,13 @@ export default function FormularioRegistroSaude({
           const dados = await respIdosos.json();
           setListaIdosos(dados.map((i: any) => ({ _id: i._id || i.id, nome: i.nome })));
         }
-
-        const respUsuarios = await fetch("https://api-associacao-idosos.onrender.com/api/usuarios", { headers });
-        if (respUsuarios.ok) {
-          const dadosUsuarios = await respUsuarios.json();
-          const apenasEnfermeiros = dadosUsuarios.filter((u: any) => u.tipo === "enfermeiro");
-          setListaEnfermeiros(apenasEnfermeiros.map((u: any) => ({ _id: u._id || u.id, nome: u.nome })));
-        }
       } catch {
         setMensagem("Erro ao carregar os dados auxiliares do servidor.");
         setTipoMensagem("erro");
       }
     };
 
-    carregarListas();
+    carregarIdosos();
   }, []);
 
   useEffect(() => {
@@ -149,29 +141,30 @@ export default function FormularioRegistroSaude({
   };
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
+    <Layout>
+    <div className="w-full box-border flex flex-col items-center py-6 sm:py-8 px-2 sm:px-0">
       <div className="w-full max-w-3xl flex items-center justify-between mb-6 mt-4 px-4 relative">
         <div className="flex items-center gap-4 w-full">
           <Botao onClick={() => navegacao("/lista/registro/saude")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100 absolute left-0">
             <ChevronLeftIcon />
           </Botao>
-          <h1 className="text-3xl font-bold text-black text-center w-full">
+          <h1 className="text-lg sm:text-3xl font-bold text-gray-800 text-center w-full">
             {tituloFormulario}
           </h1>
         </div>
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-8 overflow-hidden">
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl mx-auto p-4 sm:p-8 overflow-hidden">
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-6 max-h-[65vh] overflow-y-auto pr-2"
         >
-          <h3 className="text-black font-bold text-xl uppercase tracking-wider">
+          <h3 className="text-blue-800 font-bold text-xl uppercase tracking-wider">
             Dados de Saúde
           </h3>
 
-          <div className="flex gap-6">
-            <div className="flex flex-col w-1/2">
+          <div className="flex flex-wrap gap-6">
+            <div className="flex flex-col w-full sm:w-1/2">
               <Label htmlFor="idosoId" texto="Idoso *" />
               <ErroCampoObrigatorio valor={formData.idosoId} obrigatorio envioVazio={enviarVazio}>
                 <Select
@@ -188,28 +181,14 @@ export default function FormularioRegistroSaude({
                 </Select>
               </ErroCampoObrigatorio>
             </div>
-
-            <div className="flex flex-col w-1/2">
-              <Label htmlFor="usuarioId" texto="Enfermeiro Responsável *" />
-              <ErroCampoObrigatorio valor={formData.usuarioId} obrigatorio envioVazio={enviarVazio}>
-                <Select
-                  id="usuarioId"
-                  name="usuarioId"
-                  value={formData.usuarioId}
-                  onChange={handleChange}
-                  required
-                >
-                  <Option value="" texto="Selecione o Enfermeiro" />
-                  {listaEnfermeiros.map(u => (
-                    <Option key={u._id} value={u._id} texto={u.nome} />
-                  ))}
-                </Select>
-              </ErroCampoObrigatorio>
-            </div>
           </div>
 
-          <div className="flex gap-6">
-            <div className="flex flex-col w-1/2">
+          <p className="text-sm text-gray-400 -mt-2">
+            Este registro será associado a você e à data de hoje automaticamente.
+          </p>
+
+          <div className="flex flex-wrap gap-6">
+            <div className="flex flex-col w-full sm:w-1/2">
               <Label htmlFor="altura" texto="Altura (cm) *" />
               <ErroCampoObrigatorio valor={formData.altura} obrigatorio envioVazio={enviarVazio}>
                 <Input
@@ -224,7 +203,7 @@ export default function FormularioRegistroSaude({
               </ErroCampoObrigatorio>
             </div>
 
-            <div className="flex flex-col w-1/2">
+            <div className="flex flex-col w-full sm:w-1/2">
               <Label htmlFor="peso" texto="Peso (kg) *" />
               <ErroCampoObrigatorio valor={formData.peso} obrigatorio envioVazio={enviarVazio}>
                 <Input
@@ -241,8 +220,8 @@ export default function FormularioRegistroSaude({
             </div>
           </div>
 
-          <div className="flex gap-6">
-            <div className="flex flex-col w-1/2">
+          <div className="flex flex-wrap gap-6">
+            <div className="flex flex-col w-full sm:w-1/2">
               <Label htmlFor="pressao" texto="Pressão Arterial (mmHg) *" />
               <ErroCampoObrigatorio valor={formData.pressao} obrigatorio envioVazio={enviarVazio}>
                 <Input
@@ -257,7 +236,7 @@ export default function FormularioRegistroSaude({
               </ErroCampoObrigatorio>
             </div>
 
-            <div className="flex flex-col w-1/2">
+            <div className="flex flex-col w-full sm:w-1/2">
               <Label htmlFor="glicemia" texto="Glicemia (mg/dL) *" />
               <ErroCampoObrigatorio valor={formData.glicemia} obrigatorio envioVazio={enviarVazio}>
                 <Input
@@ -332,5 +311,6 @@ export default function FormularioRegistroSaude({
         </form>
       </div>
     </div>
+    </Layout>
   );
 }

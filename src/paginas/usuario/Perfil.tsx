@@ -10,6 +10,8 @@ import CampoDetalhes from "../../componentes/campo-detalhes-idoso/CampoDetalhes"
 import Mensagem from "../../componentes/mensagem/Mensagem";
 import type Usuario from "../../modelo/Usuario";
 import { obterIdUsuarioLogado } from "../../utilitarios/authUsuario";
+import Layout from "../../componentes/layout/Layout";
+import perfilIcon from "../../img/perfil.png";
 
 // Endpoints confirmados direto no código da API (userRoutes.ts / userController.ts):
 // GET  /api/usuario/:id  -> getUserById
@@ -31,6 +33,7 @@ export default function Perfil() {
   const [tipoMensagem, setTipoMensagem] = useState<"sucesso" | "erro" | "informacao">(
     "informacao"
   );
+  const [idososDisponiveis, setIdososDisponiveis] = useState<{ _id: string; nome: string }[]>([]);
 
   useEffect(() => {
     async function buscarUsuario() {
@@ -68,6 +71,24 @@ export default function Perfil() {
 
     buscarUsuario();
   }, [idUsuario, token]);
+
+  // Familiares vinculam a conta a um idoso específico, para que o acesso
+  // deles fique restrito a esse idoso. A lista só precisa ser buscada
+  // quando o usuário logado é do tipo "familiar".
+  useEffect(() => {
+    if (usuario?.tipo !== "familiar") return;
+
+    fetch(`${BASE_URL}/idosos`, {
+      headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+    })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((dados) => setIdososDisponiveis(Array.isArray(dados) ? dados : []))
+      .catch(() => {});
+  }, [usuario?.tipo, token]);
+
+  const nomeIdosoVinculado = idososDisponiveis.find(
+    (i) => i._id === usuario?.idosoVinculado
+  )?.nome;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -152,30 +173,34 @@ export default function Perfil() {
   };
 
   if (carregando) {
-    return <p className="text-center mt-10">Carregando...</p>;
+    return <Layout><p className="text-center py-24">Carregando...</p></Layout>;
   }
 
   if (erro) {
-    return <p className="text-center mt-10 text-red-500">Erro: {erro}</p>;
+    return <Layout><p className="text-center py-24 text-red-500">Erro: {erro}</p></Layout>;
   }
 
   if (!usuario) {
-    return <p className="text-center mt-10">Usuário não encontrado.</p>;
+    return <Layout><p className="text-center py-24">Usuário não encontrado.</p></Layout>;
   }
 
   return (
-    <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center">
-      <div className="text-black p-6 w-full flex items-center relative">
-        <Botao
-          className="absolute left-0 top-3"
-          onClick={() => navegacao("/menu")}
-        >
+    <Layout>
+    <div className="w-full box-border flex flex-col items-center">
+      <div className="text-black p-4 sm:p-6 w-full max-w-2xl flex items-center gap-4">
+        <Botao onClick={() => navegacao("/menu")} className="bg-white text-black p-2 rounded-full shadow hover:bg-gray-100">
           <ChevronLeftIcon />
         </Botao>
-        <h1 className="text-3xl font-bold text-center w-full">Meu Perfil</h1>
+        <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
+          <img src={perfilIcon} alt="" className="w-8 h-8 object-contain" />
+        </div>
+        <div>
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Meu Perfil</h1>
+          <p className="text-gray-500 text-sm mt-0.5">Dados da conta e configurações</p>
+        </div>
       </div>
 
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 flex flex-col gap-4">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col gap-4 mx-2 sm:mx-0">
         {confirmandoExclusao ? (
           <div className="text-center py-4">
             <h2 className="text-xl font-bold text-red-600 mb-4">
@@ -203,6 +228,12 @@ export default function Perfil() {
               <CampoDetalhes label="Sexo" valor={usuario.sexo} />
               <CampoDetalhes label="Endereço" valor={usuario.endereco} />
               <CampoDetalhes label="Telefone" valor={usuario.telefone} />
+              {usuario.tipo === "familiar" && (
+                <CampoDetalhes
+                  label="Idoso vinculado"
+                  valor={nomeIdosoVinculado || "Nenhum idoso vinculado"}
+                />
+              )}
             </div>
 
             <div className="flex gap-4 mt-6 justify-center flex-wrap">
@@ -220,8 +251,8 @@ export default function Perfil() {
             </div>
           </>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div className="flex flex-col">
               <Label htmlFor="nome" texto="Nome" />
               <Input
                 id="nome"
@@ -229,10 +260,11 @@ export default function Perfil() {
                 value={formDados.nome ?? ""}
                 onChange={handleChange}
                 required
+                className="w-full"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <Label htmlFor="email" texto="E-mail" />
               <Input
                 id="email"
@@ -241,10 +273,11 @@ export default function Perfil() {
                 value={formDados.email ?? ""}
                 onChange={handleChange}
                 required
+                className="w-full"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <Label htmlFor="telefone" texto="Telefone" />
               <Input
                 id="telefone"
@@ -252,32 +285,53 @@ export default function Perfil() {
                 name="telefone"
                 value={formDados.telefone ?? ""}
                 onChange={handleChange}
+                className="w-full"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <Label htmlFor="endereco" texto="Endereço" />
               <Input
                 id="endereco"
                 name="endereco"
                 value={formDados.endereco ?? ""}
                 onChange={handleChange}
+                className="w-full"
               />
             </div>
 
-            <div>
+            <div className="flex flex-col">
               <Label htmlFor="sexo" texto="Sexo" />
               <Select
                 id="sexo"
                 name="sexo"
                 value={formDados.sexo ?? ""}
                 onChange={handleChange}
+                className="w-full"
               >
                 <Option value="" texto="Selecione" />
                 <Option value="feminino" texto="Feminino" />
                 <Option value="masculino" texto="Masculino" />
               </Select>
             </div>
+
+            {formDados.tipo === "familiar" && (
+              <div className="flex flex-col">
+                <Label htmlFor="idosoVinculado" texto="Idoso vinculado" />
+                <Select
+                  id="idosoVinculado"
+                  name="idosoVinculado"
+                  value={formDados.idosoVinculado ?? ""}
+                  className="w-full"
+                  onChange={handleChange}
+                >
+                  <Option value="" texto="Selecione o idoso" />
+                  {idososDisponiveis.map((idoso) => (
+                    <Option key={idoso._id} value={idoso._id} texto={idoso.nome} />
+                  ))}
+                </Select>
+              </div>
+            )}
 
             <div className="flex gap-4 mt-4 justify-center">
               <Botao tipo="submit" texto="Salvar" variant="gradient" />
@@ -302,5 +356,6 @@ export default function Perfil() {
         )}
       </div>
     </div>
+    </Layout>
   );
 }

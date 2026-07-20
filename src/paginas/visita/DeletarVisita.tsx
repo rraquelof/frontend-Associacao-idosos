@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Botao from "../../componentes/botao/Botao";
 import Mensagem from "../../componentes/mensagem/Mensagem";
+import Layout from "../../componentes/layout/Layout";
 
 export default function DeletarVisita() {
   const { id } = useParams<{ id: string }>();
@@ -57,8 +58,9 @@ export default function DeletarVisita() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col justify-center items-center bg-gray-200">
-      <div className="bg-white p-8 rounded-xl shadow-xl text-center">
+    <Layout>
+    <div className="w-full flex flex-col justify-center items-center p-4 py-16">
+      <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl text-center w-full max-w-md">
         <h1 className="text-2xl font-bold text-red-600 mb-4">
           Confirmar Exclusão
         </h1>
@@ -96,5 +98,6 @@ export default function DeletarVisita() {
         />
       )}
     </div>
+    </Layout>
   );
 }

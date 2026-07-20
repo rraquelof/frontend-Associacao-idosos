@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Input from "../../componentes/input/Input";
 import Botao from "../../componentes/botao/Botao";
 import Select from "../../componentes/select/Select";
+import logo from "../../img/logo.png";
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -80,23 +81,23 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="w-screen min-h-screen flex bg-gray-200 box-border">
+    <div className="w-full min-h-screen flex flex-col md:flex-row bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 box-border">
       {/* Lado esquerdo */}
-      <div className="w-1/2 bg-gray-200 flex flex-col justify-center items-center text-black p-10">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <h1 className="text-5xl font-bold">
-            Apoio para Associações de Idosos
-          </h1>
-          <p className="text-lg max-w-md">
-            Juntos construímos um envelhecimento mais digno e ativo.
+      <div className="w-full md:w-1/2 bg-gradient-to-b from-slate-50 via-blue-50/40 to-emerald-50/40 flex flex-col justify-center items-center text-black p-6 sm:p-10">
+        <div className="flex flex-col items-center text-center">
+          <img src={logo} alt="SIGAAI" className="w-56 sm:w-72 h-auto" />
+          <p className="text-gray-500 text-sm sm:text-base flex items-center gap-3 -mt-2">
+            <span className="w-6 h-px bg-blue-600" />
+            Sistema de gerenciamento de abrigo de idosos
+            <span className="w-6 h-px bg-emerald-600" />
           </p>
         </div>
       </div>
 
       {/* Lado direito */}
-      <div className="w-1/2 flex justify-center items-center p-10">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-3xl font-bold mb-6 text-center text-black">
+      <div className="w-full md:w-1/2 flex justify-center items-center p-4 sm:p-10">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-5 sm:p-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-blue-800">
             Entre na sua conta
           </h2>
 
@@ -179,7 +180,7 @@ export default function Cadastro() {
               required
             />
 
-            <p className="text-center text-xl text-gray-600">
+            <p className="text-center text-base sm:text-xl text-gray-600 flex flex-wrap items-center justify-center gap-2">
               Já possui conta?
               <Botao
                 tipo="button"

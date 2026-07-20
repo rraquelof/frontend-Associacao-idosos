@@ -4,6 +4,7 @@ import CampoDetalhes from "../../componentes/campo-detalhes-idoso/CampoDetalhes"
 import type RegistroSaudeIdoso from "../../modelo/RegistroSaudeIdoso";
 import Botao from "../../componentes/botao/Botao";
 import { ChevronLeftIcon } from "lucide-react";
+import Layout from "../../componentes/layout/Layout";
 
 export default function DetalharRegistroSaude() {
     const { id } = useParams();
@@ -44,32 +45,33 @@ export default function DetalharRegistroSaude() {
     }, [id]);
 
     if (carregando) {
-        return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-blue-500 font-medium">Carregando detalhes...</div>;
+        return <Layout><div className="flex justify-center items-center py-24 text-blue-500 font-medium">Carregando detalhes...</div></Layout>;
     }
 
     if (erro) {
-        return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Erro: {erro}</div>;
+        return <Layout><div className="flex justify-center items-center py-24 text-red-500 font-bold">Erro: {erro}</div></Layout>;
     }
 
     if (!registroSaude) {
-        return <div className="min-h-screen bg-gray-200 flex justify-center items-center text-red-500 font-bold">Registro não encontrado.</div>;
+        return <Layout><div className="flex justify-center items-center py-24 text-red-500 font-bold">Registro não encontrado.</div></Layout>;
     }
 
     return (
-        <div className="w-screen min-h-screen bg-gray-200 box-border flex flex-col items-center py-8">
-            <div className="text-black p-6 w-full max-w-4xl flex items-center relative mt-4">
+        <Layout>
+        <div className="w-full box-border flex flex-col items-center py-6 sm:py-8">
+            <div className="text-black p-4 sm:p-6 w-full max-w-4xl flex items-center relative mt-4">
                 <Botao
                     className="absolute left-0 bg-white text-black p-2 rounded-full shadow hover:bg-gray-100"
                     onClick={() => navegacao("/lista/registro/saude")}
                 >
                     <ChevronLeftIcon />
                 </Botao>
-                <h1 className="text-3xl font-bold text-center w-full">
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-800 text-center w-full">
                     Registro de Saúde
                 </h1>
             </div>
-            <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl max-h-[60vh] overflow-y-auto flex flex-col mt-16">
-                <div className="p-8 flex flex-wrap gap-6 content-start">
+            <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl max-h-[60vh] overflow-y-auto flex flex-col mt-8 sm:mt-16 mx-2 sm:mx-0">
+                <div className="p-4 sm:p-8 flex flex-wrap gap-6 content-start">
                     <CampoDetalhes label="Nome do idoso" valor={registroSaude.idosoId?.nome || "Não informado"} />
                     <CampoDetalhes label="Enfermeiro responsável" valor={registroSaude.usuarioId?.nome || "Não informado"} />
                     <CampoDetalhes
@@ -113,5 +115,6 @@ export default function DetalharRegistroSaude() {
                 />
             </div>
         </div>
+        </Layout>
     );
 }

@@ -30,7 +30,10 @@ export default function Campos({ campos, onChange }: CamposDinamicosProps) {
   return (
     <div className="flex flex-col gap-4">
       {itens.map((item, index) => (
-        <div key={index} className="flex gap-3">
+        <div
+          key={index}
+          className="flex flex-col gap-4 p-3 sm:p-4 rounded-xl bg-gray-50 border border-gray-100"
+        >
           {campos.map((campo) => (
             <div key={campo} className="flex flex-col">
               <Label
@@ -42,7 +45,7 @@ export default function Campos({ campos, onChange }: CamposDinamicosProps) {
                 type="text"
                 value={item[campo]}
                 onChange={(e) => handleChange(index, campo, e.target.value)}
-                className="w-1/1"
+                className="w-full"
               />
             </div>
           ))}
