@@ -96,49 +96,58 @@ export default function FormularioRegistroSaude({
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setEnviarVazio(false);
-    setMensagem("Enviando dados, por favor aguarde...");
-    setTipoMensagem("informacao");
+  e.preventDefault();
+  setEnviarVazio(false);
+  setMensagem("Enviando dados, por favor aguarde...");
+  setTipoMensagem("informacao");
 
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
+    
+    const listaAlergias = formData.alergias
+      ? formData.alergias.split(",").map((item) => item.trim()).filter(Boolean)
+      : [];
 
-      const resposta = await fetch(endpoint, {
-        method: metodo,
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          ...formData,
-          altura: Number(formData.altura),
-          peso: Number(formData.peso),
-          glicemia: Number(formData.glicemia),
-          alergias: formData.alergias || "",
-          doencasCronicas: formData.doencasCronicas || "",
-        }),
-      });
+    const listaDoencas = formData.doencasCronicas
+      ? formData.doencasCronicas.split(",").map((item) => item.trim()).filter(Boolean)
+      : [];
 
-      const dados = await resposta.json();
+    const resposta = await fetch(endpoint, {
+      method: metodo,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({
+        ...formData,
+        usuarioId: formData.usuarioId || obterIdUsuarioLogado(),
+        altura: Number(formData.altura),
+        peso: Number(formData.peso),
+        glicemia: Number(formData.glicemia),
+        alergias: listaAlergias,           
+        doencasCronicas: listaDoencas,      
+      }),
+    });
 
-      if (!resposta.ok) {
-        setMensagem(dados.message || "Erro ao processar a requisição de saúde.");
-        setTipoMensagem("erro");
-        return;
-      }
+    const dados = await resposta.json();
 
-      setMensagem(`Acompanhamento de saúde salvo com sucesso!`);
-      setTipoMensagem("sucesso");
-
-      setTimeout(() => {
-        navegacao("/lista/registro/saude");
-      }, 2000);
-    } catch {
-      setMensagem("Erro ao conectar com o servidor.");
+    if (!resposta.ok) {
+      setMensagem(dados.message || "Erro ao processar a requisição de saúde.");
       setTipoMensagem("erro");
+      return;
     }
-  };
+
+    setMensagem(`Acompanhamento de saúde salvo com sucesso!`);
+    setTipoMensagem("sucesso");
+
+    setTimeout(() => {
+      navegacao("/lista/registro/saude");
+    }, 2000);
+  } catch {
+    setMensagem("Erro ao conectar com o servidor.");
+    setTipoMensagem("erro");
+  }
+};
 
   return (
     <Layout>
