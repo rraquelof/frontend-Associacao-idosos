@@ -1,0 +1,239 @@
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
+import { render, fireEvent, waitFor } from "@testing-library/react";
+import AssistenteIA from "./AssistenteIA";
+import { processarAgenteComApiSistema, CHAVE_GEMINI_STORAGE } from "../../utilitarios/agenteIA";
+
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => mockNavigate,
+  useLocation: () => ({ pathname: "/menu", search: "", hash: "", state: null }),
+}));
+
+function criarJwtMock(id: string, tipo: string): string {
+  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const payload = btoa(JSON.stringify({ id, tipo }));
+  return `${header}.${payload}.sig`;
+}
+
+describe("AssistenteIA e motor agenteIA", () => {
+  const fetchOriginal = globalThis.fetch;
+
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    mockNavigate.mockReset();
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  afterEach(() => {
+    globalThis.fetch = fetchOriginal;
+    vi.restoreAllMocks();
+  });
+
+  test("Não renderiza o assistente quando o usuário não está logado", () => {
+    const { container } = render(<AssistenteIA />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  test("Renderiza botão flutuante após login e navega/exibe confirmação ao responder", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaTestKey123");
+
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        resposta: "Abrindo a lista de idosos e aguardando confirmação.",
+        acaoNavegacao: "/lista/idosos",
+        confirmacaoPendente: {
+          ferramenta: "deletar_visita",
+          argumentos: { visitaId: "vis-1", confirmado: true },
+          titulo: "Confirmar exclusão de visita",
+          descricao: "Excluir a visita de João?",
+        },
+      }),
+    });
+    globalThis.fetch = fetchMock as any;
+
+    const { getByRole, getByPlaceholderText, getByText, getAllByText } = render(<AssistenteIA />);
+
+    fireEvent.click(getByRole("button", { name: /Abrir assistente de IA/i }));
+    expect(getAllByText("Coordenador(a)").length).toBeGreaterThan(0);
+
+    const input = getByPlaceholderText(/Pergunte ou peça uma ação/i);
+    fireEvent.change(input, { target: { value: "Abrir lista de idosos" } });
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() => {
+      expect(getByText("Abrindo a lista de idosos e aguardando confirmação.")).toBeInTheDocument();
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith("/lista/idosos");
+    expect(getByText("Confirmar exclusão")).toBeInTheDocument();
+    expect(getByText("Cancelar")).toBeInTheDocument();
+  });
+
+  test("processarAgenteComApiSistema sanitiza dados LGPD (remove CPF/RG/SUS/senha) e restringe tools por perfil", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-enf-01", "enfermeiro"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaTestKey123");
+
+    let payloadToolResponseEnviadoAoGemini: any = null;
+    let toolsDeclaradasParaEnfermeiro: string[] = [];
+
+    const fetchMock = vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
+      const urlStr = String(url);
+
+      if (urlStr.endsWith("/usuario/usr-enf-01")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            _id: "usr-enf-01",
+            nome: "Dr. Carlos",
+            tipo: "enfermeiro",
+            cpf: "999.999.999-99",
+          }),
+        } as Response;
+      }
+
+      if (urlStr.endsWith("/idosos")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            {
+              _id: "idoso-01",
+              nome: "Maria das Graças",
+              cpf: "145.236.987-01",
+              rg: "1.452.890",
+              sus: "704501289632145",
+              sexo: "Feminino",
+            },
+          ],
+        } as Response;
+      }
+
+      if (urlStr.includes("generativelanguage.googleapis.com")) {
+        const body = JSON.parse(String(init?.body || "{}"));
+        toolsDeclaradasParaEnfermeiro =
+          body.tools?.[0]?.functionDeclarations?.map((d: any) => d.name) || [];
+
+        const ultimaParte = body.contents[body.contents.length - 1]?.parts?.[0];
+        if (!ultimaParte?.functionResponse) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              candidates: [
+                {
+                  content: {
+                    role: "model",
+                    parts: [{ functionCall: { name: "listar_idosos", args: {} } }],
+                  },
+                },
+              ],
+            }),
+          } as Response;
+        }
+
+        payloadToolResponseEnviadoAoGemini = ultimaParte.functionResponse.response.result;
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  role: "model",
+                  parts: [{ text: "Temos 1 residente visível: Maria das Graças." }],
+                },
+              },
+            ],
+          }),
+        } as Response;
+      }
+
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+
+    globalThis.fetch = fetchMock as any;
+
+    const resultado = await processarAgenteComApiSistema({
+      mensagem: "Liste os idosos",
+    });
+
+    expect(resultado.status).toBe(200);
+    expect(resultado.body.resposta).toContain("Maria das Graças");
+
+    // Enfermeiro não pode receber tools de eventos, visitas ou cadastro/exclusão de idoso
+    expect(toolsDeclaradasParaEnfermeiro).toContain("listar_idosos");
+    expect(toolsDeclaradasParaEnfermeiro).toContain("cadastrar_registro_saude");
+    expect(toolsDeclaradasParaEnfermeiro).not.toContain("cadastrar_idoso");
+    expect(toolsDeclaradasParaEnfermeiro).not.toContain("deletar_idoso");
+    expect(toolsDeclaradasParaEnfermeiro).not.toContain("listar_eventos");
+    expect(toolsDeclaradasParaEnfermeiro).not.toContain("listar_visitas");
+
+    // CPF, RG e SUS não podem ir para a API do Gemini
+    const idosoEnviado = payloadToolResponseEnviadoAoGemini?.idosos?.[0];
+    expect(idosoEnviado?.nome).toBe("Maria das Graças");
+    expect(idosoEnviado?.cpf).toBeUndefined();
+    expect(idosoEnviado?.rg).toBeUndefined();
+    expect(idosoEnviado?.sus).toBeUndefined();
+  });
+
+  test("processarAgenteComApiSistema faz fallback automático para flash-lite quando flash retorna 429", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaTestKey123");
+
+    const modelosChamados: string[] = [];
+
+    const fetchMock = vi.fn(async (url: RequestInfo | URL) => {
+      const urlStr = String(url);
+      if (urlStr.endsWith("/usuario/usr-coord-01")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ _id: "usr-coord-01", nome: "Ana", tipo: "coordenador" }),
+        } as Response;
+      }
+      if (urlStr.includes("gemini-2.5-flash:")) {
+        modelosChamados.push("gemini-2.5-flash");
+        return {
+          ok: false,
+          status: 429,
+          statusText: "Too Many Requests",
+          json: async () => ({ error: { message: "Quota exceeded" } }),
+        } as Response;
+      }
+      if (urlStr.includes("gemini-2.5-flash-lite:")) {
+        modelosChamados.push("gemini-2.5-flash-lite");
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  role: "model",
+                  parts: [{ text: "Resposta via modelo flash-lite gratuito." }],
+                },
+              },
+            ],
+          }),
+        } as Response;
+      }
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+
+    globalThis.fetch = fetchMock as any;
+
+    const resultado = await processarAgenteComApiSistema({
+      mensagem: "Olá, resumo do abrigo",
+    });
+
+    expect(resultado.status).toBe(200);
+    expect(resultado.body.modeloUtilizado).toBe("gemini-2.5-flash-lite");
+    expect(modelosChamados).toEqual(["gemini-2.5-flash", "gemini-2.5-flash-lite"]);
+  });
+});

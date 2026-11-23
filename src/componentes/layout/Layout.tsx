@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import Sidebar from "./Sidebar";
+import AssistenteIA from "../agente/AssistenteIA";
 import logo from "../../img/logo.png";
 
 interface LayoutProps {
@@ -39,6 +40,7 @@ export default function Layout({ children }: LayoutProps) {
 
         <main className="flex-1">{children}</main>
       </div>
+      <AssistenteIA />
     </div>
   );
 }

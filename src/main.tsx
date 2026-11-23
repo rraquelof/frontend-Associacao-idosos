@@ -31,6 +31,9 @@ import AtualizarVisita from "./paginas/visita/AtualizarVisita";
 import DeletarVisita from "./paginas/visita/DeletarVisita";
 import DetalhesVisita from "./paginas/visita/DetalhesVisita";
 import Perfil from "./paginas/usuario/Perfil";
+import { inicializarMockApi } from "./utilitarios/mockApi";
+
+inicializarMockApi();
 
 function EdicaoEventoWrapper() {
   const { id } = useParams();
