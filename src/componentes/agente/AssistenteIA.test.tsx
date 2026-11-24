@@ -235,8 +235,8 @@ describe("AssistenteIA e motor agenteIA", () => {
           }),
         } as Response;
       }
-      if (urlStr.includes("gemini-flash-lite-latest:")) {
-        modelosChamados.push("gemini-flash-lite-latest");
+      if (urlStr.includes("gemini-2.5-flash-lite:")) {
+        modelosChamados.push("gemini-2.5-flash-lite");
         return {
           ok: false,
           status: 429,
@@ -244,8 +244,8 @@ describe("AssistenteIA e motor agenteIA", () => {
           json: async () => ({ error: { message: "Quota exceeded" } }),
         } as Response;
       }
-      if (urlStr.includes("gemini-2.5-flash-lite:")) {
-        modelosChamados.push("gemini-2.5-flash-lite");
+      if (urlStr.includes("gemini-flash-lite-latest:")) {
+        modelosChamados.push("gemini-flash-lite-latest");
         return {
           ok: true,
           status: 200,
@@ -254,7 +254,7 @@ describe("AssistenteIA e motor agenteIA", () => {
               {
                 content: {
                   role: "model",
-                  parts: [{ text: "Resposta via modelo flash-lite gratuito." }],
+                  parts: [{ text: "Resposta via modelo flash-lite-latest gratuito." }],
                 },
               },
             ],
@@ -271,8 +271,8 @@ describe("AssistenteIA e motor agenteIA", () => {
     });
 
     expect(resultado.status).toBe(200);
-    expect(resultado.body.modeloUtilizado).toBe("gemini-2.5-flash-lite");
-    expect(modelosChamados).toEqual(["gemini-flash-lite-latest", "gemini-2.5-flash-lite"]);
+    expect(resultado.body.modeloUtilizado).toBe("gemini-flash-lite-latest");
+    expect(modelosChamados).toEqual(["gemini-2.5-flash-lite", "gemini-flash-lite-latest"]);
   });
 
   test("processarAgenteComApiSistema ignora modelo 404 depreciado e usa modelo ativo sem falso erro de limite", async () => {
@@ -344,9 +344,9 @@ describe("AssistenteIA e motor agenteIA", () => {
     expect(resultado.body.resposta).toContain("3.5-flash-lite");
   });
 
-  test("chave AQ. roteia automaticamente para Vertex AI Express (aiplatform.googleapis.com) sem chamar generativelanguage", async () => {
+  test("chave AQ. do Google AI Studio consulta generativelanguage.googleapis.com e não aiplatform.googleapis.com", async () => {
     localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
-    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AQ.VertexExpressKey123");
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AQ.AIStudioKey123");
 
     const urlsChamadas: string[] = [];
     const fetchMock = vi.fn(async (url: RequestInfo | URL) => {
@@ -361,7 +361,22 @@ describe("AssistenteIA e motor agenteIA", () => {
         } as Response;
       }
 
-      if (urlStr.startsWith("https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent")) {
+      if (urlStr.includes("/v1beta/models?")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            models: [
+              {
+                name: "models/gemini-2.5-flash-lite",
+                supportedGenerationMethods: ["generateContent"],
+              },
+            ],
+          }),
+        } as Response;
+      }
+
+      if (urlStr.startsWith("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent")) {
         return {
           ok: true,
           status: 200,
@@ -370,7 +385,7 @@ describe("AssistenteIA e motor agenteIA", () => {
               {
                 content: {
                   role: "model",
-                  parts: [{ text: "Resposta via Vertex AI Express." }],
+                  parts: [{ text: "Resposta via AI Studio com chave AQ." }],
                 },
               },
             ],
@@ -388,9 +403,10 @@ describe("AssistenteIA e motor agenteIA", () => {
     });
 
     expect(resultado.status).toBe(200);
-    expect(resultado.body.resposta).toBe("Resposta via Vertex AI Express.");
-    expect(urlsChamadas.some((u) => u.includes("generativelanguage.googleapis.com"))).toBe(false);
-    expect(urlsChamadas.some((u) => u.startsWith("https://aiplatform.googleapis.com/"))).toBe(true);
+    expect(resultado.body.resposta).toBe("Resposta via AI Studio com chave AQ.");
+    expect(urlsChamadas.some((u) => u.includes("aiplatform.googleapis.com"))).toBe(false);
+    expect(urlsChamadas.some((u) => u.startsWith("https://generativelanguage.googleapis.com/v1beta/models?"))).toBe(true);
+    expect(urlsChamadas.some((u) => u.startsWith("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"))).toBe(true);
   });
 
   test("quebra loop quando o modelo repete a mesma chamada de ferramenta", async () => {

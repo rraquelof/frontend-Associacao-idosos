@@ -10,23 +10,14 @@ const MODELOS_FALLBACK_PADRAO = [
   "gemini-flash-latest",
 ];
 
-const MODELOS_VERTEX_EXPRESS = [
-  "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
-  "gemini-2.0-flash",
-];
-
 const TIMEOUT_DESCOBERTA_MS = 8000;
 const TIMEOUT_GERACAO_MS = 15000;
+const PAUSA_POS_503_MS = 1000;
 const CACHE_MODELOS_TTL_MS = 10 * 60 * 1000;
 const cacheModelosPorChave = new Map<
   string,
   { modelos: string[]; expiraEm: number }
 >();
-
-function ehChaveVertexExpress(apiKey: string): boolean {
-  return apiKey.trim().startsWith("AQ.");
-}
 
 const CAMPOS_SENSIVEIS_LGPD = new Set(["cpf", "rg", "sus", "senha"]);
 
@@ -1073,7 +1064,7 @@ function pontuarModeloGemini(id: string): number {
   else if (lower.includes("flash")) pontos += 200;
   else if (lower.includes("pro")) pontos += 50;
 
-  if (lower.includes("latest")) pontos += 150;
+  if (lower.includes("latest")) pontos += 10;
 
   const versao = lower.match(/gemini-(\d+)(?:\.(\d+))?/);
   if (versao) {
@@ -1115,14 +1106,30 @@ async function fetchComTimeout(
   }
 }
 
+async function aguardarComCancelamento(
+  ms: number,
+  signal?: AbortSignal
+): Promise<void> {
+  if (signal?.aborted) {
+    throw new DOMException("Operação cancelada pelo usuário.", "AbortError");
+  }
+  await new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(new DOMException("Operação cancelada pelo usuário.", "AbortError"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
 async function obterModelosCandidatos(
   apiKey: string,
   externalSignal?: AbortSignal
 ): Promise<string[]> {
-  if (ehChaveVertexExpress(apiKey)) {
-    return MODELOS_VERTEX_EXPRESS;
-  }
-
   const agora = Date.now();
   const emCache = cacheModelosPorChave.get(apiKey);
   if (emCache && emCache.expiraEm > agora) {
@@ -1183,11 +1190,6 @@ async function obterModelosCandidatos(
 }
 
 function montarUrlGenerateContent(apiKey: string, modelo: string): string {
-  if (ehChaveVertexExpress(apiKey)) {
-    return `https://aiplatform.googleapis.com/v1/publishers/google/models/${modelo}:generateContent?key=${encodeURIComponent(
-      apiKey
-    )}`;
-  }
   return `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${encodeURIComponent(
     apiKey
   )}`;
@@ -1212,7 +1214,8 @@ async function chamarGeminiComFallback(
     codigo: "ERRO_GEMINI",
   };
 
-  for (const modelo of modelos) {
+  for (let i = 0; i < modelos.length; i++) {
+    const modelo = modelos[i];
     if (opcoes?.signal?.aborted) {
       throw new DOMException("Operação cancelada pelo usuário.", "AbortError");
     }
@@ -1281,6 +1284,9 @@ async function chamarGeminiComFallback(
         mensagem: `Serviço do Google Gemini temporariamente indisponível (${msgApi}). Tente novamente em instantes.`,
         codigo: "SERVICO_INDISPONIVEL",
       };
+      if (i < modelos.length - 1) {
+        await aguardarComCancelamento(PAUSA_POS_503_MS, opcoes?.signal);
+      }
       continue;
     }
 
