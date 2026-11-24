@@ -117,6 +117,13 @@ export default function AssistenteIA() {
   );
 
   const fimMensagensRef = useRef<HTMLDivElement | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -182,6 +189,12 @@ export default function AssistenteIA() {
     }
   };
 
+  const cancelarConsulta = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setCarregando(false);
+  };
+
   const enviar = async (textoCustom?: string) => {
     const texto = (textoCustom ?? entrada).trim();
     if (!texto || carregando) return;
@@ -193,6 +206,9 @@ export default function AssistenteIA() {
     };
 
     const historicoAntes = montarHistoricoPayload(mensagens);
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setMensagens((prev) => [...prev, msgUsuario]);
     if (!textoCustom) setEntrada("");
     setCarregando(true);
@@ -201,9 +217,14 @@ export default function AssistenteIA() {
       const res = await enviarMensagemAgente({
         mensagem: texto,
         historico: historicoAntes,
+        signal: controller.signal,
       });
       processarResposta(res);
     } catch (err: any) {
+      if (err?.name === "AbortError" || controller.signal.aborted) {
+        return;
+      }
+
       const ehErroChave =
         err instanceof ErroAgenteIA &&
         (err.codigo === "CHAVE_GEMINI_AUSENTE" ||
@@ -225,6 +246,9 @@ export default function AssistenteIA() {
         },
       ]);
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       setCarregando(false);
     }
   };
@@ -257,6 +281,8 @@ export default function AssistenteIA() {
       return;
     }
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setCarregando(true);
     try {
       const res = await enviarMensagemAgente({
@@ -264,9 +290,13 @@ export default function AssistenteIA() {
           ferramenta: confirmacao.ferramenta,
           argumentos: confirmacao.argumentos,
         },
+        signal: controller.signal,
       });
       processarResposta(res, "Exclusão realizada com sucesso.");
     } catch (err: any) {
+      if (err?.name === "AbortError" || controller.signal.aborted) {
+        return;
+      }
       setMensagens((prev) => [
         ...prev,
         {
@@ -277,6 +307,9 @@ export default function AssistenteIA() {
         },
       ]);
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       setCarregando(false);
     }
   };
@@ -295,6 +328,7 @@ export default function AssistenteIA() {
   };
 
   const limparConversa = () => {
+    cancelarConsulta();
     setMensagens([]);
     try {
       sessionStorage.removeItem(obterChaveHistorico(usuarioId));
@@ -385,7 +419,7 @@ export default function AssistenteIA() {
                   type="password"
                   value={chaveInput}
                   onChange={(e) => setChaveInput(e.target.value)}
-                  placeholder="Cole sua chave AIza..."
+                  placeholder="Cole sua chave AIza... ou AQ..."
                   className="flex-1 bg-white border border-blue-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <button
@@ -536,7 +570,14 @@ export default function AssistenteIA() {
             {carregando && (
               <div className="flex items-center gap-2 text-xs text-gray-500 bg-white border border-gray-100 rounded-2xl px-3 py-2 w-fit shadow-xs">
                 <Loader2 size={14} className="animate-spin text-blue-600" />
-                Consultando sistema...
+                <span>Consultando sistema...</span>
+                <button
+                  type="button"
+                  onClick={cancelarConsulta}
+                  className="ml-1 text-[11px] font-semibold text-red-600 hover:text-red-700 underline"
+                >
+                  Cancelar
+                </button>
               </div>
             )}
             <div ref={fimMensagensRef} />

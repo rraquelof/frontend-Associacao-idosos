@@ -5,19 +5,28 @@ const API_BASE = "https://api-associacao-idosos.onrender.com/api";
 export const CHAVE_GEMINI_STORAGE = "sigaai_gemini_api_key";
 
 const MODELOS_FALLBACK_PADRAO = [
-  "gemini-flash-lite-latest",
-  "gemini-flash-latest",
-  "gemini-3.5-flash-lite",
-  "gemini-3.8-flash",
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash",
+  "gemini-flash-latest",
 ];
 
+const MODELOS_VERTEX_EXPRESS = [
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash",
+];
+
+const TIMEOUT_DESCOBERTA_MS = 8000;
+const TIMEOUT_GERACAO_MS = 15000;
 const CACHE_MODELOS_TTL_MS = 10 * 60 * 1000;
 const cacheModelosPorChave = new Map<
   string,
   { modelos: string[]; expiraEm: number }
 >();
+
+function ehChaveVertexExpress(apiKey: string): boolean {
+  return apiKey.trim().startsWith("AQ.");
+}
 
 const CAMPOS_SENSIVEIS_LGPD = new Set(["cpf", "rg", "sus", "senha"]);
 
@@ -1080,7 +1089,40 @@ function pontuarModeloGemini(id: string): number {
   return pontos;
 }
 
-async function obterModelosCandidatos(apiKey: string): Promise<string[]> {
+async function fetchComTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+  externalSignal?: AbortSignal
+): Promise<Response> {
+  if (externalSignal?.aborted) {
+    throw new DOMException("Operação cancelada pelo usuário.", "AbortError");
+  }
+
+  const controller = new AbortController();
+  const onExternalAbort = () => controller.abort(externalSignal?.reason);
+  externalSignal?.addEventListener("abort", onExternalAbort, { once: true });
+
+  const timer = setTimeout(() => {
+    controller.abort(new DOMException("Tempo limite excedido.", "TimeoutError"));
+  }, timeoutMs);
+
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+    externalSignal?.removeEventListener("abort", onExternalAbort);
+  }
+}
+
+async function obterModelosCandidatos(
+  apiKey: string,
+  externalSignal?: AbortSignal
+): Promise<string[]> {
+  if (ehChaveVertexExpress(apiKey)) {
+    return MODELOS_VERTEX_EXPRESS;
+  }
+
   const agora = Date.now();
   const emCache = cacheModelosPorChave.get(apiKey);
   if (emCache && emCache.expiraEm > agora) {
@@ -1089,15 +1131,18 @@ async function obterModelosCandidatos(apiKey: string): Promise<string[]> {
 
   let descobertos: string[] = [];
   try {
-    const resp = await fetch(
+    const resp = await fetchComTimeout(
       `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(
         apiKey
-      )}`
+      )}`,
+      { method: "GET" },
+      TIMEOUT_DESCOBERTA_MS,
+      externalSignal
     );
     if (resp.ok) {
       const dados = await resp.json();
       const lista = Array.isArray(dados?.models) ? dados.models : [];
-      descobertos = lista
+      const candidatos = lista
         .filter(
           (m: any) =>
             typeof m?.name === "string" &&
@@ -1108,33 +1153,59 @@ async function obterModelosCandidatos(apiKey: string): Promise<string[]> {
               m.name
             )
         )
-        .map((m: any) => String(m.name).replace(/^models\//, ""))
-        .sort((a: string, b: string) => pontuarModeloGemini(b) - pontuarModeloGemini(a));
+        .map((m: any) => String(m.name).replace(/^models\//, ""));
+
+      const estaveis = candidatos.filter(
+        (id: string) =>
+          !id.toLowerCase().includes("preview") && !id.toLowerCase().includes("-exp")
+      );
+      const base = estaveis.length > 0 ? estaveis : candidatos;
+      descobertos = base
+        .sort((a: string, b: string) => pontuarModeloGemini(b) - pontuarModeloGemini(a))
+        .slice(0, 3);
     }
-  } catch {
-    // Falha de rede na descoberta usa fallback padrão silenciosamente
+  } catch (err: any) {
+    if (externalSignal?.aborted || err?.name === "AbortError") {
+      throw err;
+    }
+    // Falha de rede ou timeout na descoberta usa fallback padrão
   }
 
-  const combinados = Array.from(
-    new Set([...descobertos, ...MODELOS_FALLBACK_PADRAO])
-  ).slice(0, 6);
+  const selecionados =
+    descobertos.length > 0 ? descobertos : MODELOS_FALLBACK_PADRAO.slice(0, 3);
 
   cacheModelosPorChave.set(apiKey, {
-    modelos: combinados,
+    modelos: selecionados,
     expiraEm: agora + CACHE_MODELOS_TTL_MS,
   });
 
-  return combinados;
+  return selecionados;
+}
+
+function montarUrlGenerateContent(apiKey: string, modelo: string): string {
+  if (ehChaveVertexExpress(apiKey)) {
+    return `https://aiplatform.googleapis.com/v1/publishers/google/models/${modelo}:generateContent?key=${encodeURIComponent(
+      apiKey
+    )}`;
+  }
+  return `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${encodeURIComponent(
+    apiKey
+  )}`;
 }
 
 async function chamarGeminiComFallback(
   apiKey: string,
-  payload: Record<string, unknown>
+  payload: Record<string, unknown>,
+  opcoes?: { modeloPreferido?: string; signal?: AbortSignal }
 ): Promise<
   | { ok: true; dados: any; modelo: string }
   | { ok: false; status: number; mensagem: string; codigo: string }
 > {
-  const modelos = await obterModelosCandidatos(apiKey);
+  const baseModelos = await obterModelosCandidatos(apiKey, opcoes?.signal);
+  const modelos = opcoes?.modeloPreferido
+    ? Array.from(new Set([opcoes.modeloPreferido, ...baseModelos])).slice(0, 3)
+    : baseModelos.slice(0, 3);
+
   let ultimoErro = {
     status: 500,
     mensagem: "Erro ao consultar a API do Google Gemini.",
@@ -1142,14 +1213,36 @@ async function chamarGeminiComFallback(
   };
 
   for (const modelo of modelos) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${encodeURIComponent(
-      apiKey
-    )}`;
-    const resposta = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    if (opcoes?.signal?.aborted) {
+      throw new DOMException("Operação cancelada pelo usuário.", "AbortError");
+    }
+
+    const url = montarUrlGenerateContent(apiKey, modelo);
+    let resposta: Response;
+
+    try {
+      resposta = await fetchComTimeout(
+        url,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+        TIMEOUT_GERACAO_MS,
+        opcoes?.signal
+      );
+    } catch (err: any) {
+      if (opcoes?.signal?.aborted) {
+        throw new DOMException("Operação cancelada pelo usuário.", "AbortError");
+      }
+      ultimoErro = {
+        status: 504,
+        mensagem:
+          "Tempo limite excedido ao aguardar resposta do Google Gemini. Tente novamente em instantes.",
+        codigo: "TIMEOUT_GEMINI",
+      };
+      continue;
+    }
 
     if (resposta.ok) {
       const dados = await resposta.json();
@@ -1227,6 +1320,7 @@ export async function processarAgenteComApiSistema(params: {
   historico?: MensagemHistoricoPayload[];
   confirmacaoExecucao?: { ferramenta: string; argumentos: Record<string, any> };
   apiKeyOverride?: string;
+  signal?: AbortSignal;
 }): Promise<{ status: number; body: Record<string, any> }> {
   const token =
     typeof localStorage !== "undefined" ? localStorage.getItem("token") || "" : "";
@@ -1332,15 +1426,21 @@ export async function processarAgenteComApiSistema(params: {
   };
 
   let modeloUtilizado = MODELOS_FALLBACK_PADRAO[0];
+  let modeloAtivo: string | undefined;
   let respostaTexto = "";
+  const chamadasExecutadas = new Set<string>();
 
-  for (let rodada = 0; rodada < 4; rodada++) {
-    const resultadoGemini = await chamarGeminiComFallback(apiKey, {
-      systemInstruction,
-      contents,
-      tools: [{ functionDeclarations: declaracoes }],
-      generationConfig: { temperature: 0.1 },
-    });
+  for (let rodada = 0; rodada < 3; rodada++) {
+    const resultadoGemini = await chamarGeminiComFallback(
+      apiKey,
+      {
+        systemInstruction,
+        contents,
+        tools: [{ functionDeclarations: declaracoes }],
+        generationConfig: { temperature: 0.1 },
+      },
+      { modeloPreferido: modeloAtivo, signal: params.signal }
+    );
 
     if (!resultadoGemini.ok) {
       return {
@@ -1353,6 +1453,7 @@ export async function processarAgenteComApiSistema(params: {
     }
 
     modeloUtilizado = resultadoGemini.modelo;
+    modeloAtivo = resultadoGemini.modelo;
     const candidato = resultadoGemini.dados?.candidates?.[0];
     const parts: any[] = candidato?.content?.parts || [];
     const chamadas = parts.filter((p) => p.functionCall);
@@ -1364,6 +1465,36 @@ export async function processarAgenteComApiSistema(params: {
         .trim();
       break;
     }
+
+    const chavesChamadas = chamadas.map(
+      (p) => `${p.functionCall.name}:${JSON.stringify(p.functionCall.args || {})}`
+    );
+    const todasRepetidas = chavesChamadas.every((k) => chamadasExecutadas.has(k));
+
+    if (todasRepetidas) {
+      const resumoFinal = await chamarGeminiComFallback(
+        apiKey,
+        {
+          systemInstruction,
+          contents,
+          tools: [{ functionDeclarations: declaracoes }],
+          toolConfig: { functionCallingConfig: { mode: "NONE" } },
+          generationConfig: { temperature: 0.1 },
+        },
+        { modeloPreferido: modeloAtivo, signal: params.signal }
+      );
+      if (resumoFinal.ok) {
+        const partesFinais: any[] =
+          resumoFinal.dados?.candidates?.[0]?.content?.parts || [];
+        respostaTexto = partesFinais
+          .map((p) => p.text || "")
+          .join("\n")
+          .trim();
+      }
+      break;
+    }
+
+    chavesChamadas.forEach((k) => chamadasExecutadas.add(k));
 
     contents.push({
       role: "model",
@@ -1419,6 +1550,7 @@ export async function enviarMensagemAgente(params: {
   mensagem?: string;
   historico?: MensagemHistoricoPayload[];
   confirmacaoExecucao?: { ferramenta: string; argumentos: Record<string, any> };
+  signal?: AbortSignal;
 }): Promise<RespostaAgente> {
   const token =
     typeof localStorage !== "undefined" ? localStorage.getItem("token") || "" : "";
@@ -1431,10 +1563,17 @@ export async function enviarMensagemAgente(params: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(chaveLocal ? { "x-gemini-api-key": chaveLocal } : {}),
     },
-    body: JSON.stringify(params),
+    body: JSON.stringify({
+      mensagem: params.mensagem,
+      historico: params.historico,
+      confirmacaoExecucao: params.confirmacaoExecucao,
+    }),
+    signal: params.signal,
   });
 
-  if (resposta.status === 404) {
+  const dados = await resposta.json().catch(() => ({}));
+
+  if ((resposta.status === 404 || resposta.status === 503) && !dados?.codigo) {
     const fallback = await processarAgenteComApiSistema({
       ...params,
       apiKeyOverride: chaveLocal,
@@ -1448,8 +1587,6 @@ export async function enviarMensagemAgente(params: {
     }
     return fallback.body as RespostaAgente;
   }
-
-  const dados = await resposta.json().catch(() => ({}));
 
   if (!resposta.ok) {
     throw new ErroAgenteIA(

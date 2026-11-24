@@ -1,7 +1,12 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import AssistenteIA from "./AssistenteIA";
-import { processarAgenteComApiSistema, CHAVE_GEMINI_STORAGE } from "../../utilitarios/agenteIA";
+import {
+  enviarMensagemAgente,
+  ErroAgenteIA,
+  processarAgenteComApiSistema,
+  CHAVE_GEMINI_STORAGE,
+} from "../../utilitarios/agenteIA";
 
 const mockNavigate = vi.fn();
 
@@ -337,5 +342,162 @@ describe("AssistenteIA e motor agenteIA", () => {
     expect(resultado.status).toBe(200);
     expect(resultado.body.modeloUtilizado).toBe("gemini-3.5-flash-lite");
     expect(resultado.body.resposta).toContain("3.5-flash-lite");
+  });
+
+  test("chave AQ. roteia automaticamente para Vertex AI Express (aiplatform.googleapis.com) sem chamar generativelanguage", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AQ.VertexExpressKey123");
+
+    const urlsChamadas: string[] = [];
+    const fetchMock = vi.fn(async (url: RequestInfo | URL) => {
+      const urlStr = String(url);
+      urlsChamadas.push(urlStr);
+
+      if (urlStr.endsWith("/usuario/usr-coord-01")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ _id: "usr-coord-01", nome: "Ana", tipo: "coordenador" }),
+        } as Response;
+      }
+
+      if (urlStr.startsWith("https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  role: "model",
+                  parts: [{ text: "Resposta via Vertex AI Express." }],
+                },
+              },
+            ],
+          }),
+        } as Response;
+      }
+
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+
+    globalThis.fetch = fetchMock as any;
+
+    const resultado = await processarAgenteComApiSistema({
+      mensagem: "Resumo do abrigo",
+    });
+
+    expect(resultado.status).toBe(200);
+    expect(resultado.body.resposta).toBe("Resposta via Vertex AI Express.");
+    expect(urlsChamadas.some((u) => u.includes("generativelanguage.googleapis.com"))).toBe(false);
+    expect(urlsChamadas.some((u) => u.startsWith("https://aiplatform.googleapis.com/"))).toBe(true);
+  });
+
+  test("quebra loop quando o modelo repete a mesma chamada de ferramenta", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaLoopTest123");
+
+    let chamadasGenerate = 0;
+    let modoToolConfigFinal = "";
+
+    const fetchMock = vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
+      const urlStr = String(url);
+      if (urlStr.endsWith("/usuario/usr-coord-01")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ _id: "usr-coord-01", nome: "Ana", tipo: "coordenador" }),
+        } as Response;
+      }
+      if (urlStr.endsWith("/visitas")) {
+        return { ok: true, status: 200, json: async () => [] } as Response;
+      }
+      if (urlStr.includes("/v1beta/models?")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            models: [
+              {
+                name: "models/gemini-2.5-flash-lite",
+                supportedGenerationMethods: ["generateContent"],
+              },
+            ],
+          }),
+        } as Response;
+      }
+      if (urlStr.includes(":generateContent")) {
+        chamadasGenerate++;
+        const body = JSON.parse(String(init?.body || "{}"));
+        if (body.toolConfig?.functionCallingConfig?.mode === "NONE") {
+          modoToolConfigFinal = "NONE";
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              candidates: [
+                {
+                  content: {
+                    role: "model",
+                    parts: [{ text: "Não há visitas cadastradas no momento." }],
+                  },
+                },
+              ],
+            }),
+          } as Response;
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  role: "model",
+                  parts: [{ functionCall: { name: "listar_visitas", args: {} } }],
+                },
+              },
+            ],
+          }),
+        } as Response;
+      }
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+
+    globalThis.fetch = fetchMock as any;
+
+    const resultado = await processarAgenteComApiSistema({
+      mensagem: "Liste as visitas",
+    });
+
+    expect(resultado.status).toBe(200);
+    expect(modoToolConfigFinal).toBe("NONE");
+    expect(chamadasGenerate).toBe(3);
+    expect(resultado.body.resposta).toBe("Não há visitas cadastradas no momento.");
+  });
+
+  test("enviarMensagemAgente não executa fallback duplicado quando erro 503 já traz codigo do agente", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AQ.KeyNoDup");
+
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 503,
+      json: async () => ({
+        message: "Serviço do Google Gemini temporariamente indisponível.",
+        codigo: "SERVICO_INDISPONIVEL",
+      }),
+    });
+    globalThis.fetch = fetchMock as any;
+
+    await expect(
+      enviarMensagemAgente({ mensagem: "Resumo" })
+    ).rejects.toMatchObject({
+      codigo: "SERVICO_INDISPONIVEL",
+      status: 503,
+    });
+    expect(ErroAgenteIA).toBeDefined();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
