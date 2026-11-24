@@ -516,4 +516,77 @@ describe("AssistenteIA e motor agenteIA", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  test("diversifica famílias de modelos para contornar 503 em aliases flash-lite e responder com gemini-2.5-flash", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AQ.DiversifiedKey503");
+
+    const modelosTentados: string[] = [];
+
+    const fetchMock = vi.fn(async (url: RequestInfo | URL) => {
+      const urlStr = String(url);
+      if (urlStr.endsWith("/usuario/usr-coord-01")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ _id: "usr-coord-01", nome: "Ana", tipo: "coordenador" }),
+        } as Response;
+      }
+      if (urlStr.includes("/v1beta/models?")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            models: [
+              { name: "models/gemini-2.5-flash-lite", supportedGenerationMethods: ["generateContent"] },
+              { name: "models/gemini-2.5-flash-lite-001", supportedGenerationMethods: ["generateContent"] },
+              { name: "models/gemini-flash-lite-latest", supportedGenerationMethods: ["generateContent"] },
+              { name: "models/gemini-2.5-flash", supportedGenerationMethods: ["generateContent"] },
+              { name: "models/gemini-2.0-flash", supportedGenerationMethods: ["generateContent"] },
+            ],
+          }),
+        } as Response;
+      }
+      if (urlStr.includes(":generateContent")) {
+        const matchModelo = urlStr.match(/models\/([^:]+):generateContent/);
+        const modelo = matchModelo?.[1] || "";
+        modelosTentados.push(modelo);
+
+        if (modelo.includes("flash-lite")) {
+          return {
+            ok: false,
+            status: 503,
+            statusText: "Service Unavailable",
+            json: async () => ({ error: { message: "High demand" } }),
+          } as Response;
+        }
+
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  role: "model",
+                  parts: [{ text: "Respondido via gemini-2.5-flash após 503 no flash-lite." }],
+                },
+              },
+            ],
+          }),
+        } as Response;
+      }
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+
+    globalThis.fetch = fetchMock as any;
+
+    const resultado = await processarAgenteComApiSistema({
+      mensagem: "Resumo do abrigo",
+    });
+
+    expect(resultado.status).toBe(200);
+    expect(resultado.body.modeloUtilizado).toBe("gemini-2.5-flash");
+    expect(modelosTentados).toEqual(["gemini-2.5-flash-lite", "gemini-2.5-flash"]);
+  });
 });

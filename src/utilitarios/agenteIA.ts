@@ -1126,6 +1126,56 @@ async function aguardarComCancelamento(
   });
 }
 
+function selecionarModelosDiversificados(
+  modelosOrdenados: string[],
+  limite = 4
+): string[] {
+  const selecionados: string[] = [];
+  const basesVistas = new Set<string>();
+  const clustersVistos = new Set<string>();
+  const variantesVistas = new Set<string>();
+
+  const analisar = (id: string) => {
+    const lower = id.toLowerCase();
+    const base = lower.replace(/-\d{3}$/, "");
+    const variante = lower.includes("flash-lite")
+      ? "flash-lite"
+      : lower.includes("flash")
+      ? "flash"
+      : lower.includes("pro")
+      ? "pro"
+      : "outro";
+    const matchVersao = lower.match(/gemini-(\d+(?:\.\d+)?)/);
+    const geracao = matchVersao ? matchVersao[1] : lower.includes("latest") ? "latest" : "outro";
+    return { base, variante, geracao, ehLatest: lower.includes("latest") };
+  };
+
+  for (const id of modelosOrdenados) {
+    if (selecionados.length >= limite) break;
+    const { base, variante, geracao, ehLatest } = analisar(id);
+    if (basesVistas.has(base)) continue;
+    if (ehLatest && variantesVistas.has(variante)) continue;
+
+    const cluster = `${geracao}:${variante}`;
+    if (clustersVistos.has(cluster)) continue;
+
+    selecionados.push(id);
+    basesVistas.add(base);
+    clustersVistos.add(cluster);
+    variantesVistas.add(variante);
+  }
+
+  for (const id of modelosOrdenados) {
+    if (selecionados.length >= limite) break;
+    const { base } = analisar(id);
+    if (basesVistas.has(base)) continue;
+    selecionados.push(id);
+    basesVistas.add(base);
+  }
+
+  return selecionados;
+}
+
 async function obterModelosCandidatos(
   apiKey: string,
   externalSignal?: AbortSignal
@@ -1167,9 +1217,10 @@ async function obterModelosCandidatos(
           !id.toLowerCase().includes("preview") && !id.toLowerCase().includes("-exp")
       );
       const base = estaveis.length > 0 ? estaveis : candidatos;
-      descobertos = base
-        .sort((a: string, b: string) => pontuarModeloGemini(b) - pontuarModeloGemini(a))
-        .slice(0, 3);
+      const ordenados = base.sort(
+        (a: string, b: string) => pontuarModeloGemini(b) - pontuarModeloGemini(a)
+      );
+      descobertos = selecionarModelosDiversificados(ordenados, 4);
     }
   } catch (err: any) {
     if (externalSignal?.aborted || err?.name === "AbortError") {
@@ -1179,7 +1230,9 @@ async function obterModelosCandidatos(
   }
 
   const selecionados =
-    descobertos.length > 0 ? descobertos : MODELOS_FALLBACK_PADRAO.slice(0, 3);
+    descobertos.length > 0
+      ? descobertos
+      : [...MODELOS_FALLBACK_PADRAO, "gemini-2.0-flash"].slice(0, 4);
 
   cacheModelosPorChave.set(apiKey, {
     modelos: selecionados,
@@ -1205,8 +1258,9 @@ async function chamarGeminiComFallback(
 > {
   const baseModelos = await obterModelosCandidatos(apiKey, opcoes?.signal);
   const modelos = opcoes?.modeloPreferido
-    ? Array.from(new Set([opcoes.modeloPreferido, ...baseModelos])).slice(0, 3)
-    : baseModelos.slice(0, 3);
+    ? Array.from(new Set([opcoes.modeloPreferido, ...baseModelos])).slice(0, 4)
+    : baseModelos.slice(0, 4);
+  const modelosTentados: string[] = [];
 
   let ultimoErro = {
     status: 500,
@@ -1219,6 +1273,7 @@ async function chamarGeminiComFallback(
     if (opcoes?.signal?.aborted) {
       throw new DOMException("Operação cancelada pelo usuário.", "AbortError");
     }
+    modelosTentados.push(modelo);
 
     const url = montarUrlGenerateContent(apiKey, modelo);
     let resposta: Response;
@@ -1281,7 +1336,9 @@ async function chamarGeminiComFallback(
     if (resposta.status === 503) {
       ultimoErro = {
         status: 503,
-        mensagem: `Serviço do Google Gemini temporariamente indisponível (${msgApi}). Tente novamente em instantes.`,
+        mensagem: `Serviço do Google Gemini temporariamente indisponível (${msgApi}) [modelos: ${modelosTentados.join(
+          ", "
+        )}]. Tente novamente em instantes.`,
         codigo: "SERVICO_INDISPONIVEL",
       };
       if (i < modelos.length - 1) {
