@@ -114,7 +114,22 @@ describe("AssistenteIA e motor agenteIA", () => {
         } as Response;
       }
 
-      if (urlStr.includes("generativelanguage.googleapis.com")) {
+      if (urlStr.includes("/v1beta/models?")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            models: [
+              {
+                name: "models/gemini-3.5-flash-lite",
+                supportedGenerationMethods: ["generateContent"],
+              },
+            ],
+          }),
+        } as Response;
+      }
+
+      if (urlStr.includes(":generateContent")) {
         const body = JSON.parse(String(init?.body || "{}"));
         toolsDeclaradasParaEnfermeiro =
           body.tools?.[0]?.functionDeclarations?.map((d: any) => d.name) || [];
@@ -182,9 +197,9 @@ describe("AssistenteIA e motor agenteIA", () => {
     expect(idosoEnviado?.sus).toBeUndefined();
   });
 
-  test("processarAgenteComApiSistema faz fallback automático para flash-lite quando flash retorna 429", async () => {
+  test("processarAgenteComApiSistema faz fallback automático para o próximo modelo quando o primeiro retorna 429", async () => {
     localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
-    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaTestKey123");
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaTestKey429");
 
     const modelosChamados: string[] = [];
 
@@ -197,8 +212,26 @@ describe("AssistenteIA e motor agenteIA", () => {
           json: async () => ({ _id: "usr-coord-01", nome: "Ana", tipo: "coordenador" }),
         } as Response;
       }
-      if (urlStr.includes("gemini-2.5-flash:")) {
-        modelosChamados.push("gemini-2.5-flash");
+      if (urlStr.includes("/v1beta/models?")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            models: [
+              {
+                name: "models/gemini-flash-lite-latest",
+                supportedGenerationMethods: ["generateContent"],
+              },
+              {
+                name: "models/gemini-2.5-flash-lite",
+                supportedGenerationMethods: ["generateContent"],
+              },
+            ],
+          }),
+        } as Response;
+      }
+      if (urlStr.includes("gemini-flash-lite-latest:")) {
+        modelosChamados.push("gemini-flash-lite-latest");
         return {
           ok: false,
           status: 429,
@@ -234,6 +267,75 @@ describe("AssistenteIA e motor agenteIA", () => {
 
     expect(resultado.status).toBe(200);
     expect(resultado.body.modeloUtilizado).toBe("gemini-2.5-flash-lite");
-    expect(modelosChamados).toEqual(["gemini-2.5-flash", "gemini-2.5-flash-lite"]);
+    expect(modelosChamados).toEqual(["gemini-flash-lite-latest", "gemini-2.5-flash-lite"]);
+  });
+
+  test("processarAgenteComApiSistema ignora modelo 404 depreciado e usa modelo ativo sem falso erro de limite", async () => {
+    localStorage.setItem("token", criarJwtMock("usr-coord-01", "coordenador"));
+    localStorage.setItem(CHAVE_GEMINI_STORAGE, "AIzaTestKey404");
+
+    const fetchMock = vi.fn(async (url: RequestInfo | URL) => {
+      const urlStr = String(url);
+      if (urlStr.endsWith("/usuario/usr-coord-01")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ _id: "usr-coord-01", nome: "Ana", tipo: "coordenador" }),
+        } as Response;
+      }
+      if (urlStr.includes("/v1beta/models?")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            models: [
+              {
+                name: "models/gemini-flash-lite-latest",
+                supportedGenerationMethods: ["generateContent"],
+              },
+              {
+                name: "models/gemini-3.5-flash-lite",
+                supportedGenerationMethods: ["generateContent"],
+              },
+            ],
+          }),
+        } as Response;
+      }
+      if (urlStr.includes("gemini-flash-lite-latest:")) {
+        return {
+          ok: false,
+          status: 404,
+          statusText: "Not Found",
+          json: async () => ({ error: { message: "Model not found" } }),
+        } as Response;
+      }
+      if (urlStr.includes("gemini-3.5-flash-lite:")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  role: "model",
+                  parts: [{ text: "Resposta via modelo descoberto 3.5-flash-lite." }],
+                },
+              },
+            ],
+          }),
+        } as Response;
+      }
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+
+    globalThis.fetch = fetchMock as any;
+
+    const resultado = await processarAgenteComApiSistema({
+      mensagem: "Resumo do sistema",
+    });
+
+    expect(resultado.status).toBe(200);
+    expect(resultado.body.modeloUtilizado).toBe("gemini-3.5-flash-lite");
+    expect(resultado.body.resposta).toContain("3.5-flash-lite");
   });
 });

@@ -4,11 +4,20 @@ import { usuarioTemAcesso, type PaginaComPermissao } from "./permissoes";
 const API_BASE = "https://api-associacao-idosos.onrender.com/api";
 export const CHAVE_GEMINI_STORAGE = "sigaai_gemini_api_key";
 
-const MODELOS_GRATUITOS = [
-  "gemini-2.5-flash",
+const MODELOS_FALLBACK_PADRAO = [
+  "gemini-flash-lite-latest",
+  "gemini-flash-latest",
+  "gemini-3.5-flash-lite",
+  "gemini-3.8-flash",
   "gemini-2.5-flash-lite",
-  "gemini-2.0-flash",
+  "gemini-2.5-flash",
 ];
+
+const CACHE_MODELOS_TTL_MS = 10 * 60 * 1000;
+const cacheModelosPorChave = new Map<
+  string,
+  { modelos: string[]; expiraEm: number }
+>();
 
 const CAMPOS_SENSIVEIS_LGPD = new Set(["cpf", "rg", "sus", "senha"]);
 
@@ -1047,6 +1056,77 @@ function montarSystemInstruction(ctx: ContextoExecucaoLocal): string {
   ].join("\n");
 }
 
+function pontuarModeloGemini(id: string): number {
+  const lower = id.toLowerCase();
+  let pontos = 0;
+
+  if (lower.includes("flash-lite")) pontos += 300;
+  else if (lower.includes("flash")) pontos += 200;
+  else if (lower.includes("pro")) pontos += 50;
+
+  if (lower.includes("latest")) pontos += 150;
+
+  const versao = lower.match(/gemini-(\d+)(?:\.(\d+))?/);
+  if (versao) {
+    const maior = Number(versao[1] || 0);
+    const menor = Number(versao[2] || 0);
+    pontos += maior * 20 + menor * 2;
+  }
+
+  if (lower.includes("preview") || lower.includes("-exp")) {
+    pontos -= 40;
+  }
+
+  return pontos;
+}
+
+async function obterModelosCandidatos(apiKey: string): Promise<string[]> {
+  const agora = Date.now();
+  const emCache = cacheModelosPorChave.get(apiKey);
+  if (emCache && emCache.expiraEm > agora) {
+    return emCache.modelos;
+  }
+
+  let descobertos: string[] = [];
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(
+        apiKey
+      )}`
+    );
+    if (resp.ok) {
+      const dados = await resp.json();
+      const lista = Array.isArray(dados?.models) ? dados.models : [];
+      descobertos = lista
+        .filter(
+          (m: any) =>
+            typeof m?.name === "string" &&
+            m.name.startsWith("models/gemini-") &&
+            Array.isArray(m.supportedGenerationMethods) &&
+            m.supportedGenerationMethods.includes("generateContent") &&
+            !/(tts|image|audio|live|embedding|vision|robotics|computer-use|deep-research|gemma)/i.test(
+              m.name
+            )
+        )
+        .map((m: any) => String(m.name).replace(/^models\//, ""))
+        .sort((a: string, b: string) => pontuarModeloGemini(b) - pontuarModeloGemini(a));
+    }
+  } catch {
+    // Falha de rede na descoberta usa fallback padrão silenciosamente
+  }
+
+  const combinados = Array.from(
+    new Set([...descobertos, ...MODELOS_FALLBACK_PADRAO])
+  ).slice(0, 6);
+
+  cacheModelosPorChave.set(apiKey, {
+    modelos: combinados,
+    expiraEm: agora + CACHE_MODELOS_TTL_MS,
+  });
+
+  return combinados;
+}
+
 async function chamarGeminiComFallback(
   apiKey: string,
   payload: Record<string, unknown>
@@ -1054,13 +1134,14 @@ async function chamarGeminiComFallback(
   | { ok: true; dados: any; modelo: string }
   | { ok: false; status: number; mensagem: string; codigo: string }
 > {
+  const modelos = await obterModelosCandidatos(apiKey);
   let ultimoErro = {
     status: 500,
     mensagem: "Erro ao consultar a API do Google Gemini.",
     codigo: "ERRO_GEMINI",
   };
 
-  for (const modelo of MODELOS_GRATUITOS) {
+  for (const modelo of modelos) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${encodeURIComponent(
       apiKey
     )}`;
@@ -1076,24 +1157,58 @@ async function chamarGeminiComFallback(
     }
 
     const erroJson = await resposta.json().catch(() => ({}));
-    const msgApi = erroJson?.error?.message || resposta.statusText;
+    const msgApi = String(erroJson?.error?.message || resposta.statusText || "");
 
-    if (resposta.status === 429 || resposta.status === 503 || resposta.status === 404) {
+    if (resposta.status === 404) {
+      if (ultimoErro.codigo === "ERRO_GEMINI") {
+        ultimoErro = {
+          status: 404,
+          mensagem: `Nenhum modelo Gemini compatível foi encontrado para esta chave (${msgApi}).`,
+          codigo: "MODELO_INDISPONIVEL",
+        };
+      }
+      continue;
+    }
+
+    if (resposta.status === 429) {
+      const cotaZerada = /limit:\s*0/i.test(msgApi);
       ultimoErro = {
-        status: resposta.status === 404 ? 503 : resposta.status,
-        mensagem:
-          "O limite temporário do plano gratuito do Google Gemini foi atingido. Aguarde alguns instantes e tente novamente.",
+        status: 429,
+        mensagem: cotaZerada
+          ? `A conta/projeto dessa chave no Google AI Studio está com cota gratuita zerada (limit: 0). Crie a chave em um novo projeto no AI Studio ou verifique as cotas em aistudio.google.com. Detalhe: ${msgApi}`
+          : `Limite temporário do plano gratuito do Google Gemini atingido. Aguarde alguns segundos e tente novamente. Detalhe: ${msgApi}`,
         codigo: "LIMITE_PLANO_GRATUITO",
       };
       continue;
     }
 
-    if (resposta.status === 400 || resposta.status === 401 || resposta.status === 403) {
+    if (resposta.status === 503) {
+      ultimoErro = {
+        status: 503,
+        mensagem: `Serviço do Google Gemini temporariamente indisponível (${msgApi}). Tente novamente em instantes.`,
+        codigo: "SERVICO_INDISPONIVEL",
+      };
+      continue;
+    }
+
+    if (resposta.status === 401 || resposta.status === 403) {
       return {
         ok: false,
         status: resposta.status,
         mensagem: `Chave da API do Google Gemini inválida ou sem permissão (${msgApi}).`,
         codigo: "CHAVE_GEMINI_INVALIDA",
+      };
+    }
+
+    if (resposta.status === 400) {
+      const erroChave = /api key/i.test(msgApi);
+      return {
+        ok: false,
+        status: 400,
+        mensagem: erroChave
+          ? `Chave da API do Google Gemini inválida (${msgApi}).`
+          : `Erro na requisição ao Gemini: ${msgApi}`,
+        codigo: erroChave ? "CHAVE_GEMINI_INVALIDA" : "ERRO_REQUISICAO_GEMINI",
       };
     }
 
@@ -1216,7 +1331,7 @@ export async function processarAgenteComApiSistema(params: {
     parts: [{ text: montarSystemInstruction(ctx) }],
   };
 
-  let modeloUtilizado = MODELOS_GRATUITOS[0];
+  let modeloUtilizado = MODELOS_FALLBACK_PADRAO[0];
   let respostaTexto = "";
 
   for (let rodada = 0; rodada < 4; rodada++) {
